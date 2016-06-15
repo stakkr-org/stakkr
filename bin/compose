@@ -1,0 +1,19 @@
+#!/bin/bash
+if [ ! -r "conf/compose.env" ]
+then
+    echo "Error: Missing conf/compose.env."
+    echo "       Please copy and edit from conf/compose.env.tpl."
+    exit 1
+fi
+source conf/compose.env
+
+export APACHE_VERSION
+export PHP_VERSION
+export MONGO_VERSION
+
+[ "x" == "x$DOCKER_LAMOP_UID" ] && DOCKER_LAMOP_UID=$(id -u)
+[ "x" == "x$DOCKER_LAMOP_GID" ] && DOCKER_LAMOP_GID=$(id -g)
+export DOCKER_LAMOP_UID
+export DOCKER_LAMOP_GID
+
+docker-compose -p "$COMPOSE_PROJECT_NAME" "$@"
