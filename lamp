@@ -47,7 +47,10 @@ def call_the_right_function(action: str, config: ConfigParser):
         'status': do_status,
         'console': do_console
     }
-    switcher.get(action, do_usage)(config)
+    if action == 'console': 
+        switcher.get(action, do_usage)(config)
+    else:
+        switcher.get(action, do_usage)()
 
 def print_colored(string: str):
     print('\033[1;33m' + string + '\033[0m')
