@@ -1,0 +1,8 @@
+mailcatcher:
+    image: yappabe/mailcatcher
+    ports:
+        - 127.0.0.1:1080:1080
+
+php:
+    links:
+        - mailcatcher:smtp

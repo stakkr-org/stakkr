@@ -1,0 +1,17 @@
+mysql:
+    image: mysql:${DOCKER_MYSQL_VERSION}
+    environment:
+        MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_ROOT_PASSWORD}
+    volumes:
+        - ./mysql:/var/lib/mysql
+
+mysqlclient:
+    image: mysql:${DOCKER_MYSQL_VERSION}
+    command: sh -c 'exec mysql -h"$$MYSQL_PORT_3306_TCP_ADDR" -uroot -p"$$MYSQL_ENV_MYSQL_ROOT_PASSWORD"'
+    links:
+        - mysql
+    read_only: true
+
+php:
+    links:
+        - mysql

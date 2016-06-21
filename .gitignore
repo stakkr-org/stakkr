@@ -1,9 +1,10 @@
 .*.sw*
-/conf/compose.env
+/conf/compose.ini
 /home/www-data/*
 !/home/www-data/.bashrc
 /logs
 /mongo
+/mysql
 /www/*
 !/www/.keep
 

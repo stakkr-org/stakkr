@@ -1,0 +1,104 @@
+#!/usr/bin/python3
+from argparse import ArgumentParser
+from configparser import ConfigParser
+from subprocess import call
+import os
+import sys
+
+
+MAIN_CONFIGURATION_FILE = 'conf/compose.ini'
+
+
+def read_mainconf_or_exit():
+    """Check if the configuration file exists"""
+    if os.path.isfile(MAIN_CONFIGURATION_FILE) is False:
+        msg = 'Error: Missing ' + MAIN_CONFIGURATION_FILE + ' '
+        msg += 'Create it and override values from ' + MAIN_CONFIGURATION_FILE + '.tpl'
+        raise IOError(msg)
+
+    return parse_config()
+
+
+def parse_config():
+    config = ConfigParser()
+    config.read(MAIN_CONFIGURATION_FILE)
+    return config
+
+
+def get_action():
+    arg_parser = ArgumentParser(description="Process the only argument expected (The action)")
+    arg_parser.add_argument('action', help='Command for lamp', nargs='?')
+    args = arg_parser.parse_args()
+
+    return args.action
+
+def get_php_vm_name(config: ConfigParser):
+    project_name = str(config['main'].get('project_name', 'inet' + os.path.basename(os.getcwd()).replace('-', '')))
+    php_vm = project_name + '_php_1'
+
+    return php_vm
+
+
+def call_the_right_function(action: str, config: ConfigParser):
+    switcher = {
+        'start': do_start,
+        'stop': do_stop,
+        'fullstart': do_fullstart,
+        'status': do_status,
+        'console': do_console
+    }
+    switcher.get(action, do_usage)(config)
+
+def print_colored(string: str):
+    print('\033[1;33m' + string + '\033[0m')
+
+
+def do_usage():
+    print('usage: ./' + os.path.basename(__file__) + ' [start|fullstart|stop|status|console]')
+    sys.exit(1)
+
+
+def do_start():
+    print_colored('Starting ' + os.path.basename(__file__)  + '..')
+    call(['bin/compose.py', 'up'])
+    print_colored(os.path.basename(__file__)  + ' is running')
+
+
+def do_fullstart():
+    print_colored("Building required images ...")
+    call(['bin/compose.py', 'build'])
+    print_colored("Build done.")
+    do_start()
+
+def do_stop():
+    print_colored("Stopping docker-lamop ...")
+    call(['bin/compose.py', 'stop'])
+    print_colored("docker-lamop is stopped.")
+
+def do_status():
+    call(['bin/compose.py', 'ps'])
+
+def do_console():
+    call(['docker', 'exec', '-u', 'www-data', '-it', get_php_vm_name(), '-c', 'cd /var/www; exec "bash";'])
+
+
+if __name__ == '__main__':
+    try:
+        config = read_mainconf_or_exit()
+        action = get_action()
+        call_the_right_function(action, config)
+    except Exception as e:
+        msg =  r"""
+              ______ _____  _____   ____  _____
+             |  ____|  __ \|  __ \ / __ \|  __ \
+             | |__  | |__) | |__) | |  | | |__) |
+             |  __| |  _  /|  _  /| |  | |  _  /
+             | |____| | \ \| | \ \| |__| | | \ \
+             |______|_|  \_\_|  \_\\____/|_|  \_\
+
+"""
+
+        msg += '\033[1;31m' + str(e) + '\033[0m'
+
+        print(msg)
+        exit(1)

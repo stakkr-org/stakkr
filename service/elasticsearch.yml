@@ -1,0 +1,6 @@
+elasticsearch:
+    image: elasticsearch:${DOCKER_ELASTICSEARCH_VERSION}
+
+php:
+    links:
+        - elasticsearch

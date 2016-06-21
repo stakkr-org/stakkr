@@ -1,0 +1,8 @@
+mongo:
+    image: mongo:${DOCKER_MONGO_VERSION}
+    volumes:
+        - ./mongo:/data/db
+
+php:
+    links:
+        - mongo

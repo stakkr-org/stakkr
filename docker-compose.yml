@@ -5,47 +5,27 @@ app:
         - ./www:/var/www
     command: '/bin/sh -c "echo Data-only container for PHP files."'
 
-mongo:
-    image: mongo:${MONGO_VERSION}
-    volumes:
-        - ./mongo:/data/db
-
-mongoclient:
-    image: mongoclient/mongoclient
-    links:
-        - mongo
-    ports:
-        - 127.0.0.1:3000:3000
-
 php:
-    build: https://git.inetcrm.com/sysadmin/docker-php.git#:${PHP_VERSION}
+    build: https://git.inetcrm.com/sysadmin/docker-php.git#:${DOCKER_PHP_VERSION}
     # image: inet/php:5.3
     environment:
-        FPM_UID: ${DOCKER_LAMOP_UID}
-        FPM_GID: ${DOCKER_LAMOP_GID}
+        FPM_UID: ${DOCKER_UID}
+        FPM_GID: ${DOCKER_GID}
     volumes_from:
         - app
     volumes:
         - ./logs/php:/var/log/php
-    links:
-        - mongo
-        - mailcatcher:smtp
+
 apache:
-    build: https://git.inetcrm.com/sysadmin/docker-apache.git#:${APACHE_VERSION}
+    build: https://git.inetcrm.com/sysadmin/docker-apache.git#:${DOCKER_APACHE_VERSION}
     # image: inet/apache:2.2
     environment:
-        PHP_GID: ${DOCKER_LAMOP_GID}
+        PHP_GID: ${DOCKER_GID}
     volumes_from:
         - app
     volumes:
         - ./logs/apache:/var/log/apache2
     ports:
-        - 80:80
+        - ${DOCKER_APACHE_PORT}:80
     links:
         - php
-
-mailcatcher:
-    image: yappabe/mailcatcher
-    ports:
-        - 127.0.0.1:1080:1080
-

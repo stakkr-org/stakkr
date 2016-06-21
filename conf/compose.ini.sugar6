@@ -1,0 +1,12 @@
+[main]
+services=mailcatcher,elasticsearch,mysql
+
+; Change Machines names only if you need it
+project_name=sugar6
+
+php.version=5.3
+
+mysql.version=5.5
+; mysql.root_password=changeme
+
+elasticsearch.version=1.3
