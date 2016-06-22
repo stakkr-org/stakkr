@@ -9,83 +9,121 @@ import sys
 MAIN_CONFIGURATION_FILE = 'conf/compose.ini'
 
 class Lamp():
-    def read_mainconf_or_exit(self):
-        """Check if the configuration file exists"""
-        if os.path.isfile(MAIN_CONFIGURATION_FILE) is False:
-            msg = 'Error: Missing ' + MAIN_CONFIGURATION_FILE + ' '
-            msg += 'Create it and override values from ' + MAIN_CONFIGURATION_FILE + '.tpl'
-            raise IOError(msg)
+    def __init__(self):
+        self.__read_mainconf_or_exit()
+        base_path = os.path.basename(os.getcwd()).replace('-', '')
+        self.project_name = self.config['main'].get('project_name', 'inet' + base_path)
 
-        self.config = self.__parse_config()
-
-    def get_action(self):
-        arg_parser = ArgumentParser(description="Process the only argument expected (The action)")
-        arg_parser.add_argument('action', help='Command for lamp', nargs='?')
-        args = arg_parser.parse_args()
-
-        return args.action
-
-    def call_the_right_function(self, action: str):
+    def call_the_right_function(self):
         switcher = {
             'start': self.__do_start,
             'stop': self.__do_stop,
             'fullstart': self.__do_fullstart,
             'status': self.__do_status,
             'run-php': self.__do_run_php,
+            'run-mysql': self.__do_run_mysql,
             'console': self.__do_console
         }
-        switcher.get(action, self.__do_usage)()
+        switcher.get(self.__get_action(), self.__do_usage)()
 
+    def __read_mainconf_or_exit(self):
+        """Check if the configuration file exists"""
+        if os.path.isfile(MAIN_CONFIGURATION_FILE) is False:
+            msg = 'Error: Missing ' + MAIN_CONFIGURATION_FILE + ' '
+            msg+= 'Create it and override values from ' + MAIN_CONFIGURATION_FILE + '.tpl'
+            raise IOError(msg)
+
+        self.config = self.__parse_config()
 
     def __parse_config(self):
         config = ConfigParser()
         config.read(MAIN_CONFIGURATION_FILE)
         return config
 
+    def __get_action(self):
+        self.arg_parser = ArgumentParser(description="Process the only argument expected (The action)")
+        self.arg_parser.add_argument('action', help='Command for lamp', nargs='?')
+        args = self.arg_parser.parse_known_args()
+
+        return args[0].action
+
     def __do_usage(self):
-        print('usage: ./' + os.path.basename(__file__) + ' [start|fullstart|stop|status|console]')
+        print('usage: ./' + os.path.basename(__file__) + ' [start|fullstart|stop|status|console|run-php|run-mysql]')
         sys.exit(1)
 
     def __do_start(self):
         self.__print_colored('Starting ' + os.path.basename(__file__)  + '..')
-        subprocess.run(['bin/compose.py', 'up'])
+        subprocess.run(['bin/compose', 'up'])
         self.__print_colored(os.path.basename(__file__)  + ' is running')
 
     def __do_fullstart(self):
         self.__print_colored("Building required images ...")
-        subprocess.run(['bin/compose.py', 'build'])
+        subprocess.run(['bin/compose', 'build'])
         self.__print_colored("Build done.")
         self.__do_start()
 
     def __do_stop(self):
         self.__print_colored("Stopping docker-lamop ...")
-        subprocess.run(['bin/compose.py', 'stop'])
+        subprocess.run(['bin/compose', 'stop'])
         self.__print_colored("docker-lamop is stopped.")
 
     def __do_status(self):
-        subprocess.run(['bin/compose.py', 'ps'])
+        subprocess.run(['bin/compose', 'ps'])
 
     def __do_console(self):
-        subprocess.run(['docker', 'exec', '-u', 'www-data', '-it', self.__get_php_vm_name(), 'bash'])
+        self.arg_parser.add_argument('vm', help='VMs to enter in (mysql or php)')
+        args = self.arg_parser.parse_known_args()
+        if args[0].action is None or args[0].vm is None or args[0].vm not in ['mysql', 'php']:
+            raise Exception("You must define the VM as a second argument (php or mysql)")
+
+        switcher = {
+            'mysql': self.__get_mysql_vm_name,
+            'php': self.__get_php_vm_name
+        }
+
+        subprocess.run(['docker', 'exec', '-u', 'www-data', '-it', switcher.get(args[0].vm)(), 'bash'])
 
     def __do_run_php(self):
-        cmd = ['docker', 'exec', '-u', 'www-data', '-t', '-i', self.__get_php_vm_name()]
-        cmd += ['bash', '-c', '-- "cd /var; /usr/bin/php -v"']
-        subprocess.run()
+        self.arg_parser.add_argument('--file', help='File to Run')
+        args = self.arg_parser.parse_known_args()
+        if args[0].file is None:
+            raise Exception("You must define a file to execute with --file")
+        if os.path.isfile(args[0].file) is False:
+            raise IOError("You must call the file with a relative path such as www/test.php")
+
+        cmd = ['docker', 'exec', '-u', 'www-data', '-it', self.__get_php_vm_name()]
+        cmd+= ['bash', '-c', '--', 'cd /var; /usr/bin/php -f' + args[0].file]
+        subprocess.run(cmd)
+
+    def __do_run_mysql(self):
+        self.arg_parser.add_argument('--sql', help='SQL to Run')
+        args = self.arg_parser.parse_known_args()
+        if args[0].sql is None:
+            raise Exception("You must define the SQL to be executed with --sql")
+
+        password = self.config['main'].get('mysql.root_password', 'changeme');
+        cmd = ['docker', 'exec', '-it', self.__get_mysql_vm_name()]
+        cmd+= ['mysql', '-u', 'root', '-p' + password, '-e', args[0].sql]
+        subprocess.run(cmd)
 
     def __print_colored(self, string: str):
         print('\033[1;33m' + string + '\033[0m')
 
-    def __get_php_vm_name(self):
-        project_name = self.config['main'].get('project_name', 'inet' + os.path.basename(os.getcwd()).replace('-', ''))
-        return project_name + '_php_1'
 
+    def __get_php_vm_name(self):
+        return self.project_name + '_php_1'
+
+    def __get_mysql_vm_name(self):
+        services_list = self.config['main'].get('services', '').split(',')
+        if 'mysql' not in services_list:
+            raise Exception("mysql is not defined in your services")
+
+        return self.project_name + '_mysql_1'
 
 if __name__ == '__main__':
     try:
         lamp = Lamp()
-        lamp.read_mainconf_or_exit()
-        lamp.call_the_right_function(lamp.get_action())
+        lamp.call_the_right_function()
     except Exception as e:
         msg =  r"""
               ______ _____  _____   ____  _____
@@ -98,6 +136,7 @@ if __name__ == '__main__':
 """
 
         msg += '\033[1;31m' + str(e) + '\033[0m'
-
         print(msg)
+        print("")
+        raise e
         exit(1)
