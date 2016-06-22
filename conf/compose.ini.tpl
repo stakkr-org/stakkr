@@ -14,9 +14,6 @@
 
 ; Set your apache version to 2.2
 ; apache.version=2.2
-;
-; To Change the port
-; apache.port=80
 
 ; Check https://hub.docker.com/_/mongo/ (3.3 by default)
 ; mongo.version=3.3

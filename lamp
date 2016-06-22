@@ -12,7 +12,7 @@ class Lamp():
         self.__read_mainconf_or_exit()
         base_path = os.path.basename(os.getcwd()).replace('-', '')
         self.project_name = self.config['main'].get('project_name', 'inet' + base_path)
-        
+
         self.arg_parser = ArgumentParser(description="Process the only argument expected (The action)")
         self.arg_parser.add_argument('action', help='Command for lamp', nargs='?')
 
@@ -55,6 +55,9 @@ class Lamp():
         self.__print_colored('Starting ' + os.path.basename(__file__)  + '..')
         subprocess.call(['bin/compose', 'up'])
         self.__print_colored(os.path.basename(__file__)  + ' is running')
+        print('')
+        self.__print_colored('To access it from a browser use : http://' + self.__get_apache_vm_ip())
+
 
     def __do_fullstart(self):
         self.__print_colored("Building required images ...")
@@ -119,6 +122,13 @@ class Lamp():
             raise Exception("mysql is not defined in your services")
 
         return self.project_name + '_mysql_1'
+
+    def __get_apache_vm_ip(self):
+        cmd = ['docker', 'inspect', '-f', '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}']
+        cmd+= [self.project_name + '_apache_1']
+        result = subprocess.check_output(cmd)
+        
+        return result.decode("utf-8", "strict")
 
 if __name__ == '__main__':
     try:

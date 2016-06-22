@@ -31,7 +31,6 @@ def set_env_values_from_conf(config: list):
     os.putenv('DOCKER_HOSTNAME', str(config.get('hostname', 'localhost')))
 
     # Services versions and options
-    os.putenv('DOCKER_APACHE_PORT', str(config.get('apache.port', 80)))
     os.putenv('DOCKER_APACHE_VERSION', str(config.get('apache.version', 2.2)))
 
     os.putenv('DOCKER_PHP_VERSION', str(config.get('php.version', 5.6)))

@@ -25,7 +25,5 @@ apache:
         - app
     volumes:
         - ./logs/apache:/var/log/apache2
-    ports:
-        - ${DOCKER_APACHE_PORT}:80
     links:
         - php
