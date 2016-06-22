@@ -49,8 +49,9 @@ def get_cli_arguments():
     arg_parser.add_argument('command', help='Command for docker-compose')
     args = arg_parser.parse_args()
     command = [args.command]
-    if (args.command == 'up'):
+    if args.command == 'up':
         command.append('-d')
+        # for new compose : command.append('--remove-orphans')
 
     return command
 
