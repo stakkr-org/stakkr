@@ -12,8 +12,11 @@ class Lamp():
         self.__read_mainconf_or_exit()
         base_path = os.path.basename(os.getcwd()).replace('-', '')
         self.project_name = self.config['main'].get('project_name', 'inet' + base_path)
+        
+        self.arg_parser = ArgumentParser(description="Process the only argument expected (The action)")
+        self.arg_parser.add_argument('action', help='Command for lamp', nargs='?')
 
-    def call_the_right_function(self):
+    def call_the_right_action(self):
         switcher = {
             'start': self.__do_start,
             'stop': self.__do_stop,
@@ -40,8 +43,6 @@ class Lamp():
         return config
 
     def __get_action(self):
-        self.arg_parser = ArgumentParser(description="Process the only argument expected (The action)")
-        self.arg_parser.add_argument('action', help='Command for lamp', nargs='?')
         args = self.arg_parser.parse_known_args()
 
         return args[0].action
@@ -122,7 +123,7 @@ class Lamp():
 if __name__ == '__main__':
     try:
         lamp = Lamp()
-        lamp.call_the_right_function()
+        lamp.call_the_right_action()
     except Exception as e:
         msg =  r"""
               ______ _____  _____   ____  _____
@@ -138,4 +139,4 @@ if __name__ == '__main__':
         print(msg)
         print("")
         raise e
-        exit(1)
+        sys.exit(1)
