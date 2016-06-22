@@ -52,22 +52,22 @@ class Lamp():
 
     def __do_start(self):
         self.__print_colored('Starting ' + os.path.basename(__file__)  + '..')
-        subprocess.run(['bin/compose', 'up'])
+        subprocess.call(['bin/compose', 'up'])
         self.__print_colored(os.path.basename(__file__)  + ' is running')
 
     def __do_fullstart(self):
         self.__print_colored("Building required images ...")
-        subprocess.run(['bin/compose', 'build'])
+        subprocess.call(['bin/compose', 'build'])
         self.__print_colored("Build done.")
         self.__do_start()
 
     def __do_stop(self):
         self.__print_colored("Stopping docker-lamop ...")
-        subprocess.run(['bin/compose', 'stop'])
+        subprocess.call(['bin/compose', 'stop'])
         self.__print_colored("docker-lamop is stopped.")
 
     def __do_status(self):
-        subprocess.run(['bin/compose', 'ps'])
+        subprocess.call(['bin/compose', 'ps'])
 
     def __do_console(self):
         self.arg_parser.add_argument('vm', help='VMs to enter in (mysql or php)')
@@ -80,7 +80,7 @@ class Lamp():
             'php': self.__get_php_vm_name
         }
         user_name = 'www-data' if args[0].vm == 'php' else 'root'
-        subprocess.run(['docker', 'exec', '-u', user_name, '-it', switcher.get(args[0].vm)(), 'bash'])
+        subprocess.call(['docker', 'exec', '-u', user_name, '-it', switcher.get(args[0].vm)(), 'bash'])
 
     def __do_run_php(self):
         self.arg_parser.add_argument('--file', help='File to Run')
@@ -92,7 +92,7 @@ class Lamp():
 
         cmd = ['docker', 'exec', '-u', 'www-data', '-it', self.__get_php_vm_name()]
         cmd+= ['bash', '-c', '--', 'cd /var; /usr/bin/php -f' + args[0].file]
-        subprocess.run(cmd)
+        subprocess.call(cmd)
 
     def __do_run_mysql(self):
         self.arg_parser.add_argument('--sql', help='SQL to Run')
@@ -103,7 +103,7 @@ class Lamp():
         password = self.config['main'].get('mysql.root_password', 'changeme');
         cmd = ['docker', 'exec', '-it', self.__get_mysql_vm_name()]
         cmd+= ['mysql', '-u', 'root', '-p' + password, '-e', args[0].sql]
-        subprocess.run(cmd)
+        subprocess.call(cmd)
 
     def __print_colored(self, string: str):
         print('\033[1;33m' + string + '\033[0m')
