@@ -80,8 +80,9 @@ class Lamp():
             'mysql': self.__get_mysql_vm_name,
             'php': self.__get_php_vm_name
         }
-
-        subprocess.run(['docker', 'exec', '-u', 'www-data', '-it', switcher.get(args[0].vm)(), 'bash'])
+        user_name = 'www-data' if args[0].vm == 'php' else 'root'
+        print(user_name)
+        subprocess.run(['docker', 'exec', '-u', user_name, '-it', switcher.get(args[0].vm)(), 'bash'])
 
     def __do_run_php(self):
         self.arg_parser.add_argument('--file', help='File to Run')
