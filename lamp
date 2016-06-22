@@ -5,10 +5,9 @@ import subprocess
 import os
 import sys
 
-
-MAIN_CONFIGURATION_FILE = 'conf/compose.ini'
-
 class Lamp():
+    MAIN_CONFIGURATION_FILE = 'conf/compose.ini'
+
     def __init__(self):
         self.__read_mainconf_or_exit()
         base_path = os.path.basename(os.getcwd()).replace('-', '')
@@ -28,16 +27,16 @@ class Lamp():
 
     def __read_mainconf_or_exit(self):
         """Check if the configuration file exists"""
-        if os.path.isfile(MAIN_CONFIGURATION_FILE) is False:
-            msg = 'Error: Missing ' + MAIN_CONFIGURATION_FILE + ' '
-            msg+= 'Create it and override values from ' + MAIN_CONFIGURATION_FILE + '.tpl'
+        if os.path.isfile(self.MAIN_CONFIGURATION_FILE) is False:
+            msg = 'Error: Missing ' + self.MAIN_CONFIGURATION_FILE + ' '
+            msg+= 'Create it and override values from ' + self.MAIN_CONFIGURATION_FILE + '.tpl'
             raise IOError(msg)
 
         self.config = self.__parse_config()
 
     def __parse_config(self):
         config = ConfigParser()
-        config.read(MAIN_CONFIGURATION_FILE)
+        config.read(self.MAIN_CONFIGURATION_FILE)
         return config
 
     def __get_action(self):
@@ -81,7 +80,6 @@ class Lamp():
             'php': self.__get_php_vm_name
         }
         user_name = 'www-data' if args[0].vm == 'php' else 'root'
-        print(user_name)
         subprocess.run(['docker', 'exec', '-u', user_name, '-it', switcher.get(args[0].vm)(), 'bash'])
 
     def __do_run_php(self):
