@@ -73,7 +73,7 @@ class Lamp():
     def __do_console(self):
         self.arg_parser.add_argument('vm', help='VMs to enter in (mysql or php)')
         args = self.arg_parser.parse_known_args()
-        if args[0].action is None or args[0].vm is None or args[0].vm not in ['mysql', 'php']:
+        if args[0].vm not in ['mysql', 'php']:
             raise Exception("You must define the VM as a second argument (php or mysql)")
 
         switcher = {
