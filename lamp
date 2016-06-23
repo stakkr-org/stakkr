@@ -16,6 +16,7 @@ class Lamp():
         self.arg_parser = ArgumentParser(description="Process the only argument expected (The action)")
         self.arg_parser.add_argument('action', help='Command for lamp', nargs='?')
 
+
     def call_the_right_action(self):
         switcher = {
             'start': self.__do_start,
@@ -28,6 +29,11 @@ class Lamp():
         }
         switcher.get(self.__get_action(), self.__do_usage)()
 
+
+    def colorize(self, string: str, color=33):
+        return '\033[1;' + str(color) + 'm' + string + '\033[0m'
+
+
     def __read_mainconf_or_exit(self):
         """Check if the configuration file exists"""
         if os.path.isfile(self.MAIN_CONFIGURATION_FILE) is False:
@@ -37,41 +43,60 @@ class Lamp():
 
         self.config = self.__parse_config()
 
+
     def __parse_config(self):
         config = ConfigParser()
         config.read(self.MAIN_CONFIGURATION_FILE)
         return config
+
 
     def __get_action(self):
         args = self.arg_parser.parse_known_args()
 
         return args[0].action
 
+
     def __do_usage(self):
         print('usage: ./' + os.path.basename(__file__) + ' [start|fullstart|stop|status|console|run-php|run-mysql]')
         sys.exit(1)
 
+
     def __do_start(self):
-        self.__print_colored('Starting ' + os.path.basename(__file__)  + '..')
+        print(self.colorize('Starting ' + os.path.basename(__file__)  + '..'))
         subprocess.call(['bin/compose', 'up'])
-        self.__print_colored(os.path.basename(__file__)  + ' is running')
-        print('')
-        self.__print_colored('To access it from a browser use : http://' + self.__get_apache_vm_ip())
+        print(self.colorize(os.path.basename(__file__)  + ' is running\n'))
+        print('To access the ' + self.colorize('web server') + ' use : http://' + self.__get_vm_ip('apache') + '\n')
+
+        mailcatcher_ip = self.__get_vm_ip('mailcatcher')
+        if mailcatcher_ip is not None:
+            print('For ' + self.colorize('mailcatcher') + ' use : http://' + mailcatcher_ip + ':1080')
+            print('                and : smtp://' + mailcatcher_ip + ':1025' + '\n')
+
+        mongoclient_ip = self.__get_vm_ip('mongoclient')
+        if mongoclient_ip is not None:
+            print('For ' + self.colorize('mongoclient') + ' use : http://' + mongoclient_ip + ':3000' + '\n')
+
+        pma_ip = self.__get_vm_ip('phpmyadmin')
+        if pma_ip is not None:
+            print('For ' + self.colorize('phpMyAdmin') + ' use : http://' + pma_ip + '\n')
 
 
     def __do_fullstart(self):
-        self.__print_colored("Building required images ...")
+        print(self.colorize("Building required images ..."))
         subprocess.call(['bin/compose', 'build'])
-        self.__print_colored("Build done.")
+        print(self.colorize("Build done."))
         self.__do_start()
 
+
     def __do_stop(self):
-        self.__print_colored("Stopping docker-lamop ...")
+        print(self.colorize("Stopping docker-lamop ..."))
         subprocess.call(['bin/compose', 'stop'])
-        self.__print_colored("docker-lamop is stopped.")
+        print(self.colorize("docker-lamop is stopped."))
+
 
     def __do_status(self):
         subprocess.call(['bin/compose', 'ps'])
+
 
     def __do_console(self):
         self.arg_parser.add_argument('vm', help='VMs to enter in (mysql or php)')
@@ -86,6 +111,7 @@ class Lamp():
         user_name = 'www-data' if args[0].vm == 'php' else 'root'
         subprocess.call(['docker', 'exec', '-u', user_name, '-it', switcher.get(args[0].vm)(), 'bash'])
 
+
     def __do_run_php(self):
         self.arg_parser.add_argument('--file', help='File to Run')
         args = self.arg_parser.parse_known_args()
@@ -98,23 +124,26 @@ class Lamp():
         cmd+= ['bash', '-c', '--', 'cd /var; /usr/bin/php -f' + args[0].file]
         subprocess.call(cmd)
 
+
     def __do_run_mysql(self):
-        self.arg_parser.add_argument('--sql', help='SQL to Run')
         args = self.arg_parser.parse_known_args()
-        if args[0].sql is None:
-            raise Exception("You must define the SQL to be executed with --sql")
+        cmd_args = ' '.join(args[1])
 
+        if cmd_args == '':
+            msg = 'You must define the command to send to MySQL\n'
+            msg+= 'Example: ' + self.colorize(__file__ + ' ' + 'run-mysql -- -e "show databases"')
+            raise Exception(msg)
+
+        tty = 't' if sys.stdin.isatty() else ''
         password = self.config['main'].get('mysql.root_password', 'changeme');
-        cmd = ['docker', 'exec', '-it', self.__get_mysql_vm_name()]
-        cmd+= ['mysql', '-u', 'root', '-p' + password, '-e', args[0].sql]
-        subprocess.call(cmd)
-
-    def __print_colored(self, string: str):
-        print('\033[1;33m' + string + '\033[0m')
+        cmd = ['docker', 'exec', '-i' + tty, self.__get_mysql_vm_name()]
+        cmd+= ['mysql', '-u', 'root', '-p' + password, cmd_args]
+        subprocess.call(cmd, stdin=sys.stdin)
 
 
     def __get_php_vm_name(self):
         return self.project_name + '_php_1'
+
 
     def __get_mysql_vm_name(self):
         services_list = self.config['main'].get('services', '').split(',')
@@ -123,12 +152,16 @@ class Lamp():
 
         return self.project_name + '_mysql_1'
 
-    def __get_apache_vm_ip(self):
+
+    def __get_vm_ip(self, vm: str):
         cmd = ['docker', 'inspect', '-f', '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}']
-        cmd+= [self.project_name + '_apache_1']
-        result = subprocess.check_output(cmd)
-        
-        return result.decode("utf-8", "strict")
+        cmd+= [self.project_name + '_' + vm + '_1']
+        try:
+            result = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            return result.decode("utf-8", "strict").rstrip('\n')
+        except subprocess.CalledProcessError as e:
+            return None
+
 
 if __name__ == '__main__':
     try:
@@ -145,7 +178,7 @@ if __name__ == '__main__':
 
 """
 
-        msg += '\033[1;31m' + str(e) + '\033[0m'
+        msg += lamp.colorize(str(e), 31)
         print(msg)
         print("")
         raise e

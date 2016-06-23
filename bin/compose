@@ -28,7 +28,6 @@ def parse_config():
 def set_env_values_from_conf(config: list):
     os.putenv('DOCKER_UID', str(config.get('uid', os.getuid())))
     os.putenv('DOCKER_GID', str(config.get('gid', os.getgid())))
-    os.putenv('DOCKER_HOSTNAME', str(config.get('hostname', 'localhost')))
 
     # Services versions and options
     os.putenv('DOCKER_APACHE_VERSION', str(config.get('apache.version', 2.2)))

@@ -1,0 +1,8 @@
+phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+        PMA_USER: root
+        PMA_PASSWORD: ${DOCKER_MYSQL_ROOT_PASSWORD}
+        #PMA_ARBITRARY: 1
+    links:
+        - mysql:db
