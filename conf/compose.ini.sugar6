@@ -1,5 +1,5 @@
 [main]
-services=mailcatcher,elasticsearch,mysql
+services=mailcatcher,elasticsearch,mysql,phpmyadmin
 
 ; Change Machines names only if you need it
 project_name=sugar6
