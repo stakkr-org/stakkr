@@ -129,11 +129,6 @@ class Lamp():
         args = self.arg_parser.parse_known_args()
         cmd_args = ' '.join(args[1])
 
-        if cmd_args == '':
-            msg = 'You must define the command to send to MySQL\n'
-            msg+= 'Example: ' + self.colorize(__file__ + ' ' + 'run-mysql -- -e "show databases"')
-            raise Exception(msg)
-
         tty = 't' if sys.stdin.isatty() else ''
         password = self.config['main'].get('mysql.root_password', 'changeme');
         cmd = ['docker', 'exec', '-i' + tty, self.__get_mysql_vm_name()]
