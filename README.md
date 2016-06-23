@@ -48,26 +48,26 @@ Everything should be defined in the `[main]` section. **Don't use double quotes 
 You can define the list of services you want to have. Each machin will have the same hostname than their service name. To reach, for example, the elasticsearch server from a web application use `elasticsearch` or to connect to mysql use as the server name `mysql`.
 ```ini
 ; Comma separated, valid values: mongo / mongoclient / mysql / mailcatcher / elasticsearch
-; services=mongo,mailcatcher,elasticsearch,mysql
+services=mongo,mailcatcher,elasticsearch,mysql
 ```
 
 ### Other useful parameters.
 Machines prefix. It should be different for each project (else the folder name is used).
 ```ini
 ; Change Machines names only if you need it
-; project_name=lamp
+project_name=lamp
 ```
 
 PHP Version :
 ```ini
 ; Set your sugar version to 5.6 or 7.0 (5.6 by default)
-; php.version=7.0
+php.version=7.0
 ```
 
 MySQL Password if mysql is defined in the services list:
 ```ini
 ; Password set on first start. Once the data exist won't be changed
-; mysql.root_password=changeme
+mysql.root_password=changeme
 ```
 
 # Files location
