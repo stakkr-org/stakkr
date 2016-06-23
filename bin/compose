@@ -41,6 +41,7 @@ def set_env_values_from_conf(config: list):
 
     os.putenv('DOCKER_ELASTICSEARCH_VERSION', str(config.get('elasticsearch.version', 2)))
 
+    os.putenv('DOCKER_PMA_UPLOAD_MAX_FILESIZE', str(config.get('phpmyadmin.upload_max_filesize', '128M')))
 
 def get_cli_arguments():
     arg_parser = ArgumentParser(description="Process the only argument expected (The command)")
@@ -79,3 +80,5 @@ if __name__ == '__main__':
     cmd += get_services([service for service in main_config.get('services', '').split(',') if service != ''])
     cmd += ['-p', project_name] + get_cli_arguments()
     call(cmd)
+
+    # run the post scripts if needed

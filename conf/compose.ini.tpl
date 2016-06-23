@@ -12,6 +12,9 @@
 ; Set your sugar version to 5.6 or 7.0 (5.6 by default)
 ; php.version=7.0
 
+; Set the max upload size for PMA
+; phpmyadmin.upload_max_filesize=128M
+
 ; Set your apache version to 2.2
 ; apache.version=2.2
 

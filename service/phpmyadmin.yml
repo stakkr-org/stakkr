@@ -3,6 +3,7 @@ phpmyadmin:
     environment:
         PMA_USER: root
         PMA_PASSWORD: ${DOCKER_MYSQL_ROOT_PASSWORD}
+        PHP_UPLOAD_MAX_FILESIZE: ${DOCKER_PMA_UPLOAD_MAX_FILESIZE}
         #PMA_ARBITRARY: 1
     links:
         - mysql:db

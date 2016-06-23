@@ -34,6 +34,7 @@ class Lamp():
         return '\033[1;' + str(color) + 'm' + string + '\033[0m'
 
 
+
     def __read_mainconf_or_exit(self):
         """Check if the configuration file exists"""
         if os.path.isfile(self.MAIN_CONFIGURATION_FILE) is False:
@@ -66,6 +67,8 @@ class Lamp():
         subprocess.call(['bin/compose', 'up'])
         print(self.colorize(os.path.basename(__file__)  + ' is running\n'))
         print('To access the ' + self.colorize('web server') + ' use : http://' + self.__get_vm_ip('apache') + '\n')
+
+        self.__run_services_post_scripts()
 
         mailcatcher_ip = self.__get_vm_ip('mailcatcher')
         if mailcatcher_ip is not None:
@@ -134,6 +137,16 @@ class Lamp():
         cmd = ['docker', 'exec', '-i' + tty, self.__get_mysql_vm_name()]
         cmd+= ['mysql', '-u', 'root', '-p' + password, cmd_args]
         subprocess.call(cmd, stdin=sys.stdin)
+
+
+    def __run_services_post_scripts(self):
+        services = [service for service in self.config['main'].get('services', '').split(',') if service != '']
+        for service in services:
+            service_script = 'service/' + service + '.sh'
+            if os.path.isfile(service_script) is False:
+                continue
+
+            subprocess.call(['bash', service_script, self.project_name + '_' + service + '_1'])
 
 
     def __get_php_vm_name(self):
