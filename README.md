@@ -121,7 +121,9 @@ Example to enter the PHP Machine:
 
 
 # PHP usage
-Use `./lamp run-php --file {www/filename.php}` to launch PHP scripts like if you were locally. The path is relative so launch everything from your docker project root (the same folder than this file).
+Use `./lamp run-php -f www/filename.php` to launch PHP scripts like if you were locally. The path is relative so launch everything from your docker project root (the same folder than this file).
+
+You can also use that command to run any PHP command (example: `./lamp run-php -v`)
 
 
 # MySQL usage

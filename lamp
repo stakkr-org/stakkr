@@ -14,7 +14,7 @@ class Lamp():
         self.project_name = self.config['main'].get('project_name', 'inet' + base_path)
 
         self.arg_parser = ArgumentParser(description="Process the only argument expected (The action)")
-        self.arg_parser.add_argument('action', help='Command for lamp', nargs='?')
+        self.arg_parser.add_argument('action', help='Command for lamp')
 
 
     def call_the_right_action(self):
@@ -115,27 +115,23 @@ class Lamp():
         subprocess.call(['docker', 'exec', '-u', user_name, '-it', switcher.get(args[0].vm)(), 'bash'])
 
 
-    def __do_run_php(self):
-        self.arg_parser.add_argument('--file', help='File to Run')
+    def __pars_unknown_args(self):
         args = self.arg_parser.parse_known_args()
-        if args[0].file is None:
-            raise Exception("You must define a file to execute with --file")
-        if os.path.isfile(args[0].file) is False:
-            raise IOError("You must call the file with a relative path such as www/test.php")
+        return ' '.join(args[1])
 
+
+    def __do_run_php(self):
+        tty = 't' if sys.stdin.isatty() else ''
         cmd = ['docker', 'exec', '-u', 'www-data', '-it', self.__get_php_vm_name()]
-        cmd+= ['bash', '-c', '--', 'cd /var; /usr/bin/php -f' + args[0].file]
-        subprocess.call(cmd)
+        cmd+= ['bash', '-c', '--', 'cd /var; exec /usr/bin/php ' + self.__pars_unknown_args()]
+        subprocess.call(cmd, stdin=sys.stdin)
 
 
     def __do_run_mysql(self):
-        args = self.arg_parser.parse_known_args()
-        cmd_args = ' '.join(args[1])
-
         tty = 't' if sys.stdin.isatty() else ''
         password = self.config['main'].get('mysql.root_password', 'changeme');
         cmd = ['docker', 'exec', '-i' + tty, self.__get_mysql_vm_name()]
-        cmd+= ['mysql', '-u', 'root', '-p' + password, cmd_args]
+        cmd+= ['mysql', '-u', 'root', '-p' + password, self.__pars_unknown_args()]
         subprocess.call(cmd, stdin=sys.stdin)
 
 
