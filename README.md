@@ -89,9 +89,21 @@ VM's urls are given once the servers are started.
 ## First start or update
 Run `./lamp fullstart` to build and start the docker environment.
 
+After the run you'll get something like that (contain all the useful URLs):
+```bash
+lamp is running
+
+To access the web server use : http://172.18.0.7
+
+For mailcatcher use : http://172.18.0.2:1080
+                and : smtp://172.18.0.2:1025
+
+For phpMyAdmin use : http://172.18.0.6
+```
 
 ## Quick start
 Run `./lamp start` to start the docker environment.
+
 
 
 ## Stop
