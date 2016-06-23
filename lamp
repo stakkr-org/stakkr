@@ -67,7 +67,6 @@ class Lamp():
         subprocess.call(['bin/compose', 'up'])
         print(self.colorize(os.path.basename(__file__)  + ' is running\n'))
         print('To access the ' + self.colorize('web server') + ' use : http://' + self.__get_vm_ip('apache') + '\n')
-        print('For Xdebug, ' + self.colorize('PHP IP Address') + ' is : ' + self.__get_vm_ip('php') + ':9001\n')
 
         self.__run_services_post_scripts()
 
