@@ -2,9 +2,11 @@
 /conf/compose.ini
 /home/www-data/*
 !/home/www-data/.bashrc
-/logs
+/logs/*
+!/logs/apache/.keep
+!/logs/php/.keep
+!/logs/php/xdebug_profiler/.keep
 /mongo
 /mysql
 /www/*
 !/www/.keep
-
