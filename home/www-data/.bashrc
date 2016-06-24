@@ -7,5 +7,6 @@ echo "
        \/       \/          \/            \/     \/
 
 "
+export PATH=$PATH:~/bin
 alias ll="ls -ail --color"
 cd /var/www

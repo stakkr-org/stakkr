@@ -2,6 +2,7 @@
 /conf/compose.ini
 /home/www-data/*
 !/home/www-data/.bashrc
+!/home/www-data/bin/.keep
 /logs/*
 !/logs/apache/.keep
 !/logs/php/.keep
