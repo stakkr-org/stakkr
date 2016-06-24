@@ -76,6 +76,10 @@ mysql.root_password=changeme
 * Mongo data is into `mongo/` (created on the first run)
 * Logs for Apache and PHP are located into `logs/`
 
+## Add binaries
+You can add binaries (such as sugarcli.phar) that will automatically be available from the PATH by putting it to
+`home/www-data/bin/`
+
 
 # HostNames
 VM's urls are given once the servers are started.
@@ -103,8 +107,6 @@ For phpMyAdmin use : http://172.18.0.6
 
 ## Quick start
 Run `./lamp start` to start the docker environment.
-
-
 
 ## Stop
 Run `./lamp stop` to stop all applications.
