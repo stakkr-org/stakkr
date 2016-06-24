@@ -71,16 +71,16 @@ class Lamp():
         self.__run_services_post_scripts()
 
         mailcatcher_ip = self.__get_vm_ip('mailcatcher')
-        if mailcatcher_ip is not None:
+        if mailcatcher_ip is not None and mailcatcher_ip != '':
             print('For ' + self.colorize('mailcatcher') + ' use : http://' + mailcatcher_ip + ':1080')
             print('                and : smtp://' + mailcatcher_ip + ':1025' + '\n')
 
         mongoclient_ip = self.__get_vm_ip('mongoclient')
-        if mongoclient_ip is not None:
+        if mongoclient_ip is not None and mongoclient_ip != '':
             print('For ' + self.colorize('mongoclient') + ' use : http://' + mongoclient_ip + ':3000' + '\n')
 
         pma_ip = self.__get_vm_ip('phpmyadmin')
-        if pma_ip is not None:
+        if pma_ip is not None and pma_ip != '':
             print('For ' + self.colorize('phpMyAdmin') + ' use : http://' + pma_ip + '\n')
 
 
