@@ -6,8 +6,8 @@ app:
     command: '/bin/sh -c "echo Data-only container for PHP files."'
 
 php:
-    build: https://git.inetcrm.com/sysadmin/docker-php.git#:${DOCKER_PHP_VERSION}
-    # image: inet/php:5.3
+    image: inetprocess/php:${DOCKER_PHP_VERSION}
+    #build: https://github.com/inetprocess/docker-php#:${DOCKER_PHP_VERSION}
     environment:
         FPM_UID: ${DOCKER_UID}
         FPM_GID: ${DOCKER_GID}
@@ -17,8 +17,8 @@ php:
         - ./logs/php:/var/log/php
 
 apache:
-    build: https://git.inetcrm.com/sysadmin/docker-apache.git#:${DOCKER_APACHE_VERSION}
-    # image: inet/apache:2.2
+    image: inetprocess/apache:${DOCKER_APACHE_VERSION}
+    #build: https://github.com/inetprocess/docker-apache#:${DOCKER_APACHE_VERSION}
     environment:
         PHP_GID: ${DOCKER_GID}
     volumes_from:
