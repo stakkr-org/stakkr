@@ -1,5 +1,5 @@
 [main]
-; Comma separated, valid values: mongo / mongoclient / mysql / mailcatcher / elasticsearch
+; Comma separated, valid values: mongo / mongoclient / mysql / mailcatcher (or maildev) / elasticsearch
 ; services=mongo,mailcatcher,elasticsearch,mysql
 
 ; Change Machines names only if you need it

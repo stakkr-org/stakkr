@@ -105,7 +105,12 @@ class Lamp():
         mailcatcher_ip = self.__get_vm_item('mailcatcher', 'ip')
         if mailcatcher_ip != '':
             puts('For ' + colored.yellow('mailcatcher') + ' use : http://' + mailcatcher_ip + ':1080')
-            print('                and : smtp://' + mailcatcher_ip + ':1025' + '\n')
+            puts('                and in your VM use the smtp ' + colored.yellow('mailcatcher') + ' with the port 1025' + '\n')
+
+        maildev_ip = self.__get_vm_item('maildev', 'ip')
+        if maildev_ip != '':
+            puts('For ' + colored.yellow('maildev') + ' use : http://' + maildev_ip)
+            puts('            and in your VM use the server "' + colored.yellow('maildev') + '" with the port 25' + '\n')
 
         mongoclient_ip = self.__get_vm_item('mongoclient', 'ip')
         if mongoclient_ip != '':

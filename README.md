@@ -86,7 +86,7 @@ VM's urls are given once the servers are started.
 * ElasticSearch Server: `elasticsearch`
 * MySQL Server: `mysql`
 * Mongo Server : `mongo`
-* SMTP Server : `smtp` with port `1025`
+* SMTP Server : `maildev` with port `25` (or `mailcatcher` with port `1025`)
 
 
 # Start / Stop the servers
@@ -99,8 +99,8 @@ lamp is running
 
 To access the web server use : http://172.18.0.7
 
-For mailcatcher use : http://172.18.0.2:1080
-                and : smtp://172.18.0.2:1025
+For maildev use : http://172.18.0.6
+            and in your VM use the server "maildev" with the port 25
 
 For phpMyAdmin use : http://172.18.0.6
 ```

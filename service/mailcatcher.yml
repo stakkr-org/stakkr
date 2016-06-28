@@ -3,4 +3,5 @@ mailcatcher:
 
 php:
     links:
+        - mailcatcher
         - mailcatcher:smtp

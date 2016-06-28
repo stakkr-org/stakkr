@@ -1,0 +1,7 @@
+maildev:
+    image: djfarrelly/maildev
+
+php:
+    links:
+        - maildev
+        - maildev:smtp
