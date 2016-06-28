@@ -1,5 +1,6 @@
 mysql:
     image: mysql:${DOCKER_MYSQL_VERSION}
+    mem_limit: ${DOCKER_MYSQL_RAM}
     environment:
         MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_ROOT_PASSWORD}
     volumes:

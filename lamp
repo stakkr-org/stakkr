@@ -68,9 +68,8 @@ class Lamp():
 
 
     def __extract_vm_info(self, vm_id: str):
-        cmd = ['docker', 'inspect', vm_id]
         try:
-            result = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            result = subprocess.check_output(['docker', 'inspect', vm_id], stderr=subprocess.STDOUT)
             data = json_loads(result.decode("utf-8", "strict").rstrip('\n'))
             vm_info = {
                 'name': data[0]['Name'].lstrip('/'),

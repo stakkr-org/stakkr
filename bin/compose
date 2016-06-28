@@ -31,15 +31,19 @@ def set_env_values_from_conf(config: list):
 
     # Services versions and options
     os.putenv('DOCKER_APACHE_VERSION', str(config.get('apache.version', 2.2)))
+    os.putenv('DOCKER_APACHE_RAM', str(config.get('apache.ram', '512M')))
 
     os.putenv('DOCKER_PHP_VERSION', str(config.get('php.version', 5.6)))
+    os.putenv('DOCKER_PHP_RAM', str(config.get('php.ram', '512M')))
 
     os.putenv('DOCKER_MONGO_VERSION', str(config.get('mongo.version', 3.3)))
 
     os.putenv('DOCKER_MYSQL_VERSION', str(config.get('mysql.version', 5.7)))
     os.putenv('DOCKER_MYSQL_ROOT_PASSWORD', str(config.get('mysql.root_password', 'changeme')))
+    os.putenv('DOCKER_MYSQL_RAM', str(config.get('mysql.ram', '512M')))
 
     os.putenv('DOCKER_ELASTICSEARCH_VERSION', str(config.get('elasticsearch.version', 2)))
+    os.putenv('DOCKER_ELASTICSEARCH_RAM', str(config.get('elasticsearch.ram', '512M')))
 
     os.putenv('DOCKER_PMA_UPLOAD_MAX_FILESIZE', str(config.get('phpmyadmin.upload_max_filesize', '128M')))
 
