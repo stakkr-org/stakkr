@@ -90,12 +90,16 @@ class Lamp():
 
 
     def __do_start(self):
+
         puts(colored.green('Starting ' + self.project_name  + ' ...'))
         subprocess.call(['bin/compose', 'up'])
         puts(colored.green(self.project_name  + ' has been started\n'))
-        puts('To access the ' + colored.yellow('web server') + ' use : http://' + self.__get_vm_item('apache', 'ip') + '\n')
+
+        self.vms = self.__get_vms()
 
         self.__run_services_post_scripts()
+
+        puts('To access the ' + colored.yellow('web server') + ' use : http://' + self.__get_vm_item('apache', 'ip') + '\n')
 
         mailcatcher_ip = self.__get_vm_item('mailcatcher', 'ip')
         if mailcatcher_ip != '':
