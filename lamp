@@ -16,9 +16,10 @@ class Lamp():
         self.project_name = self.config['main'].get('project_name', 'inet' + base_path)
 
         self.arg_parser = ArgumentParser(description="Process the only argument expected (The action)")
-        self.arg_parser.add_argument('action', help='Command for lamp')
+        self.arg_parser.add_argument('action', help='Main command to run)')
 
         self.vms = self.__get_vms()
+
 
     def call_the_right_action(self):
         switcher = {
@@ -77,6 +78,7 @@ class Lamp():
                 'ports': data[0]['Config']['ExposedPorts'].keys() if 'ExposedPorts' in data[0]['Config'] else [],
                 'image': data[0]['Config']['Image'],
                 'ip': data[0]['NetworkSettings']['IPAddress'],
+                'running': data[0]['State']['Running'],
             }
 
             return vm_info
@@ -130,26 +132,41 @@ class Lamp():
 
     def __do_status(self):
         puts(columns(
-            [(colored.green('VM')), 10],
+            [(colored.green('VM')), 20],
             [(colored.green('IP')), 15],
-            [(colored.green('Ports')), 20],
+            [(colored.green('Ports')), 30],
             [(colored.green('Image')), 30],
-            [(colored.green('Docker ID')), 66],
+            [(colored.green('Docker ID')), 15],
             [(colored.green('Docker Name')), 25]
         ))
 
+        puts(columns(
+            ['-'*20, 20],
+            ['-'*15, 15],
+            ['-'*30, 30],
+            ['-'*30, 30],
+            ['-'*15, 15],
+            ['-'*25, 25]
+        ))
+
+        running_vms = 0
         for vm_id, vm_data in self.vms.items():
-            if vm_data['ip'] == '':
+            if vm_data['running'] is False:
                 continue
 
+            running_vms+= 1
             puts(columns(
-                [vm_data['compose_name'], 10],
+                [vm_data['compose_name'], 20],
                 [vm_data['ip'], 15],
-                [' - '.join(vm_data['ports']), 20],
+                [', '.join(vm_data['ports']), 30],
                 [vm_data['image'], 30],
-                [vm_id, 66],
+                [vm_id[:12], 15],
                 [vm_data['name'], 25]
             ))
+
+        if running_vms == 0:
+            puts(colored.red('Have you started your server with the start or fullstart action ?'))
+            return
 
 
     def __do_console(self):
@@ -163,6 +180,7 @@ class Lamp():
             raise Exception(args[0].vm + ' does not seem to be in your services or has crashed')
 
         user_name = 'www-data' if args[0].vm == 'php' else 'root'
+        tty = 't' if sys.stdin.isatty() else ''
         subprocess.call(['docker', 'exec', '-u', user_name, '-i' + tty, vm_name, 'bash'])
 
 
