@@ -51,6 +51,8 @@ def get_cli_arguments():
     if args.command == 'up':
         command.append('-d')
         # for new compose : command.append('--remove-orphans')
+    elif args.command == 'ps':
+        command.append('-q')
 
     return command
 

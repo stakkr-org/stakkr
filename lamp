@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 from argparse import ArgumentParser
 from configparser import ConfigParser
-import subprocess
+from clint.textui import colored, puts, columns
+from json import loads as json_loads
 import os
+import subprocess
 import sys
 
 class Lamp():
@@ -16,6 +18,7 @@ class Lamp():
         self.arg_parser = ArgumentParser(description="Process the only argument expected (The action)")
         self.arg_parser.add_argument('action', help='Command for lamp')
 
+        self.vms = self.__get_vms()
 
     def call_the_right_action(self):
         switcher = {
@@ -28,11 +31,6 @@ class Lamp():
             'console': self.__do_console
         }
         switcher.get(self.__get_action(), self.__do_usage)()
-
-
-    def colorize(self, string: str, color=33):
-        return '\033[1;' + str(color) + 'm' + string + '\033[0m'
-
 
 
     def __read_mainconf_or_exit(self):
@@ -57,48 +55,97 @@ class Lamp():
         return args[0].action
 
 
+    def __get_vms(self):
+        cmd = ['bin/compose', 'ps']
+        vms_id = subprocess.check_output(cmd).splitlines()
+        vms_info = dict()
+        for vm_id in vms_id:
+            vm_id = vm_id.decode('utf-8', 'strict')
+            vms_info[vm_id] = self.__extract_vm_info(vm_id)
+
+        return vms_info
+
+
+    def __extract_vm_info(self, vm_id: str):
+        cmd = ['docker', 'inspect', vm_id]
+        try:
+            result = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            data = json_loads(result.decode("utf-8", "strict").rstrip('\n'))
+            vm_info = {
+                'name': data[0]['Name'].lstrip('/'),
+                'compose_name': data[0]['Config']['Labels']['com.docker.compose.service'],
+                'ports': data[0]['Config']['ExposedPorts'].keys() if 'ExposedPorts' in data[0]['Config'] else [],
+                'image': data[0]['Config']['Image'],
+                'ip': data[0]['NetworkSettings']['IPAddress'],
+            }
+
+            return vm_info
+        except subprocess.CalledProcessError as e:
+            return None
+
+
     def __do_usage(self):
         print('usage: ./' + os.path.basename(__file__) + ' [start|fullstart|stop|status|console|run-php|run-mysql]')
         sys.exit(1)
 
 
     def __do_start(self):
-        print(self.colorize('Starting ' + os.path.basename(__file__)  + '..'))
+        puts(colored.green('Starting ' + self.project_name  + ' ...'))
         subprocess.call(['bin/compose', 'up'])
-        print(self.colorize(os.path.basename(__file__)  + ' is running\n'))
-        print('To access the ' + self.colorize('web server') + ' use : http://' + self.__get_vm_ip('apache') + '\n')
+        puts(colored.green(self.project_name  + ' has been started\n'))
+        puts('To access the ' + colored.yellow('web server') + ' use : http://' + self.__get_vm_item('apache', 'ip') + '\n')
 
         self.__run_services_post_scripts()
 
-        mailcatcher_ip = self.__get_vm_ip('mailcatcher')
-        if mailcatcher_ip is not None and mailcatcher_ip != '':
-            print('For ' + self.colorize('mailcatcher') + ' use : http://' + mailcatcher_ip + ':1080')
+        mailcatcher_ip = self.__get_vm_item('mailcatcher', 'ip')
+        if mailcatcher_ip != '':
+            puts('For ' + colored.yellow('mailcatcher') + ' use : http://' + mailcatcher_ip + ':1080')
             print('                and : smtp://' + mailcatcher_ip + ':1025' + '\n')
 
-        mongoclient_ip = self.__get_vm_ip('mongoclient')
-        if mongoclient_ip is not None and mongoclient_ip != '':
-            print('For ' + self.colorize('mongoclient') + ' use : http://' + mongoclient_ip + ':3000' + '\n')
+        mongoclient_ip = self.__get_vm_item('mongoclient', 'ip')
+        if mongoclient_ip != '':
+            puts('For ' + colored.yellow('mongoclient') + ' use : http://' + mongoclient_ip + ':3000' + '\n')
 
-        pma_ip = self.__get_vm_ip('phpmyadmin')
-        if pma_ip is not None and pma_ip != '':
-            print('For ' + self.colorize('phpMyAdmin') + ' use : http://' + pma_ip + '\n')
+        pma_ip = self.__get_vm_item('phpmyadmin', 'ip')
+        if pma_ip != '':
+            puts('For ' + colored.yellow('phpMyAdmin') + ' use : http://' + pma_ip + '\n')
 
 
     def __do_fullstart(self):
-        print(self.colorize("Building required images ..."))
+        puts(colored.green("\nBuilding required images ..."))
         subprocess.call(['bin/compose', 'build'])
-        print(self.colorize("Build done."))
+        puts(colored.green("Build done\n"))
         self.__do_start()
 
 
     def __do_stop(self):
-        print(self.colorize("Stopping docker-lamop ..."))
+        puts(colored.yellow("Stopping docker-lamp ..."))
         subprocess.call(['bin/compose', 'stop'])
-        print(self.colorize("docker-lamop is stopped."))
+        puts(colored.yellow("docker-lamp is stopped."))
 
 
     def __do_status(self):
-        subprocess.call(['bin/compose', 'ps'])
+        puts(columns(
+            [(colored.green('VM')), 10],
+            [(colored.green('IP')), 15],
+            [(colored.green('Ports')), 20],
+            [(colored.green('Image')), 30],
+            [(colored.green('Docker ID')), 66],
+            [(colored.green('Docker Name')), 25]
+        ))
+
+        for vm_id, vm_data in self.vms.items():
+            if vm_data['ip'] == '':
+                continue
+
+            puts(columns(
+                [vm_data['compose_name'], 10],
+                [vm_data['ip'], 15],
+                [' - '.join(vm_data['ports']), 20],
+                [vm_data['image'], 30],
+                [vm_id, 66],
+                [vm_data['name'], 25]
+            ))
 
 
     def __do_console(self):
@@ -107,64 +154,55 @@ class Lamp():
         if args[0].vm not in ['mysql', 'php']:
             raise Exception("You must define the VM as a second argument (php or mysql)")
 
-        switcher = {
-            'mysql': self.__get_mysql_vm_name,
-            'php': self.__get_php_vm_name
-        }
+        vm_name = self.__get_vm_item(args[0].vm, 'name')
+        if vm_name == '':
+            raise Exception(args[0].vm + ' does not seem to be in your services or has crashed')
+
         user_name = 'www-data' if args[0].vm == 'php' else 'root'
-        subprocess.call(['docker', 'exec', '-u', user_name, '-it', switcher.get(args[0].vm)(), 'bash'])
-
-
-    def __pars_unknown_args(self):
-        args = self.arg_parser.parse_known_args()
-        return ' '.join(args[1])
+        subprocess.call(['docker', 'exec', '-u', user_name, '-it', vm_name, 'bash'])
 
 
     def __do_run_php(self):
         tty = 't' if sys.stdin.isatty() else ''
-        cmd = ['docker', 'exec', '-u', 'www-data', '-it', self.__get_php_vm_name()]
-        cmd+= ['bash', '-c', '--', 'cd /var; exec /usr/bin/php ' + self.__pars_unknown_args()]
+        cmd = ['docker', 'exec', '-u', 'www-data', '-it', self.__get_vm_item('php', 'name')]
+        cmd+= ['bash', '-c', '--', 'cd /var; exec /usr/bin/php ' + self.__get_unknown_args()]
         subprocess.call(cmd, stdin=sys.stdin)
 
 
     def __do_run_mysql(self):
+        vm_name = self.__get_vm_item('mysql', 'name')
+        if vm_name == '':
+            raise Exception('mysql does not seem to be in your services or has crashed')
+
         tty = 't' if sys.stdin.isatty() else ''
         password = self.config['main'].get('mysql.root_password', 'changeme');
-        cmd = ['docker', 'exec', '-i' + tty, self.__get_mysql_vm_name()]
-        cmd+= ['mysql', '-u', 'root', '-p' + password, self.__pars_unknown_args()]
+        cmd = ['docker', 'exec', '-u', 'www-data', '-it', vm_name]
+        cmd+= ['mysql', '-u', 'root', '-p' + password, self.__get_unknown_args()]
         subprocess.call(cmd, stdin=sys.stdin)
+
+
+    def __get_unknown_args(self):
+        args = self.arg_parser.parse_known_args()
+        return ' '.join(args[1])
 
 
     def __run_services_post_scripts(self):
         services = [service for service in self.config['main'].get('services', '').split(',') if service != '']
         for service in services:
             service_script = 'service/' + service + '.sh'
+            vm_name = self.__get_vm_item(service, 'name')
             if os.path.isfile(service_script) is False:
                 continue
 
-            subprocess.call(['bash', service_script, self.project_name + '_' + service + '_1'])
+            subprocess.call(['bash', service_script, vm_name])
 
 
-    def __get_php_vm_name(self):
-        return self.project_name + '_php_1'
+    def __get_vm_item(self, compose_name: str, item_name: str):
+        for vm_id, vm_data in self.vms.items():
+            if vm_data['compose_name'] == compose_name:
+                return vm_data[item_name]
 
-
-    def __get_mysql_vm_name(self):
-        services_list = self.config['main'].get('services', '').split(',')
-        if 'mysql' not in services_list:
-            raise Exception("mysql is not defined in your services")
-
-        return self.project_name + '_mysql_1'
-
-
-    def __get_vm_ip(self, vm: str):
-        cmd = ['docker', 'inspect', '-f', '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}']
-        cmd+= [self.project_name + '_' + vm + '_1']
-        try:
-            result = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-            return result.decode("utf-8", "strict").rstrip('\n')
-        except subprocess.CalledProcessError as e:
-            return None
+        return ''
 
 
 if __name__ == '__main__':
@@ -182,7 +220,7 @@ if __name__ == '__main__':
 
 """
 
-        msg += lamp.colorize(str(e), 31)
+        msg += puts(colored.red(str(e)))
         print(msg)
         print("")
         raise e

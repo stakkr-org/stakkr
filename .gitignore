@@ -1,4 +1,5 @@
 .*.sw*
+/*.egg-info
 /conf/compose.ini
 /home/www-data/*
 !/home/www-data/.bashrc
