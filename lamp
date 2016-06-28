@@ -104,8 +104,8 @@ class Lamp():
 
         mailcatcher_ip = self.__get_vm_item('mailcatcher', 'ip')
         if mailcatcher_ip != '':
-            puts('For ' + colored.yellow('mailcatcher') + ' use : http://' + mailcatcher_ip + ':1080')
-            puts('                and in your VM use the smtp ' + colored.yellow('mailcatcher') + ' with the port 1025' + '\n')
+            puts('For ' + colored.yellow('mailcatcher') + ' use : http://' + mailcatcher_ip)
+            puts('                and in your VM use the smtp ' + colored.yellow('mailcatcher') + ' with the port 25' + '\n')
 
         maildev_ip = self.__get_vm_item('maildev', 'ip')
         if maildev_ip != '':

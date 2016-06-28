@@ -1,5 +1,5 @@
 mailcatcher:
-    image: yappabe/mailcatcher
+    image: tophfr/mailcatcher
 
 php:
     links:

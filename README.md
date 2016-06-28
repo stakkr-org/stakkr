@@ -1,6 +1,23 @@
 # Docker-lamp
 Docker compose for a lamp stack (with MongoDB or MySQL).
 
+- [Docker-lamp](#docker-lamp)
+- [Docker installation](#docker-installation)
+- [Docker compose installation](#docker-compose-installation)
+- [Pull the repository](#pull-the-repository)
+- [Configuration](#configuration)
+	- [Config Parameters](#config-parameters)
+- [Files location](#files-location)
+	- [Add binaries](#add-binaries)
+- [HostNames](#hostnames)
+- [Start / Stop the servers](#start-stop-the-servers)
+	- [Start](#start)
+	- [Stop](#stop)
+	- [Status](#status)
+- [Enter a VM](#enter-a-vm)
+- [PHP usage](#php-usage)
+- [MySQL usage](#mysql-usage)
+
 
 # Docker installation
 Read https://docs.docker.com/engine/installation/ubuntulinux/ but in summary (be careful to define the right user instead of {LDAP USER}):
@@ -23,7 +40,7 @@ usermod -aG docker {LDAP USER}
 
 # Docker compose installation
 Read https://docs.docker.com/compose/install/ and **take the link to the right version**. Below an example with the 1.6.2:
-```
+```bash
 sudo su -
 curl -L https://github.com/docker/compose/releases/download/1.6.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
@@ -34,6 +51,13 @@ Verify with `docker-compose --version`
 
 # Pull the repository
 You can clone the repository as many times as you want as you can have multiple instances at the same time. A good practice is too have one clone for one project or one clone for projects with the same versions of PHP / MySQL / Elasticsearch, etc ...
+
+Once cloned, you need to run the `install.sh` script:
+```bash
+git clone ssh://git@git.inetcrm.com:22824/sysadmin/docker-lamp.git
+cd docker-lamp
+./install.sh
+```
 
 
 # Configuration
@@ -47,11 +71,11 @@ Everything should be defined in the `[main]` section. **Don't use double quotes 
 ### Services
 You can define the list of services you want to have. Each machin will have the same hostname than their service name. To reach, for example, the elasticsearch server from a web application use `elasticsearch` or to connect to mysql use as the server name `mysql`.
 ```ini
-; Comma separated, valid values: mongo / mongoclient / mysql / mailcatcher / elasticsearch
-services=mongo,mailcatcher,elasticsearch,mysql
+; Comma separated, valid values: mongo / mongoclient / mysql / mailcatcher / maildev / elasticsearch
+services=mongo,maildev,elasticsearch,mysql
 ```
 
-### Other useful parameters.
+### Other useful parameters
 Machines prefix. It should be different for each project (else the folder name is used).
 ```ini
 ; Change Machines names only if you need it
@@ -70,6 +94,15 @@ MySQL Password if mysql is defined in the services list:
 mysql.root_password=changeme
 ```
 
+Memory assigned to the VMS:
+```ini
+apache.ram=512M
+elasticsearch.ram=512M
+mysql.ram=512M
+php.ram=512M
+
+```
+
 # Files location
 * All files served by the web server are located into `www/`
 * MySQL data is into `mysql/` (created on the first run)
@@ -86,12 +119,12 @@ VM's urls are given once the servers are started.
 * ElasticSearch Server: `elasticsearch`
 * MySQL Server: `mysql`
 * Mongo Server : `mongo`
-* SMTP Server : `maildev` with port `25` (or `mailcatcher` with port `1025`)
+* SMTP Server : `maildev` (or `mailcatcher`) with port `25`
 
 
 # Start / Stop the servers
-## First start or update
-Run `./lamp fullstart` to build and start the docker environment.
+## Start
+Run `./lamp start` to start the docker environment.
 
 After the run you'll get something like that (contain all the useful URLs):
 ```bash
@@ -105,12 +138,11 @@ For maildev use : http://172.18.0.6
 For phpMyAdmin use : http://172.18.0.6
 ```
 
-## Quick start
-Run `./lamp start` to start the docker environment.
-
 ## Stop
 Run `./lamp stop` to stop all applications.
 
+## Status
+Run `./lamp status` to see the list of running VMS
 
 # Enter a VM
 If you need to run some commands into a VM you can use the console mode by running `./lamp console` with the vm name at the end (only PHP and MySQL are supported).
@@ -119,7 +151,7 @@ Example to enter the PHP Machine:
 ```bash
 ./lamp console php
 ```
-**Be careful that all changes are overwritten when you change a parameter in the config or run a `fullstart`. If you need a definitive change, ask an sysadmin.**
+**Be careful that all changes are overwritten when you change a parameter in the config and run a start that will update the images (in case the official images have been updated). If you need a definitive change, ask an sysadmin.**
 
 
 # PHP usage
