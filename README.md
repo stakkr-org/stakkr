@@ -1,7 +1,6 @@
 # Docker-lamp
 Docker compose for a lamp stack (with MongoDB or MySQL).
 
-- [Docker-lamp](#docker-lamp)
 - [Docker installation](#docker-installation)
 - [Docker compose installation](#docker-compose-installation)
 - [Pull the repository](#pull-the-repository)
