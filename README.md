@@ -3,7 +3,7 @@ Docker compose for a lamp stack (with MongoDB or MySQL).
 
 - [Docker installation](#docker-installation)
 - [Docker compose installation](#docker-compose-installation)
-- [Pull the repository](#pull-the-repository)
+- [Clone the repository](#pull-the-repository)
 - [Configuration](#configuration)
 	- [Config Parameters](#config-parameters)
 - [Files location](#files-location)
@@ -48,7 +48,7 @@ exit
 
 Verify with `docker-compose --version`
 
-# Pull the repository
+# Clone the repository
 You can clone the repository as many times as you want as you can have multiple instances at the same time. A good practice is too have one clone for one project or one clone for projects with the same versions of PHP / MySQL / Elasticsearch, etc ...
 
 Once cloned, you need to run the `install.sh` script:
