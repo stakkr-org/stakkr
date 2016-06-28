@@ -163,7 +163,7 @@ class Lamp():
             raise Exception(args[0].vm + ' does not seem to be in your services or has crashed')
 
         user_name = 'www-data' if args[0].vm == 'php' else 'root'
-        subprocess.call(['docker', 'exec', '-u', user_name, '-it', vm_name, 'bash'])
+        subprocess.call(['docker', 'exec', '-u', user_name, '-i' + tty, vm_name, 'bash'])
 
 
     def __do_run_php(self):
@@ -180,7 +180,7 @@ class Lamp():
 
         tty = 't' if sys.stdin.isatty() else ''
         password = self.config['main'].get('mysql.root_password', 'changeme');
-        cmd = ['docker', 'exec', '-u', 'www-data', '-it', vm_name]
+        cmd = ['docker', 'exec', '-u', 'www-data', '-i' + tty, vm_name]
         cmd+= ['mysql', '-u', 'root', '-p' + password, self.__get_unknown_args()]
         subprocess.call(cmd, stdin=sys.stdin)
 

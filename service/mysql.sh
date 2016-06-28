@@ -3,8 +3,11 @@ for i in $(seq 1 90); do
     docker exec -i $1 bash -c 'mysql -p$MYSQL_ROOT_PASSWORD -e "SHOW DATABASES"' > /dev/null 2>&1
 
     if [ $i -gt 1 ]; then
-        echo "Waiting for MySQL ..."
+        echo "Waiting for MySQL ."
+    elif [ $i -gt 2 ]; then
+        echo "."
     fi
+
 
     if [ $? -eq 0 ]; then
         break
