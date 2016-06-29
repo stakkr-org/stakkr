@@ -1,6 +1,8 @@
 .*.sw*
 /*.egg-info
 /conf/compose.ini
+!/conf/mysql-override/mysqld.cnf
+/conf/mysql-override/*
 /home/www-data/*
 !/home/www-data/.bashrc
 !/home/www-data/bin/.keep

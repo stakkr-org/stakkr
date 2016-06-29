@@ -74,6 +74,8 @@ You can define the list of services you want to have. Each machin will have the 
 services=mongo,maildev,elasticsearch,mysql
 ```
 
+A service can launch a post-start script that has the same name with an `.sh` extension (example: `service/mysql.sh`).
+
 ### Other useful parameters
 Machines prefix. It should be different for each project (else the folder name is used).
 ```ini
@@ -104,7 +106,7 @@ php.ram=512M
 
 # Files location
 * All files served by the web server are located into `www/`
-* MySQL data is into `mysql/` (created on the first run)
+* MySQL data is into `mysql/` (created on the first run). If you need to override the mysql configuration you can put a file in `conf/mysql-override` with a `.cnf` extension.
 * Mongo data is into `mongo/` (created on the first run)
 * Logs for Apache and PHP are located into `logs/`
 
