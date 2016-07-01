@@ -96,7 +96,7 @@ class Lamp():
 
 
     def __do_usage(self):
-        print('usage: ./' + os.path.basename(__file__) + ' [start|fullstart|stop|status|console|run-php|run-mysql]')
+        print('usage: ./' + os.path.basename(__file__) + ' [start|fullstart|stop|status|console|run-php|run-mysql|sugarcli]')
         sys.exit(1)
 
 
