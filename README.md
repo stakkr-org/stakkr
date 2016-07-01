@@ -16,6 +16,7 @@ Docker compose for a lamp stack (with MongoDB or MySQL).
 - [Enter a VM](#enter-a-vm)
 - [PHP usage](#php-usage)
 - [MySQL usage](#mysql-usage)
+- [sugarcli usage](#sugarcli-usage)
 
 
 # Docker installation
@@ -156,9 +157,20 @@ Example to enter the PHP Machine:
 
 
 # PHP usage
-Use `./lamp run-php -f www/filename.php` to launch PHP scripts like if you were locally. The path is relative so launch everything from your docker project root (the same folder than this file).
+Use `./lamp run-php -f www/filename.php` to launch PHP scripts like if you were locally. The path is relative so launch everything from your docker project root (the same folder than this file). If you want to run it from a sub-directory, just use the full path of lamp (example: `/home/user/docker/lamp`) and the relative path of your file.
 
-You can also use that command to run any PHP command (example: `./lamp run-php -v`)
+That:
+```bash
+cd /home/user/docker
+./lamp run-php -f www/filename.php
+```
+Is equal to:
+```bash
+cd /home/user/docker/www
+/home/user/docker/lamp run-php -f filename.php
+```
+
+You can also use that command to run any PHP command (example: `./lamp run-php -v`).
 
 
 # MySQL usage
@@ -172,4 +184,14 @@ zcat file.sql.gz | ./lamp run-mysql
 If you want to create a Database (You can also use the phpMyAdmin service of course):
 ```bash
 ./lamp run-mysql -e "CREATE DATABASE my_db;"
+```
+
+
+# SugarCLI usage
+Use `./lamp sugarcli` to use sugarcli
+
+Example to get a list of users:
+```bash
+cd /home/user/docker/www/sugarproject
+/home/user/docker/lamp sugarcli user:list --path .
 ```
