@@ -3,14 +3,23 @@ from argparse import ArgumentParser
 from configparser import ConfigParser
 from clint.textui import colored, puts, columns
 from json import loads as json_loads
-import os
+from urllib.request import urlretrieve
+import os, stat, sys
 import subprocess
-import sys
 
 class Lamp():
     MAIN_CONFIGURATION_FILE = 'conf/compose.ini'
 
     def __init__(self):
+        # Make sure we are in the right directory
+        self.lamp_base_dir = os.path.dirname(os.path.realpath(__file__))
+        self.current_dir = os.getcwd()
+        if self.current_dir.find(self.lamp_base_dir) != 0:
+            raise Exception('You are not in a sub-directory of your lamp instance')
+
+        self.current_dir_relative = self.current_dir[len(self.lamp_base_dir):].lstrip('/')
+        os.chdir(self.lamp_base_dir)
+
         self.__read_mainconf_or_exit()
         base_path = os.path.basename(os.getcwd()).replace('-', '')
         self.project_name = self.config['main'].get('project_name', 'inet' + base_path)
@@ -29,7 +38,8 @@ class Lamp():
             'status': self.__do_status,
             'run-php': self.__do_run_php,
             'run-mysql': self.__do_run_mysql,
-            'console': self.__do_console
+            'console': self.__do_console,
+            'sugarcli': self.__do_sugarcli
         }
         switcher.get(self.__get_action(), self.__do_usage)()
 
@@ -100,6 +110,10 @@ class Lamp():
 
         self.__run_services_post_scripts()
 
+        self.__display_services_ports()
+
+
+    def __display_services_ports():
         puts('To access the ' + colored.yellow('web server') + ' use : http://' + self.__get_vm_item('apache', 'ip') + '\n')
 
         mailcatcher_ip = self.__get_vm_item('mailcatcher', 'ip')
@@ -190,8 +204,8 @@ class Lamp():
 
     def __do_run_php(self):
         tty = 't' if sys.stdin.isatty() else ''
-        cmd = ['docker', 'exec', '-u', 'www-data', '-it', self.__get_vm_item('php', 'name')]
-        cmd+= ['bash', '-c', '--', 'cd /var; exec /usr/bin/php ' + self.__get_unknown_args()]
+        cmd = ['docker', 'exec', '-u', 'www-data', '-i' + tty, self.__get_vm_item('php', 'name')]
+        cmd+= ['bash', '-c', '--', 'cd /var/' + self.current_dir_relative + '; exec /usr/bin/php ' + self.__get_unknown_args()]
         subprocess.call(cmd, stdin=sys.stdin)
 
 
@@ -204,6 +218,19 @@ class Lamp():
         password = self.config['main'].get('mysql.root_password', 'changeme');
         cmd = ['docker', 'exec', '-u', 'www-data', '-i' + tty, vm_name]
         cmd+= ['mysql', '-u', 'root', '-p' + password, self.__get_unknown_args()]
+        subprocess.call(cmd, stdin=sys.stdin)
+
+
+    def __do_sugarcli(self):
+        # download sugarcli if it's not the case
+        if os.path.isfile('home/www-data/bin/sugarcli.phar') is False:
+            puts(colored.yellow('sugarcli has not been downloaded yet, downloading ...'))
+            urlretrieve('http://apt.inetprocess.fr/pub/sugarcli.phar', 'home/www-data/bin/sugarcli.phar')
+            os.chmod('home/www-data/bin/sugarcli.phar', stat.S_IRWXU)
+
+        tty = 't' if sys.stdin.isatty() else ''
+        cmd = ['docker', 'exec', '-u', 'www-data', '-i' + tty, self.__get_vm_item('php', 'name')]
+        cmd+= ['bash', '-c', '--', 'cd /var/' + self.current_dir_relative + '; exec /usr/bin/php ~/bin/sugarcli.phar ' + self.__get_unknown_args()]
         subprocess.call(cmd, stdin=sys.stdin)
 
 
