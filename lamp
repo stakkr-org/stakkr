@@ -113,7 +113,7 @@ class Lamp():
         self.__display_services_ports()
 
 
-    def __display_services_ports():
+    def __display_services_ports(self):
         puts('To access the ' + colored.yellow('web server') + ' use : http://' + self.__get_vm_item('apache', 'ip') + '\n')
 
         mailcatcher_ip = self.__get_vm_item('mailcatcher', 'ip')
@@ -195,7 +195,7 @@ class Lamp():
 
         vm_name = self.__get_vm_item(args[0].vm, 'name')
         if vm_name == '':
-            raise Exception(args[0].vm + ' does not seem to be in your services or has crashed')
+            raise Exception('{} does not seem to be in your services or has crashed'.format(args[0].vm))
 
         user_name = 'www-data' if args[0].vm == 'php' else 'root'
         tty = 't' if sys.stdin.isatty() else ''
