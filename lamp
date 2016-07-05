@@ -10,19 +10,15 @@ import subprocess
 class Lamp():
     MAIN_CONFIGURATION_FILE = 'conf/compose.ini'
 
-    def __init__(self):
-        # Make sure we are in the right directory
-        self.lamp_base_dir = os.path.dirname(os.path.realpath(__file__))
-        self.current_dir = os.getcwd()
-        if self.current_dir.find(self.lamp_base_dir) != 0:
-            raise Exception('You are not in a sub-directory of your lamp instance')
+    lamp_base_dir = os.path.dirname(os.path.realpath(__file__))
 
+    def __init__(self):
+        self.current_dir = os.getcwd()
+        # Make sure we are in the right directory
         self.current_dir_relative = self.current_dir[len(self.lamp_base_dir):].lstrip('/')
         os.chdir(self.lamp_base_dir)
 
         self.__read_mainconf_or_exit()
-        base_path = os.path.basename(os.getcwd()).replace('-', '')
-        self.project_name = self.config['main'].get('project_name', 'inet' + base_path)
 
         self.arg_parser = ArgumentParser(description="Process the only argument expected (The action)")
         self.arg_parser.add_argument('action', help='Main command to run)')
@@ -102,9 +98,9 @@ class Lamp():
 
     def __do_start(self):
 
-        puts(colored.green('Starting ' + self.project_name  + ' ...'))
+        puts(colored.green('Starting your lamp server ...'))
         subprocess.call(['bin/compose', 'up'])
-        puts(colored.green(self.project_name  + ' has been started\n'))
+        puts(colored.green('lamp server has been started\n'))
 
         self.vms = self.__get_vms()
 
@@ -114,25 +110,25 @@ class Lamp():
 
 
     def __display_services_ports(self):
-        puts('To access the ' + colored.yellow('web server') + ' use : http://' + self.__get_vm_item('apache', 'ip') + '\n')
+        puts('To access the {} use : http://{}\n'.format(colored.yellow('web server'), self.__get_vm_item('apache', 'ip')))
 
         mailcatcher_ip = self.__get_vm_item('mailcatcher', 'ip')
         if mailcatcher_ip != '':
-            puts('For ' + colored.yellow('mailcatcher') + ' use : http://' + mailcatcher_ip)
-            puts('                and in your VM use the smtp ' + colored.yellow('mailcatcher') + ' with the port 25' + '\n')
+            puts('For {} use : http://{}'.format(colored.yellow('mailcatcher'), mailcatcher_ip))
+            puts(' '*16 + 'and in your VM use the server "{}" with the port 25\n'.format(colored.yellow('mailcatcher')))
 
         maildev_ip = self.__get_vm_item('maildev', 'ip')
         if maildev_ip != '':
-            puts('For ' + colored.yellow('maildev') + ' use : http://' + maildev_ip)
-            puts('            and in your VM use the server "' + colored.yellow('maildev') + '" with the port 25' + '\n')
+            puts('For {} use : http://{}'.format(colored.yellow('maildev'), maildev_ip))
+            puts(' '*12 + 'and in your VM use the server "{}" with the port 25\n'.format(colored.yellow('maildev')))
 
         mongoclient_ip = self.__get_vm_item('mongoclient', 'ip')
         if mongoclient_ip != '':
-            puts('For ' + colored.yellow('mongoclient') + ' use : http://' + mongoclient_ip + ':3000' + '\n')
+            puts('For {} use : http://{}:3000\n'.format(colored.yellow('mongoclient'), mongoclient_ip))
 
         pma_ip = self.__get_vm_item('phpmyadmin', 'ip')
         if pma_ip != '':
-            puts('For ' + colored.yellow('phpMyAdmin') + ' use : http://' + pma_ip + '\n')
+            puts('For {} use : http://{}\n'.format(colored.yellow('phpMyAdmin'), pma_ip))
 
 
     def __do_fullstart(self):
@@ -222,6 +218,9 @@ class Lamp():
 
 
     def __do_sugarcli(self):
+        if self.current_dir.find(self.lamp_base_dir) != 0:
+            raise Exception('You are not in a sub-directory of your lamp instance')
+
         # download sugarcli if it's not the case
         if os.path.isfile('home/www-data/bin/sugarcli.phar') is False:
             puts(colored.yellow('sugarcli has not been downloaded yet, downloading ...'))
@@ -275,6 +274,6 @@ if __name__ == '__main__':
 
         msg += puts(colored.red(str(e)))
         print(msg)
-        print("")
-        raise e
+        #print("")
+        #raise e
         sys.exit(1)
