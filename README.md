@@ -17,6 +17,7 @@ Docker compose for a lamp stack (with MongoDB or MySQL).
 - [PHP usage](#php-usage)
 - [MySQL usage](#mysql-usage)
 - [sugarcli usage](#sugarcli-usage)
+- [sugar-install usage](#sugar-install-usage)
 
 
 # Docker installation
@@ -194,4 +195,41 @@ Example to get a list of users:
 ```bash
 cd /home/user/docker/www/sugarproject
 /home/user/docker/lamp sugarcli user:list --path .
+```
+
+
+# sugar-install usage
+Use `./lamp sugarcrm-install` to install any version of SugarCRM automatically.
+
+The zip files are downloaded from the Workspace "SugarCRM Packages" of our files repository (https://files.inetprocess.fr). You need to define your api key / password in the compose.ini to be allow the command to download the files. Only the packages availables from that repository are installable. 
+
+1. Open https://files.inetprocess.fr/api/ecf9a003a50b156a927b06a177bd273f/keystore_generate_auth_token/docker_lamp with your LDAP credentials.
+2. Open compose.ini and add:
+```ini
+; Token = t
+pydio.token = xxxxxx
+; Private = p
+pydio.private = xxxxxx
+```
+
+You must define the following parameters:
+- `--type` : Corporate, Developer, Enterprise, Professional, Ultimate
+- `--version` : for example 7.7.0.0
+- `--path` : for example www/MySugar.
+
+You can also add:
+- `--demo_data` : Install demo data
+- `--force` : overwrite the existing SugarCRM
+
+Example:
+```bash
+cd /home/user/docker
+./lamp sugar-install --type Enterprise --version 6.5.0 --path www/SugarTest --demo_data --force
+```
+
+The output will be for example :
+```bash
+Installation was sucessfully completed.
+SugarCRM has been installed into www/SugarTest
+Login to http://192.168.99.6/SugarTest with admin and GxTHEf1q
 ```

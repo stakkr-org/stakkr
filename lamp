@@ -29,6 +29,14 @@ class Lamp():
 
         self.vms = self.__get_vms()
 
+        self.running_vms = 0
+        for vm_id, vm_data in self.vms.items():
+            if vm_data['running'] is False:
+                continue
+
+            self.running_vms+= 1
+
+
 
     def call_the_right_action(self):
         switcher = {
@@ -144,12 +152,20 @@ class Lamp():
 
 
     def __do_stop(self):
+        if self.running_vms == 0:
+            puts(colored.red('Have you started your server with the start or fullstart action ?'))
+            return
+
         puts(colored.yellow("Stopping docker-lamp ..."))
         subprocess.call(['bin/compose', 'stop'])
         puts(colored.yellow("docker-lamp is stopped."))
 
 
     def __do_status(self):
+        if self.running_vms == 0:
+            puts(colored.red('Have you started your server with the start or fullstart action ?'))
+            return
+
         puts(columns(
             [(colored.green('VM')), 20],
             [(colored.green('IP')), 15],
@@ -168,12 +184,7 @@ class Lamp():
             ['-'*25, 25]
         ))
 
-        running_vms = 0
         for vm_id, vm_data in self.vms.items():
-            if vm_data['running'] is False:
-                continue
-
-            running_vms+= 1
             puts(columns(
                 [vm_data['compose_name'], 20],
                 [vm_data['ip'], 15],
@@ -183,12 +194,13 @@ class Lamp():
                 [vm_data['name'], 25]
             ))
 
-        if running_vms == 0:
-            puts(colored.red('Have you started your server with the start or fullstart action ?'))
-            return
 
 
     def __do_console(self):
+        if self.running_vms == 0:
+            puts(colored.red('Have you started your server with the start or fullstart action ?'))
+            return
+
         self.arg_parser.add_argument('vm', help='VMs to enter in (mysql or php)')
         args = self.arg_parser.parse_known_args()
         if args[0].vm not in ['mysql', 'php']:
@@ -253,6 +265,10 @@ class Lamp():
 
 
     def __do_sugarcli(self):
+        if self.running_vms == 0:
+            puts(colored.red('Have you started your server with the start or fullstart action ?'))
+            return
+
         self.__download_sugar_cli()
 
         self.__run_sugarcli(self.__get_unknown_args())
@@ -307,6 +323,10 @@ class Lamp():
 
 
     def __do_sugar_install(self):
+        if self.running_vms == 0:
+            puts(colored.red('Have you started your server with the start or fullstart action ?'))
+            return
+            
         sugar_types = ['Corporate', 'Developer', 'Enterprise', 'Professional', 'Ultimate']
         local_parser = ArgumentParser()
         local_parser.add_argument('--type', required=True, choices=sugar_types)
