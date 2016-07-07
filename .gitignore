@@ -1,5 +1,6 @@
 .*.sw*
 /*.egg-info
+*__pycache__*
 /conf/compose.ini
 !/conf/mysql-override/mysqld.cnf
 /conf/mysql-override/*
