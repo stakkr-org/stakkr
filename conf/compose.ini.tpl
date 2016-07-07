@@ -34,3 +34,8 @@
 ; Check https://hub.docker.com/_/elasticsearch/
 ; elasticsearch.version=2
 ; elasticsearch.ram=512M
+
+
+; To download SugarCRM
+pydio.token = xxxxxx
+pydio.private = xxxxxx

@@ -1,11 +1,15 @@
 #!/usr/bin/python3
 from argparse import ArgumentParser
-from configparser import ConfigParser
 from clint.textui import colored, puts, columns
+from configparser import ConfigParser
 from json import loads as json_loads
+from lib import pydiodownload
 from urllib.request import urlretrieve
-import os, stat, sys
+from zipfile import ZipFile
+import os, random, shutil, stat, sys
+import fileinput
 import subprocess
+import uuid
 
 class Lamp():
     MAIN_CONFIGURATION_FILE = 'conf/compose.ini'
@@ -35,7 +39,8 @@ class Lamp():
             'run-php': self.__do_run_php,
             'run-mysql': self.__do_run_mysql,
             'console': self.__do_console,
-            'sugarcli': self.__do_sugarcli
+            'sugarcli': self.__do_sugarcli,
+            'sugar-install': self.__do_sugar_install
         }
         switcher.get(self.__get_action(), self.__do_usage)()
 
@@ -92,7 +97,7 @@ class Lamp():
 
 
     def __do_usage(self):
-        print('usage: ./' + os.path.basename(__file__) + ' [start|fullstart|stop|status|console|run-php|run-mysql|sugarcli]')
+        print('usage: ./' + os.path.basename(__file__) + ' [start|fullstart|stop|status|console|run-php|run-mysql|sugarcli|sugar-install]')
         sys.exit(1)
 
 
@@ -217,20 +222,119 @@ class Lamp():
         subprocess.call(cmd, stdin=sys.stdin)
 
 
-    def __do_sugarcli(self):
-        if self.current_dir.find(self.lamp_base_dir) != 0:
-            raise Exception('You are not in a sub-directory of your lamp instance')
+    def __generate_password(self, length=8):
+        alphabet = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        password = ''
 
+        for i in range(length):
+            next_index = random.randrange(len(alphabet))
+            password = password + alphabet[next_index]
+
+        return password
+
+
+    def __download_sugar_cli(self):
         # download sugarcli if it's not the case
         if os.path.isfile('home/www-data/bin/sugarcli.phar') is False:
             puts(colored.yellow('sugarcli has not been downloaded yet, downloading ...'))
             urlretrieve('http://apt.inetprocess.fr/pub/sugarcli.phar', 'home/www-data/bin/sugarcli.phar')
             os.chmod('home/www-data/bin/sugarcli.phar', stat.S_IRWXU)
 
+
+    def __run_sugarcli(self, sugarcli_cmd: str):
+        if self.current_dir.find(self.lamp_base_dir) != 0:
+            raise Exception('You are not in a sub-directory of your lamp instance')
+
         tty = 't' if sys.stdin.isatty() else ''
         cmd = ['docker', 'exec', '-u', 'www-data', '-i' + tty, self.__get_vm_item('php', 'name')]
-        cmd+= ['bash', '-c', '--', 'cd /var/' + self.current_dir_relative + '; exec /usr/bin/php ~/bin/sugarcli.phar ' + self.__get_unknown_args()]
+        cmd+= ['bash', '-c', '--']
+        cmd+= ['cd /var/' + self.current_dir_relative + '; exec /usr/bin/php ~/bin/sugarcli.phar ' + sugarcli_cmd]
         subprocess.call(cmd, stdin=sys.stdin)
+
+
+    def __do_sugarcli(self):
+        self.__download_sugar_cli()
+
+        self.__run_sugarcli(self.__get_unknown_args())
+
+
+    def __download_sugar_package(self, sugar_type, sugar_version):
+        pydio_ws_url = 'https://files.inetprocess.fr/api/ecf9a003a50b156a927b06a177bd273f'
+        # To generate a token: https://files.inetprocess.fr/api/ecf9a003a50b156a927b06a177bd273f/keystore_generate_auth_token/docker_lamp
+        # or go to my account
+        token = self.config['main'].get('pydio.token', None)
+        private = self.config['main'].get('pydio.private', None)
+
+        if token is None or private is None:
+            puts(colored.red('To download Sugar you must set pydio.token and pydio.private in your compose.ini'))
+            exit(1)
+
+        try:
+            file_name = pydiodownload.get_installation_file_url(pydio_ws_url, sugar_type, sugar_version, token, private)
+        except IOError as e:
+            puts(colored.red('Check your Sugar type or version: {}'.format(e)))
+            exit(1)
+
+        # download the file, run sugarcli
+        tmp_output_file = 'www/SugarCRM-{}.zip'.format(uuid.uuid4())
+        pydiodownload.get_raw_file(pydio_ws_url, file_name, token, private, tmp_output_file)
+
+        return tmp_output_file
+
+
+    def __create_and_modify_sugarcrm_config(self, folder_name: str, password: str, demo_data: bool):
+        tmp_config = 'www/config-{}.php'.format(uuid.uuid4())
+
+        self.__run_sugarcli('install:config:get -c ' + tmp_config)
+
+        install_demo_data = 'yes' if demo_data is True else 'no'
+        config_file = fileinput.input(tmp_config, inplace=1)
+        for line in config_file:
+            line = line.replace('<DB_USER>', 'root')
+            line = line.replace('<DB_PASSWORD>', self.config['main'].get('mysql.root_password', 'changeme'))
+            line = line.replace('<DB_NAME>', 'sugar_' + folder_name.replace('/', '_'))
+            line = line.replace("['setup_db_host_name'] = 'localhost';", "['setup_db_host_name'] = 'mysql';")
+            line = line.replace("['setup_fts_host'] = 'localhost';", "['setup_fts_host'] = 'elasticsearch';")
+            line = line.replace('<SITE_URL>', 'http://' + self.__get_vm_item('apache', 'ip') + '/' + folder_name)
+            line = line.replace('<SUGAR_ADMIN_USER>', 'admin')
+            line = line.replace('<SUGAR_ADMIN_PASSWORD>', password)
+            # line = line.replace('<SUGAR_LICENSE>', 'root')
+            line = line.replace("['demoData'] = 'no';", "['demoData'] = '" + install_demo_data + "';")
+            print(line, end='')
+        config_file.close()
+
+        return tmp_config
+
+
+    def __do_sugar_install(self):
+        sugar_types = ['Corporate', 'Developer', 'Enterprise', 'Professional', 'Ultimate']
+        local_parser = ArgumentParser()
+        local_parser.add_argument('--type', required=True, choices=sugar_types)
+        local_parser.add_argument('--version', required=True)
+        local_parser.add_argument('--path', required=True)
+        local_parser.add_argument('--demo_data', action='store_true')
+        local_parser.add_argument('--force', action='store_true')
+        local_args = local_parser.parse_args(self.arg_parser.parse_known_args()[1])
+        folder_name = local_args.path.lstrip('www/')
+
+        if os.path.isdir(local_args.path) and local_args.force is False:
+            puts(colored.red("Can't install your SugarCRM to {}, folder exists".format(local_args.path)))
+            exit(1)
+
+
+        # Creating the config File, downloading and installing
+        password = self.__generate_password()
+        config_file = self.__create_and_modify_sugarcrm_config(folder_name, password, local_args.demo_data)
+        sugar_zip_file = self.__download_sugar_package(local_args.type, local_args.version)
+        self.__download_sugar_cli()
+        self.__run_sugarcli('install:run --source {} --config {} --path {} --force'.format(sugar_zip_file, config_file, local_args.path))
+
+        # Teardown tasks
+        os.remove(sugar_zip_file)
+        os.remove(config_file)
+        sugar_url = 'http://' + self.__get_vm_item('apache', 'ip') + '/' + folder_name
+        puts('SugarCRM has been installed into ' + colored.green(local_args.path))
+        puts('Login to ' + colored.green(sugar_url) + ' with ' + colored.green('admin') + ' and ' + colored.red(password))
 
 
     def __get_unknown_args(self):
@@ -271,8 +375,8 @@ if __name__ == '__main__':
              |______|_|  \_\_|  \_\\____/|_|  \_\
 
 """
-
         msg += puts(colored.red(str(e)))
+
         print(msg)
         #print("")
         #raise e

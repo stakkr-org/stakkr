@@ -9,6 +9,4 @@ setup(name='docker-lamp',
       author_email='emmanuel.dyan@inetprocess.com',
       license='Apache 2.0',
       packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
-      install_requires=[
-          'clint',
-      ])
+      install_requires=['clint'])
