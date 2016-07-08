@@ -326,7 +326,11 @@ class Lamp():
         if self.running_vms == 0:
             puts(colored.red('Have you started your server with the start or fullstart action ?'))
             return
-            
+
+        if self.current_dir != self.lamp_base_dir:
+            puts(colored.red('That command should be run from the root ({})'.format(self.lamp_base_dir)))
+            exit(1)
+
         sugar_types = ['Corporate', 'Developer', 'Enterprise', 'Professional', 'Ultimate']
         local_parser = ArgumentParser()
         local_parser.add_argument('--type', required=True, choices=sugar_types)
