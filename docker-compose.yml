@@ -7,7 +7,6 @@ data:
 
 apache:
     image: inetprocess/apache:${DOCKER_APACHE_VERSION}
-    #build: https://github.com/inetprocess/docker-apache#:${DOCKER_APACHE_VERSION}
     mem_limit: ${DOCKER_APACHE_RAM}
     environment:
         PHP_GID: ${DOCKER_GID}
@@ -18,7 +17,6 @@ apache:
 
 php:
     image: inetprocess/php:${DOCKER_PHP_VERSION}
-    #build: https://github.com/inetprocess/docker-php#:${DOCKER_PHP_VERSION}
     mem_limit: ${DOCKER_PHP_RAM}
     environment:
         FPM_UID: ${DOCKER_UID}
@@ -26,3 +24,5 @@ php:
     volumes_from: [data]
     volumes:
         - ./logs/php:/var/log/php
+        - ./conf/php-fpm-override:/etc/php5/fpm/user-conf.d
+        - ./conf/php-fpm-override:/etc/php/7.0/fpm/user-conf.d

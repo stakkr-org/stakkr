@@ -103,7 +103,6 @@ apache.ram=512M
 elasticsearch.ram=512M
 mysql.ram=512M
 php.ram=512M
-
 ```
 
 # Files location
@@ -111,6 +110,7 @@ php.ram=512M
 * MySQL data is into `mysql/` (created on the first run). If you need to override the mysql configuration you can put a file in `conf/mysql-override` with a `.cnf` extension.
 * Mongo data is into `mongo/` (created on the first run)
 * Logs for Apache and PHP are located into `logs/`
+* If you need to override the PHP configuration you can put a file in `conf/php-fpm-override` with a `.conf` extension. The format is the fpm configuration files one. Example: `php_value[memory_limit] = 127M`.
 
 ## Add binaries
 You can add binaries (such as sugarcli.phar) that will automatically be available from the PATH by putting it to
@@ -201,7 +201,7 @@ cd /home/user/docker/www/sugarproject
 # sugar-install usage
 Use `./lamp sugarcrm-install` to install any version of SugarCRM automatically.
 
-The zip files are downloaded from the Workspace "SugarCRM Packages" of our files repository (https://files.inetprocess.fr). You need to define your api key / password in the compose.ini to be allow the command to download the files. Only the packages availables from that repository are installable. 
+The zip files are downloaded from the Workspace "SugarCRM Packages" of our files repository (https://files.inetprocess.fr). You need to define your api key / password in the compose.ini to be allow the command to download the files. Only the packages availables from that repository are installable.
 
 1. Open https://files.inetprocess.fr/api/ecf9a003a50b156a927b06a177bd273f/keystore_generate_auth_token/docker_lamp with your LDAP credentials.
 2. Open compose.ini and add:

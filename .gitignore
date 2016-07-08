@@ -3,6 +3,8 @@
 *__pycache__*
 /conf/compose.ini
 !/conf/mysql-override/mysqld.cnf
+/conf/php-fpm-override/*
+!/conf/php-fpm-override/README
 /conf/mysql-override/*
 /home/www-data/*
 !/home/www-data/.bashrc
