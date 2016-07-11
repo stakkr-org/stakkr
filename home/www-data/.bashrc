@@ -8,5 +8,6 @@ echo "
 
 "
 export PATH=$PATH:~/bin
+export TERM=xterm
 alias ll="ls -ail --color"
 cd /var/www
