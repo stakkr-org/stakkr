@@ -177,16 +177,16 @@ You can also use that command to run any PHP command (example: `./lamp run-php -
 # MySQL usage
 Use `./lamp run-mysql` to enter the mysql console.
 
-If you need to import a file, read it and pipe the command like below:
-```bash
-zcat file.sql.gz | ./lamp run-mysql
-```
 
 If you want to create a Database (You can also use the phpMyAdmin service of course):
 ```bash
 ./lamp run-mysql -e "CREATE DATABASE my_db;"
 ```
 
+If you need to import a file, read it and pipe the command like below:
+```bash
+zcat file.sql.gz | ./lamp run-mysql db
+```
 
 # SugarCLI usage
 Use `./lamp sugarcli` to use sugarcli
