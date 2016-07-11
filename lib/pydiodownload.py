@@ -1,16 +1,15 @@
-#!/usr/bin/python3
-from hashlib import sha1
-from hashlib import sha256
-from urllib.parse import urlparse
 from urllib.request import pathname2url
-import hmac
-import random
 import requests
 import sys
-import xml.etree.ElementTree
 
 
 def generate_auth_hash(url, token, private):
+    from hashlib import sha1
+    from hashlib import sha256
+    from urllib.parse import urlparse
+    import hmac
+    import random
+
     nonce = sha1(str(random.random()).encode("utf-8")).hexdigest()
     uri = urlparse(url).path.rstrip('/')
     msg = uri + ':' + nonce + ':' + private
@@ -57,6 +56,8 @@ def get_raw_file(base_url, file_path, token, private, output_file):
 
 
 def parse_xml_response(raw_xml):
+    import xml.etree.ElementTree
+
     try:
         return xml.etree.ElementTree.fromstring(raw_xml)
     except xml.etree.ElementTree.ParseError as e:

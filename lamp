@@ -1,19 +1,23 @@
 #!/usr/bin/python3
 from argparse import ArgumentParser
 from clint.textui import colored, puts, columns
-from configparser import ConfigParser
-from json import loads as json_loads
-from lib import pydiodownload
-from urllib.request import urlretrieve
-from zipfile import ZipFile
-import os, random, shutil, stat, sys
-import fileinput
+from lib import docker
+from lib import sugarcli
+from lib import utils
+import os
+import sys
 import subprocess
-import uuid
+
+
+def check_vms_are_running(func):
+    def decorator(self):
+        if self.running_vms == 0:
+            raise Exception('Have you started your server with the start or fullstart action ?')
+        func(self)
+    return decorator
+
 
 class Lamp():
-    MAIN_CONFIGURATION_FILE = 'conf/compose.ini'
-
     lamp_base_dir = os.path.dirname(os.path.realpath(__file__))
 
     def __init__(self):
@@ -22,20 +26,22 @@ class Lamp():
         self.current_dir_relative = self.current_dir[len(self.lamp_base_dir):].lstrip('/')
         os.chdir(self.lamp_base_dir)
 
-        self.__read_mainconf_or_exit()
+        from lib import configreader
+        config_reader = configreader.Config('conf/compose.ini')
+        self.config = config_reader.read()
 
-        self.arg_parser = ArgumentParser(description="Process the only argument expected (The action)")
-        self.arg_parser.add_argument('action', help='Main command to run)')
+        self.valid_actions = ('start', 'fullstart', 'stop', 'restart', 'status', 'console', 'run-php', 'run-mysql', 'sugarcli', 'sugar-install')
+        self.arg_parser = ArgumentParser(description="Process the only argument expected (The action)", usage="./lamp {action}")
+        self.arg_parser.add_argument('action', choices=self.valid_actions)
 
-        self.vms = self.__get_vms()
+        self.vms = docker.get_vms()
 
         self.running_vms = 0
         for vm_id, vm_data in self.vms.items():
             if vm_data['running'] is False:
                 continue
 
-            self.running_vms+= 1
-
+            self.running_vms += 1
 
 
     def call_the_right_action(self):
@@ -43,6 +49,7 @@ class Lamp():
             'start': self.__do_start,
             'stop': self.__do_stop,
             'fullstart': self.__do_fullstart,
+            'restart': self.__do_restart,
             'status': self.__do_status,
             'run-php': self.__do_run_php,
             'run-mysql': self.__do_run_mysql,
@@ -50,76 +57,166 @@ class Lamp():
             'sugarcli': self.__do_sugarcli,
             'sugar-install': self.__do_sugar_install
         }
-        switcher.get(self.__get_action(), self.__do_usage)()
 
-
-    def __read_mainconf_or_exit(self):
-        """Check if the configuration file exists"""
-        if os.path.isfile(self.MAIN_CONFIGURATION_FILE) is False:
-            msg = 'Error: Missing ' + self.MAIN_CONFIGURATION_FILE + ' '
-            msg+= 'Create it and override values from ' + self.MAIN_CONFIGURATION_FILE + '.tpl'
-            raise IOError(msg)
-
-        self.config = self.__parse_config()
-
-
-    def __parse_config(self):
-        config = ConfigParser()
-        config.read(self.MAIN_CONFIGURATION_FILE)
-        return config
-
-
-    def __get_action(self):
         args = self.arg_parser.parse_known_args()
-
-        return args[0].action
-
-
-    def __get_vms(self):
-        cmd = ['bin/compose', 'ps']
-        vms_id = subprocess.check_output(cmd).splitlines()
-        vms_info = dict()
-        for vm_id in vms_id:
-            vm_id = vm_id.decode('utf-8', 'strict')
-            vms_info[vm_id] = self.__extract_vm_info(vm_id)
-
-        return vms_info
-
-
-    def __extract_vm_info(self, vm_id: str):
-        try:
-            result = subprocess.check_output(['docker', 'inspect', vm_id], stderr=subprocess.STDOUT)
-            data = json_loads(result.decode("utf-8", "strict").rstrip('\n'))
-            vm_info = {
-                'name': data[0]['Name'].lstrip('/'),
-                'compose_name': data[0]['Config']['Labels']['com.docker.compose.service'],
-                'ports': data[0]['Config']['ExposedPorts'].keys() if 'ExposedPorts' in data[0]['Config'] else [],
-                'image': data[0]['Config']['Image'],
-                'ip': data[0]['NetworkSettings']['IPAddress'],
-                'running': data[0]['State']['Running'],
-            }
-
-            return vm_info
-        except subprocess.CalledProcessError as e:
-            return None
-
-
-    def __do_usage(self):
-        print('usage: ./' + os.path.basename(__file__) + ' [start|fullstart|stop|status|console|run-php|run-mysql|sugarcli|sugar-install]')
-        sys.exit(1)
+        switcher.get(args[0].action)()
 
 
     def __do_start(self):
-
         puts(colored.green('Starting your lamp server ...'))
         subprocess.call(['bin/compose', 'up'])
         puts(colored.green('lamp server has been started\n'))
 
-        self.vms = self.__get_vms()
+        self.vms = docker.get_vms()
 
         self.__run_services_post_scripts()
 
         self.__display_services_ports()
+
+
+    def __do_fullstart(self):
+        puts(colored.green("\nBuilding required images ..."))
+        subprocess.call(['bin/compose', 'build'])
+        puts(colored.green("Build done\n"))
+        self.__do_start()
+
+
+    @check_vms_are_running
+    def __do_stop(self):
+        puts(colored.yellow("Stopping docker-lamp ..."))
+        subprocess.call(['bin/compose', 'stop'])
+        puts(colored.yellow("docker-lamp is stopped."))
+
+
+    @check_vms_are_running
+    def __do_restart(self):
+        puts(colored.green("Restarting docker-lamp ..."))
+        self.__do_stop()
+        self.__do_start()
+
+
+    @check_vms_are_running
+    def __do_status(self):
+        puts(columns(
+            [(colored.green('VM')), 20],
+            [(colored.green('IP')), 15],
+            [(colored.green('Ports')), 30],
+            [(colored.green('Image')), 30],
+            [(colored.green('Docker ID')), 15],
+            [(colored.green('Docker Name')), 25]
+        ))
+
+        puts(columns(
+            ['-'*20, 20],
+            ['-'*15, 15],
+            ['-'*30, 30],
+            ['-'*30, 30],
+            ['-'*15, 15],
+            ['-'*25, 25]
+        ))
+
+        for vm_id, vm_data in self.vms.items():
+            if vm_data['ip'] == '':
+                continue
+
+            puts(columns(
+                [vm_data['compose_name'], 20],
+                [vm_data['ip'], 15],
+                [', '.join(vm_data['ports']), 30],
+                [vm_data['image'], 30],
+                [vm_id[:12], 15],
+                [vm_data['name'], 25]
+            ))
+
+
+    @check_vms_are_running
+    def __do_console(self):
+        consoled_vms = ('mysql', 'php')
+        local_parser = ArgumentParser()
+        local_parser.add_argument('vm', choices=consoled_vms)
+        # I need to reinject the existing parameters as I concatenate new ones to my cli
+        local_args = local_parser.parse_args(self.arg_parser.parse_known_args()[1])
+
+        vm_name = self.__get_vm_item(local_args.vm, 'name')
+        if vm_name == '':
+            raise Exception('{} does not seem to be in your services or has crashed'.format(local_args.vm))
+
+        user_name = 'www-data' if local_args.vm == 'php' else 'root'
+        tty = 't' if sys.stdin.isatty() else ''
+        subprocess.call(['docker', 'exec', '-u', user_name, '-i' + tty, vm_name, 'bash'])
+
+
+    @check_vms_are_running
+    def __do_run_php(self):
+        tty = 't' if sys.stdin.isatty() else ''
+        cmd = ['docker', 'exec', '-u', 'www-data', '-i' + tty, self.__get_vm_item('php', 'name'), 'bash', '-c', '--']
+        cmd += ['cd /var/' + self.current_dir_relative + '; exec /usr/bin/php ' + self.__get_unknown_args()]
+        subprocess.call(cmd, stdin=sys.stdin)
+
+
+    @check_vms_are_running
+    def __do_run_mysql(self):
+        vm_name = self.__get_vm_item('mysql', 'name')
+        if vm_name == '':
+            raise Exception('mysql does not seem to be in your services or has crashed')
+
+        tty = 't' if sys.stdin.isatty() else ''
+        password = self.config['main'].get('mysql.root_password', 'changeme')
+        cmd = ['docker', 'exec', '-u', 'www-data', '-i' + tty, vm_name]
+        cmd += ['mysql', '-u', 'root', '-p' + password, self.__get_unknown_args()]
+        subprocess.call(cmd, stdin=sys.stdin)
+
+
+    @check_vms_are_running
+    def __do_sugarcli(self):
+        if self.current_dir.find(self.lamp_base_dir) != 0:
+            raise Exception('You are not in a sub-directory of your lamp instance')
+
+        sugarcli.run(self.__get_vm_item('php', 'name'), self.current_dir_relative, self.__get_unknown_args())
+
+
+    @check_vms_are_running
+    def __do_sugar_install(self):
+        if self.current_dir != self.lamp_base_dir:
+            raise IOError('That command should be run from the root ({})'.format(self.lamp_base_dir))
+
+        sugar_types = ('Corporate', 'Developer', 'Enterprise', 'Professional', 'Ultimate')
+        local_parser = ArgumentParser()
+        local_parser.add_argument('--type', required=True, choices=sugar_types)
+        local_parser.add_argument('--version', required=True)
+        local_parser.add_argument('--path', required=True)
+        local_parser.add_argument('--demo_data', action='store_true')
+        local_parser.add_argument('--force', action='store_true')
+        local_args = local_parser.parse_args(self.arg_parser.parse_known_args()[1])
+        folder_name = local_args.path.lstrip('www/')
+
+        if os.path.isdir(local_args.path) and local_args.force is False:
+            raise IOError("Can't install your SugarCRM to {}, folder exists".format(local_args.path))
+
+        # Creating the config File, downloading and installing
+        password = utils.generate_password()
+        config_file = self.__create_and_modify_sugarcrm_config(folder_name, password, local_args.demo_data)
+
+        token = self.config['main'].get('pydio.token', None)
+        private = self.config['main'].get('pydio.private', None)
+        error_message = False
+        try:
+            sugar_zip_file = sugarcli.download_sugar_package(token, private, local_args.type, local_args.version)
+            sugarcli_cmd = 'install:run --source {} --config {} --path {} --force'.format(sugar_zip_file, config_file, local_args.path)
+            sugarcli.run(self.__get_vm_item('php', 'name'), self.current_dir_relative, sugarcli_cmd)
+            os.remove(sugar_zip_file)
+        except Exception as e:
+            error_message = str(e)
+
+        # the file has been created for sure so delete in all cases
+        os.remove(config_file)
+
+        if error_message is not False:
+            raise Exception(error_message)
+
+        sugar_url = 'http://' + self.__get_vm_item('apache', 'ip') + '/' + folder_name
+        puts('SugarCRM has been installed into ' + colored.green(local_args.path))
+        puts('Login to ' + colored.green(sugar_url) + ' with ' + colored.green('admin') + ' and ' + colored.red(password))
 
 
     def __display_services_ports(self):
@@ -144,166 +241,16 @@ class Lamp():
             puts('For {} use : http://{}\n'.format(colored.yellow('phpMyAdmin'), pma_ip))
 
 
-    def __do_fullstart(self):
-        puts(colored.green("\nBuilding required images ..."))
-        subprocess.call(['bin/compose', 'build'])
-        puts(colored.green("Build done\n"))
-        self.__do_start()
-
-
-    def __do_stop(self):
-        if self.running_vms == 0:
-            puts(colored.red('Have you started your server with the start or fullstart action ?'))
-            return
-
-        puts(colored.yellow("Stopping docker-lamp ..."))
-        subprocess.call(['bin/compose', 'stop'])
-        puts(colored.yellow("docker-lamp is stopped."))
-
-
-    def __do_status(self):
-        if self.running_vms == 0:
-            puts(colored.red('Have you started your server with the start or fullstart action ?'))
-            return
-
-        puts(columns(
-            [(colored.green('VM')), 20],
-            [(colored.green('IP')), 15],
-            [(colored.green('Ports')), 30],
-            [(colored.green('Image')), 30],
-            [(colored.green('Docker ID')), 15],
-            [(colored.green('Docker Name')), 25]
-        ))
-
-        puts(columns(
-            ['-'*20, 20],
-            ['-'*15, 15],
-            ['-'*30, 30],
-            ['-'*30, 30],
-            ['-'*15, 15],
-            ['-'*25, 25]
-        ))
-
-        for vm_id, vm_data in self.vms.items():
-            puts(columns(
-                [vm_data['compose_name'], 20],
-                [vm_data['ip'], 15],
-                [', '.join(vm_data['ports']), 30],
-                [vm_data['image'], 30],
-                [vm_id[:12], 15],
-                [vm_data['name'], 25]
-            ))
-
-
-
-    def __do_console(self):
-        if self.running_vms == 0:
-            puts(colored.red('Have you started your server with the start or fullstart action ?'))
-            return
-
-        self.arg_parser.add_argument('vm', help='VMs to enter in (mysql or php)')
-        args = self.arg_parser.parse_known_args()
-        if args[0].vm not in ['mysql', 'php']:
-            raise Exception("You must define the VM as a second argument (php or mysql)")
-
-        vm_name = self.__get_vm_item(args[0].vm, 'name')
-        if vm_name == '':
-            raise Exception('{} does not seem to be in your services or has crashed'.format(args[0].vm))
-
-        user_name = 'www-data' if args[0].vm == 'php' else 'root'
-        tty = 't' if sys.stdin.isatty() else ''
-        subprocess.call(['docker', 'exec', '-u', user_name, '-i' + tty, vm_name, 'bash'])
-
-
-    def __do_run_php(self):
-        tty = 't' if sys.stdin.isatty() else ''
-        cmd = ['docker', 'exec', '-u', 'www-data', '-i' + tty, self.__get_vm_item('php', 'name')]
-        cmd+= ['bash', '-c', '--', 'cd /var/' + self.current_dir_relative + '; exec /usr/bin/php ' + self.__get_unknown_args()]
-        subprocess.call(cmd, stdin=sys.stdin)
-
-
-    def __do_run_mysql(self):
-        vm_name = self.__get_vm_item('mysql', 'name')
-        if vm_name == '':
-            raise Exception('mysql does not seem to be in your services or has crashed')
-
-        tty = 't' if sys.stdin.isatty() else ''
-        password = self.config['main'].get('mysql.root_password', 'changeme');
-        cmd = ['docker', 'exec', '-u', 'www-data', '-i' + tty, vm_name]
-        cmd+= ['mysql', '-u', 'root', '-p' + password, self.__get_unknown_args()]
-        subprocess.call(cmd, stdin=sys.stdin)
-
-
-    def __generate_password(self, length=8):
-        alphabet = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        password = ''
-
-        for i in range(length):
-            next_index = random.randrange(len(alphabet))
-            password = password + alphabet[next_index]
-
-        return password
-
-
-    def __download_sugar_cli(self):
-        # download sugarcli if it's not the case
-        if os.path.isfile('home/www-data/bin/sugarcli.phar') is False:
-            puts(colored.yellow('sugarcli has not been downloaded yet, downloading ...'))
-            urlretrieve('http://apt.inetprocess.fr/pub/sugarcli.phar', 'home/www-data/bin/sugarcli.phar')
-            os.chmod('home/www-data/bin/sugarcli.phar', stat.S_IRWXU)
-
-
-    def __run_sugarcli(self, sugarcli_cmd: str):
-        if self.current_dir.find(self.lamp_base_dir) != 0:
-            raise Exception('You are not in a sub-directory of your lamp instance')
-
-        tty = 't' if sys.stdin.isatty() else ''
-        cmd = ['docker', 'exec', '-u', 'www-data', '-i' + tty, self.__get_vm_item('php', 'name')]
-        cmd+= ['bash', '-c', '--']
-        cmd+= ['cd /var/' + self.current_dir_relative + '; exec /usr/bin/php ~/bin/sugarcli.phar ' + sugarcli_cmd]
-        subprocess.call(cmd, stdin=sys.stdin)
-
-
-    def __do_sugarcli(self):
-        if self.running_vms == 0:
-            puts(colored.red('Have you started your server with the start or fullstart action ?'))
-            return
-
-        self.__download_sugar_cli()
-
-        self.__run_sugarcli(self.__get_unknown_args())
-
-
-    def __download_sugar_package(self, sugar_type, sugar_version):
-        pydio_ws_url = 'https://files.inetprocess.fr/api/ecf9a003a50b156a927b06a177bd273f'
-        # To generate a token: https://files.inetprocess.fr/api/ecf9a003a50b156a927b06a177bd273f/keystore_generate_auth_token/docker_lamp
-        # or go to my account
-        token = self.config['main'].get('pydio.token', None)
-        private = self.config['main'].get('pydio.private', None)
-
-        if token is None or private is None:
-            puts(colored.red('To download Sugar you must set pydio.token and pydio.private in your compose.ini'))
-            exit(1)
-
-        try:
-            file_name = pydiodownload.get_installation_file_url(pydio_ws_url, sugar_type, sugar_version, token, private)
-        except IOError as e:
-            puts(colored.red('Check your Sugar type or version: {}'.format(e)))
-            exit(1)
-
-        # download the file, run sugarcli
-        tmp_output_file = 'www/SugarCRM-{}.zip'.format(uuid.uuid4())
-        pydiodownload.get_raw_file(pydio_ws_url, file_name, token, private, tmp_output_file)
-
-        return tmp_output_file
-
-
     def __create_and_modify_sugarcrm_config(self, folder_name: str, password: str, demo_data: bool):
+        import uuid
         tmp_config = 'www/config-{}.php'.format(uuid.uuid4())
-
-        self.__run_sugarcli('install:config:get -c ' + tmp_config)
-
         install_demo_data = 'yes' if demo_data is True else 'no'
+
+        sugarcli.run(self.__get_vm_item('php', 'name'), self.current_dir_relative, 'install:config:get -c ' + tmp_config)
+        if os.path.isfile(tmp_config) is False:
+            raise IOError("Config file has not been created by sugarcli")
+
+        import fileinput
         config_file = fileinput.input(tmp_config, inplace=1)
         for line in config_file:
             line = line.replace('<DB_USER>', 'root')
@@ -320,45 +267,6 @@ class Lamp():
         config_file.close()
 
         return tmp_config
-
-
-    def __do_sugar_install(self):
-        if self.running_vms == 0:
-            puts(colored.red('Have you started your server with the start or fullstart action ?'))
-            return
-
-        if self.current_dir != self.lamp_base_dir:
-            puts(colored.red('That command should be run from the root ({})'.format(self.lamp_base_dir)))
-            exit(1)
-
-        sugar_types = ['Corporate', 'Developer', 'Enterprise', 'Professional', 'Ultimate']
-        local_parser = ArgumentParser()
-        local_parser.add_argument('--type', required=True, choices=sugar_types)
-        local_parser.add_argument('--version', required=True)
-        local_parser.add_argument('--path', required=True)
-        local_parser.add_argument('--demo_data', action='store_true')
-        local_parser.add_argument('--force', action='store_true')
-        local_args = local_parser.parse_args(self.arg_parser.parse_known_args()[1])
-        folder_name = local_args.path.lstrip('www/')
-
-        if os.path.isdir(local_args.path) and local_args.force is False:
-            puts(colored.red("Can't install your SugarCRM to {}, folder exists".format(local_args.path)))
-            exit(1)
-
-
-        # Creating the config File, downloading and installing
-        password = self.__generate_password()
-        config_file = self.__create_and_modify_sugarcrm_config(folder_name, password, local_args.demo_data)
-        sugar_zip_file = self.__download_sugar_package(local_args.type, local_args.version)
-        self.__download_sugar_cli()
-        self.__run_sugarcli('install:run --source {} --config {} --path {} --force'.format(sugar_zip_file, config_file, local_args.path))
-
-        # Teardown tasks
-        os.remove(sugar_zip_file)
-        os.remove(config_file)
-        sugar_url = 'http://' + self.__get_vm_item('apache', 'ip') + '/' + folder_name
-        puts('SugarCRM has been installed into ' + colored.green(local_args.path))
-        puts('Login to ' + colored.green(sugar_url) + ' with ' + colored.green('admin') + ' and ' + colored.red(password))
 
 
     def __get_unknown_args(self):
@@ -390,18 +298,17 @@ if __name__ == '__main__':
         lamp = Lamp()
         lamp.call_the_right_action()
     except Exception as e:
-        msg =  r"""
-              ______ _____  _____   ____  _____
-             |  ____|  __ \|  __ \ / __ \|  __ \
-             | |__  | |__) | |__) | |  | | |__) |
-             |  __| |  _  /|  _  /| |  | |  _  /
-             | |____| | \ \| | \ \| |__| | | \ \
-             |______|_|  \_\_|  \_\\____/|_|  \_\
+        msg = colored.yellow(r""" ______ _____  _____   ____  _____
+|  ____|  __ \|  __ \ / __ \|  __ \
+| |__  | |__) | |__) | |  | | |__) |
+|  __| |  _  /|  _  /| |  | |  _  /
+| |____| | \ \| | \ \| |__| | | \ \
+|______|_|  \_\_|  \_\\____/|_|  \_\
 
-"""
-        msg += puts(colored.red(str(e)))
+""")
+        msg += colored.red(str(e))
 
-        print(msg)
-        #print("")
-        #raise e
+        puts(msg)
+        print("")
+        raise e
         sys.exit(1)
