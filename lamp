@@ -202,8 +202,10 @@ class Lamp():
         error_message = False
         try:
             sugar_zip_file = sugarcli.download_sugar_package(token, private, local_args.type, local_args.version)
-            sugarcli_cmd = 'install:run --source {} --config {} --path {} --force'.format(sugar_zip_file, config_file, local_args.path)
-            sugarcli.run(self.__get_vm_item('php', 'name'), self.current_dir_relative, sugarcli_cmd)
+            sugarcli.run(
+                self.__get_vm_item('php', 'name'),
+                self.current_dir_relative,
+                'install:run --source {} --config {} --path {} --force'.format(sugar_zip_file, config_file, local_args.path))
             os.remove(sugar_zip_file)
         except Exception as e:
             error_message = str(e)
