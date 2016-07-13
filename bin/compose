@@ -8,7 +8,7 @@ import sys
 
 MAIN_CONFIGURATION_FILE = 'conf/compose.ini'
 
-
+# TODO Utiliser la librairie configreader
 def read_mainconf_or_exit():
     """Check if the configuration file exists"""
     if os.path.isfile(MAIN_CONFIGURATION_FILE) is False:
@@ -19,12 +19,15 @@ def read_mainconf_or_exit():
     return parse_config()
 
 
+# TODO Utiliser la librairie configreader
 def parse_config():
     config = ConfigParser()
     config.read(MAIN_CONFIGURATION_FILE)
     return config
 
 
+# TODO Lire les paramètres par défaut de compose.ini.tpl
+# TODO Convertir les str(...) en ''.format(...)
 def set_env_values_from_conf(config: list):
     os.putenv('DOCKER_UID', str(config.get('uid', os.getuid())))
     os.putenv('DOCKER_GID', str(config.get('gid', os.getgid())))
@@ -47,6 +50,7 @@ def set_env_values_from_conf(config: list):
 
     os.putenv('DOCKER_PMA_UPLOAD_MAX_FILESIZE', str(config.get('phpmyadmin.upload_max_filesize', '128M')))
 
+
 def get_cli_arguments():
     arg_parser = ArgumentParser(description="Process the only argument expected (The command)")
     arg_parser.add_argument('command', help='Command for docker-compose')
@@ -61,6 +65,7 @@ def get_cli_arguments():
     return command
 
 
+# TODO ajouter ici les post scripts et non dans le ./lamp
 def get_services(services: list):
     services_files = []
     for service in services:

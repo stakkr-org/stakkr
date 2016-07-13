@@ -38,6 +38,6 @@
 
 ; To download SugarCRM, generate a token: https://files.inetprocess.fr/api/ecf9a003a50b156a927b06a177bd273f/keystore_generate_auth_token/docker_lamp
 ; Token = t
-pydio.token = xxxxxx
+; pydio.token = xxxxxx
 ; Private = p
-pydio.private = xxxxxx
+; pydio.private = xxxxxx
