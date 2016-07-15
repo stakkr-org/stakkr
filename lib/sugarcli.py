@@ -19,7 +19,7 @@ def run(vm_name: str, relative_dir: str, sugarcli_cmd: str):
     tty = 't' if sys.stdin.isatty() else ''
     cmd = ['docker', 'exec', '-u', 'www-data', '-i' + tty, vm_name]
     cmd += ['bash', '-c', '--']
-    cmd += ['cd /var/' + relative_dir + '; exec /usr/bin/php ~/bin/sugarcli.phar ' + sugarcli_cmd]
+    cmd += ['cd /var/' + relative_dir + '; exec /usr/bin/php ~/bin/sugarcli.phar {}'.format(sugarcli_cmd)]
     subprocess.call(cmd, stdin=sys.stdin, stderr=subprocess.STDOUT)
 
 
