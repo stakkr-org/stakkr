@@ -9,6 +9,8 @@ import sys
 import subprocess
 
 
+# TODO Utiliser click , virtualenv et setuptools
+# TODO Remplacer certaines options de configuration par @click.option('--uid', envvar='UID') ?
 def check_vms_are_running(func):
     def decorator(self):
         if self.running_vms == 0:
