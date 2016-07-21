@@ -129,17 +129,6 @@ VM's urls are given once the servers are started.
 * SMTP Server : `maildev` (or `mailcatcher`) with port `25`
 
 
-# Before running any command
-You have to be in a virtual environement:
-```bash
-source ${PWD##*/}_lamp/bin/activate
-```
-
-To leave that environment:
-```bash
-deactivate
-```
-
 # Writing a plugin
 To write a plugin you need to create a folder in the plugins/ directory that contains your commands. Each file with a
 `.py` extension will be taken as a plugin. The main function should be named exactly like the file.
@@ -157,6 +146,18 @@ def hi():
 Once your plugin has been written you need to re-run:
 ```bash
 lamp refresh-plugins
+```
+
+
+# Before running any command
+You have to be in a virtual environement:
+```bash
+source ${PWD##*/}_lamp/bin/activate
+```
+
+To leave that environment:
+```bash
+deactivate
 ```
 
 
