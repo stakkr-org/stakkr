@@ -156,7 +156,7 @@ def hi():
 
 Once your plugin has been written you need to re-run:
 ```bash
-pip install -e .
+lamp refresh-plugins
 ```
 
 
