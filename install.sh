@@ -8,6 +8,13 @@ rm -rf ${PWD##*/}_lamp
 
 echo "Installing various python packages"
 sudo apt-get -y install python3-pip python3-setuptools python3-virtualenv virtualenv > /dev/null
+sudo pip install --upgrade pip > /dev/null
+sudo pip install autoenv > /dev/null
+
+echo ""
+echo "If you want to automatically load the current virtualenvironment, check that you have something like "
+echo "'echo \"source `which activate.sh`\"' in your bashrc"
+echo ""
 
 echo "Creating the virtualenv"
 virtualenv -p /usr/bin/python3 ${PWD##*/}_lamp > /dev/null
