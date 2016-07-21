@@ -9,5 +9,5 @@ pip3 install click > /dev/null
 pip3 install -e . > /dev/null
 
 echo "Leaving the virtualenv. To enter it again do : "
-echo "source \${PWD##*/}_lamp/bin/activate"
+echo "   source \${PWD##*/}_lamp/bin/activate"
 deactivate > /dev/null
