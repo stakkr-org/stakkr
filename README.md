@@ -1,23 +1,27 @@
 # Docker-lamp
 Docker compose for a lamp stack (with MongoDB or MySQL).
 
+- [Docker-lamp](#docker-lamp)
 - [Docker installation](#docker-installation)
+- [add the right repo according to the doc. Such as:](#add-the-right-repo-according-to-the-doc-such-as)
+- [deb https://apt.dockerproject.org/repo ubuntu-trusty main](#deb-httpsaptdockerprojectorgrepo-ubuntu-trusty-main)
 - [Docker compose installation](#docker-compose-installation)
-- [Clone the repository](#pull-the-repository)
+- [Clone the repository](#clone-the-repository)
 - [Configuration](#configuration)
 	- [Config Parameters](#config-parameters)
 - [Files location](#files-location)
 	- [Add binaries](#add-binaries)
 - [HostNames](#hostnames)
-- [Start / Stop the servers](#start-stop-the-servers)
-	- [Start](#start)
-	- [Stop](#stop)
+- [Before running any command](#before-running-any-command)
+- [Writing a plugin](#writing-a-plugin)
+- [Usage](#usage)
+	- [Start the servers](#start-the-servers)
+	- [Stop the servers](#stop-the-servers)
+	- [Restart the servers](#restart-the-servers)
 	- [Status](#status)
-- [Enter a VM](#enter-a-vm)
-- [PHP usage](#php-usage)
-- [MySQL usage](#mysql-usage)
-- [sugarcli usage](#sugarcli-usage)
-- [sugar-install usage](#sugar-install-usage)
+	- [Enter a VM](#enter-a-vm)
+	- [PHP usage](#php-usage)
+	- [MySQL usage](#mysql-usage)
 
 
 # Docker installation
@@ -136,6 +140,25 @@ To leave that environment:
 deactivate
 ```
 
+# Writing a plugin
+To write a plugin you need to create a folder in the plugins/ directory that contains your commands. Each file with a
+`.py` extension will be taken as a plugin. The main function should be named exactly like the file.
+
+Example for a file that is in `plugins/my_command/hi.py`:
+```python
+import click
+
+
+@click.command(help="Example")
+def hi():
+    print('Hi!')
+```
+
+Once your plugin has been written you need to re-run:
+```bash
+pip install -e .
+```
+
 
 # Usage
 __WARNING: Make sure that you are in a virtual environment. To verify that, check that your prompt starts with something like `(xyz_lamp) `__
@@ -210,50 +233,4 @@ lamp run mysql -e "CREATE DATABASE my_db;"
 If you need to import a file, read it and pipe the command like below:
 ```bash
 zcat file.sql.gz | lamp run mysql db
-```
-
-## sugarcli commands
-Use `lamp sugarcli` to use sugarcli
-
-Example to get a list of users:
-```bash
-cd /home/user/docker/www/sugarproject
-/home/user/docker/lamp sugarcli user:list --path .
-```
-
-
-## sugar-install
-Use `lamp sugarcrm-install` to install any version of SugarCRM automatically.
-
-The zip files are downloaded from the Workspace "SugarCRM Packages" of our files repository (https://files.inetprocess.fr). You need to define your api key / password in the compose.ini to be allow the command to download the files. Only the packages availables from that repository are installable.
-
-1. Open https://files.inetprocess.fr/api/ecf9a003a50b156a927b06a177bd273f/keystore_generate_auth_token/docker_lamp with your LDAP credentials.
-2. Open compose.ini and add:
-```ini
-; Token = t
-pydio.token = xxxxxx
-; Private = p
-pydio.private = xxxxxx
-```
-
-You must define the following parameters:
-- `-s`, `--sugar-type` : Corporate, Developer, Enterprise, Professional, Ultimate
-- `--version` : for example 7.7.0.0
-- `-p`, `--path` : for example www/MySugar.
-
-You can also add:
-- `--demo-data` : Install demo data
-- `-f`, `--force` : overwrite the existing SugarCRM
-
-Example:
-```bash
-cd /home/user/docker
-lamp sugar-install --type Enterprise --version 6.5.0 --path www/SugarTest --demo_data --force
-```
-
-The output will be for example :
-```bash
-Installation was sucessfully completed.
-SugarCRM has been installed into www/SugarTest
-Login to http://192.168.99.6/SugarTest with admin and GxTHEf1q
 ```

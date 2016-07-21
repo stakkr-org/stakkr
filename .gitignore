@@ -15,8 +15,9 @@
 !/logs/php/xdebug_profiler/.keep
 /mongo
 /mysql
+!/plugins/README.md
+/plugins/*
 /www/*
 !/www/.keep
 
-# virtualenvs
 *_lamp

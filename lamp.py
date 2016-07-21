@@ -1,16 +1,16 @@
 import click
 import os
+import subprocess
 import sys
 
-from lib import lamp
+from click_plugins import with_plugins
+from pkg_resources import iter_entry_points
 
 
 # TODO Utiliser click , virtualenv et setuptools
 # TODO Remplacer certaines options de configuration par @click.option('--uid', envvar='UID') ?
 # TODO Système de plugins avec https://github.com/click-contrib/click-plugins
-sugar_types = ('Corporate', 'Developer', 'Enterprise', 'Professional', 'Ultimate')
-
-
+@with_plugins(iter_entry_points('lamp.plugins'))
 @click.group(help="""Wrapper for Docker Compose that helps
 to start / stop / get the status, etc .... of services.
 
@@ -18,12 +18,14 @@ Based on a configuration file located into conf/""")
 @click.version_option('0.2')
 @click.option('--debug/--no-debug', default=False)
 @click.pass_context
-def cli(ctx, debug):
+def lamp(ctx, debug):
+    from lib import lamp
+
     ctx.obj['DEBUG'] = debug
     ctx.obj['LAMP'] = lamp.Lamp(os.path.dirname(os.path.realpath(__file__)))
 
 
-@cli.command(help="""In case you don't use images but Git repos, run that command
+@lamp.command(help="""In case you don't use images but Git repos, run that command
 to build your images.""")
 @click.pass_context
 def fullstart(ctx):
@@ -33,7 +35,7 @@ def fullstart(ctx):
     print(click.style('Build done\n', fg='green'))
 
 
-@cli.command(help="Start the servers")
+@lamp.command(help="Start the servers")
 @click.pass_context
 def start(ctx):
     print(click.style('Starting your lamp server ...', fg='green'))
@@ -44,7 +46,7 @@ def start(ctx):
     lamp.display_services_ports()
 
 
-@cli.command(help="Stop the servers")
+@lamp.command(help="Stop the servers")
 @click.pass_context
 def stop(ctx):
     print(click.style('Stopping docker-lamp ...', fg='green'))
@@ -53,7 +55,7 @@ def stop(ctx):
     print(click.style('docker-lamp has been stopped.\n', fg='green'))
 
 
-@cli.command(help="Restart the servers")
+@lamp.command(help="Restart the servers")
 @click.pass_context
 def restart(ctx):
     print(click.style('Restarting docker-lamp ...', fg='green'))
@@ -62,14 +64,14 @@ def restart(ctx):
     print(click.style('docker-lamp has been restarted.\n', fg='green'))
 
 
-@cli.command(help="Display the list of running servers")
+@lamp.command(help="Display the list of running servers")
 @click.pass_context
 def status(ctx):
     lamp = ctx.obj['LAMP']
     lamp.status()
 
 
-@cli.command(help="Enter a VM")
+@lamp.command(help="Enter a VM")
 @click.pass_context
 @click.option('--user', help="User's name", type=click.Choice(['www-data', 'root']))
 @click.argument('vm', required=True, type=click.Choice(['mysql', 'php']))
@@ -85,7 +87,7 @@ def console(ctx, vm: str, user: str):
     lamp.console(vm, user)
 
 
-@cli.command(help="Run a command to a VM", context_settings=dict(ignore_unknown_options=True))
+@lamp.command(help="Run a command to a VM", context_settings=dict(ignore_unknown_options=True))
 @click.pass_context
 @click.option('--user', '-u', help="User's name", type=click.Choice(['www-data', 'root']))
 @click.argument('vm', required=True, type=click.Choice(['mysql', 'php']))
@@ -104,31 +106,17 @@ def run(ctx, vm: str, user: str, run_args: tuple):
         lamp.run_mysql(run_args)
 
 
-@cli.command(help="Run a sugarcli command", context_settings=dict(ignore_unknown_options=True))
-@click.pass_context
-@click.argument('run_args', nargs=-1, type=click.UNPROCESSED)
-def sugarcli(ctx, run_args: tuple):
-    run_args = ' '.join(run_args)
+@lamp.command(help='Launch that command if you install a new plugin', name="refresh-plugins")
+def refresh_plugins():
+    from subprocess import DEVNULL
 
-    lamp = ctx.obj['LAMP']
-    lamp.sugarcli(run_args)
-
-
-@cli.command(help='Install SugarCRM', name='sugar-install')
-@click.pass_context
-@click.option('--sugar-type', '-s', required=True, help="SugarCRM Type", type=click.Choice(sugar_types))
-@click.option('--version', required=True, help="SugarCRM Version (Example: 6.5.0)")
-@click.option('--path', '-p', required=True, help="Where to install", type=click.Path())
-@click.option('--demo-data', help="Install demo data", is_flag=True)
-@click.option('--force', '-f', help="Remove an existing installation", is_flag=True)
-def sugar_install(ctx, sugar_type: str, version: str, path: str, demo_data: bool, force: bool):
-    lamp = ctx.obj['LAMP']
-    lamp.sugar_install(sugar_type, version, path, demo_data, force)
+    subprocess.check_call(['pip', 'install', '-e', '.'], stdout=DEVNULL)
+    print(click.style('Plugins refreshed.\n', fg='green'))
 
 
 def main():
     try:
-        cli(obj={})
+        lamp(obj={})
     except Exception as e:
         msg = click.style(r""" ______ _____  _____   ____  _____
 |  ____|  __ \|  __ \ / __ \|  __ \
