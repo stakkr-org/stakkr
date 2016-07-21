@@ -9,7 +9,7 @@
 ; uid=1005
 ; gid=1005
 
-; Set your sugar version to 5.3 or 7.0 (5.6 by default)
+; Set your PHP version from 5.3 to 7.0 (5.6 by default)
 ; php.version=7.0
 ; php.ram=512M
 

@@ -90,7 +90,7 @@ project_name=lamp
 
 PHP Version :
 ```ini
-; Set your sugar version to 5.6 or 7.0 (5.6 by default)
+; Set your PHP version from 5.3 to 7.0 (5.6 by default)
 php.version=7.0
 ```
 
@@ -116,7 +116,7 @@ php.ram=512M
 * If you need to override the PHP configuration you can put a file in `conf/php-fpm-override` with a `.conf` extension. The format is the fpm configuration files one. Example: `php_value[memory_limit] = 127M`.
 
 ## Add binaries
-You can add binaries (such as sugarcli.phar) that will automatically be available from the PATH by putting it to
+You can add binaries (such as phpunit) that will automatically be available from the PATH by putting it to
 `home/www-data/bin/`
 
 
