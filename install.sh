@@ -2,7 +2,7 @@
 set -e
 
 echo "Cleaning the old virtualenv"
-rm -rf *.egg-info 
+rm -rf *.egg-info
 rm -rf ${PWD##*/}_lamp
 
 
