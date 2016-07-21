@@ -68,8 +68,6 @@ cd docker-lamp
 # Configuration
 Copy the file `conf/compose.ini.tpl` to `conf/compose.ini` and set the right Configuration parameters.
 
-As that tool has been made to develop for SugarCRM, there are two sample configuration files that could be useful `conf/compose.ini.sugar6` and `conf/compose.ini.sugar7`.
-
 
 ## Config Parameters
 Everything should be defined in the `[main]` section. **Don't use double quotes to protect your values.**. All values are defined in the compose.ini.tpl.
