@@ -2,7 +2,6 @@ import os
 import sys
 import subprocess
 
-from argparse import ArgumentParser
 from clint.textui import colored, puts, columns
 from lib import docker
 
