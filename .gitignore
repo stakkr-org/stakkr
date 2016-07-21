@@ -17,3 +17,6 @@
 /mysql
 /www/*
 !/www/.keep
+
+# virtualenvs
+*_lamp

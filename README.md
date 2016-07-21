@@ -125,9 +125,23 @@ VM's urls are given once the servers are started.
 * SMTP Server : `maildev` (or `mailcatcher`) with port `25`
 
 
-# Start / Stop the servers
-## Start
-Run `./lamp start` to start the docker environment.
+# Before running any command
+You have to be in a virtual environement:
+```bash
+source ${PWD##*/}_lamp/bin/activate
+```
+
+To leave that environment:
+```bash
+deactivate
+```
+
+
+# Usage
+__WARNING: Make sure that you are in a virtual environment. To verify that, check that your prompt starts with something like `(xyz_lamp) `__
+
+## Start the servers
+Run `lamp start` to start the docker environment.
 
 After the run you'll get something like that (contain all the useful URLs):
 ```bash
@@ -141,55 +155,65 @@ For maildev use : http://172.18.0.6
 For phpMyAdmin use : http://172.18.0.6
 ```
 
-## Stop
-Run `./lamp stop` to stop all applications.
+
+## Stop the servers
+Run `lamp stop` to stop all applications.
+
+
+## Restart the servers
+Run `lamp restart` to restart all applications.
+
 
 ## Status
-Run `./lamp status` to see the list of running VMS
+Run `lamp status` to see the list of running VMS
 
-# Enter a VM
-If you need to run some commands into a VM you can use the console mode by running `./lamp console` with the vm name at the end (only PHP and MySQL are supported).
+
+## Enter a VM
+If you need to run some commands into a VM you can use the console mode by running `lamp console` with the vm name at the end (only PHP and MySQL are supported).
 
 Example to enter the PHP Machine:
 ```bash
-./lamp console php
+lamp console php
 ```
+
+You can also define the user to run the commands with by setting `--user` (choices are _www-data_ or _root_)
+
 **Be careful that all changes are overwritten when you change a parameter in the config and run a start that will update the images (in case the official images have been updated). If you need a definitive change, ask an sysadmin.**
 
 
-# PHP usage
-Use `./lamp run-php -f www/filename.php` to launch PHP scripts like if you were locally. The path is relative so launch everything from your docker project root (the same folder than this file). If you want to run it from a sub-directory, just use the full path of lamp (example: `/home/user/docker/lamp`) and the relative path of your file.
+## PHP usage
+Use `lamp run php -f www/filename.php` to launch PHP scripts like if you were locally. The path is relative so launch everything from your docker project root (the same folder than this file). If you want to run it from a sub-directory, just use the full path of lamp (example: `/home/user/docker/lamp`) and the relative path of your file.
 
 That:
 ```bash
 cd /home/user/docker
-./lamp run-php -f www/filename.php
+lamp run php -f www/filename.php
 ```
 Is equal to:
 ```bash
 cd /home/user/docker/www
-/home/user/docker/lamp run-php -f filename.php
+/home/user/docker/lamp run php -f filename.php
 ```
 
-You can also use that command to run any PHP command (example: `./lamp run-php -v`).
+You can also use that command to run any PHP command (example: `lamp run php -v`). You can also define the user to run the commands with by setting `--user` (choices are _www-data_ or _root_)
 
 
-# MySQL usage
-Use `./lamp run-mysql` to enter the mysql console.
+## MySQL usage
+Use `lamp run mysql` to enter the mysql console.
 
 
 If you want to create a Database (You can also use the phpMyAdmin service of course):
 ```bash
-./lamp run-mysql -e "CREATE DATABASE my_db;"
+lamp run mysql -e "CREATE DATABASE my_db;"
 ```
 
 If you need to import a file, read it and pipe the command like below:
 ```bash
-zcat file.sql.gz | ./lamp run-mysql db
+zcat file.sql.gz | lamp run mysql db
 ```
 
-# SugarCLI usage
-Use `./lamp sugarcli` to use sugarcli
+## sugarcli commands
+Use `lamp sugarcli` to use sugarcli
 
 Example to get a list of users:
 ```bash
@@ -198,8 +222,8 @@ cd /home/user/docker/www/sugarproject
 ```
 
 
-# sugar-install usage
-Use `./lamp sugarcrm-install` to install any version of SugarCRM automatically.
+## sugar-install
+Use `lamp sugarcrm-install` to install any version of SugarCRM automatically.
 
 The zip files are downloaded from the Workspace "SugarCRM Packages" of our files repository (https://files.inetprocess.fr). You need to define your api key / password in the compose.ini to be allow the command to download the files. Only the packages availables from that repository are installable.
 
@@ -213,18 +237,18 @@ pydio.private = xxxxxx
 ```
 
 You must define the following parameters:
-- `--type` : Corporate, Developer, Enterprise, Professional, Ultimate
+- `-s`, `--sugar-type` : Corporate, Developer, Enterprise, Professional, Ultimate
 - `--version` : for example 7.7.0.0
-- `--path` : for example www/MySugar.
+- `-p`, `--path` : for example www/MySugar.
 
 You can also add:
-- `--demo_data` : Install demo data
-- `--force` : overwrite the existing SugarCRM
+- `--demo-data` : Install demo data
+- `-f`, `--force` : overwrite the existing SugarCRM
 
 Example:
 ```bash
 cd /home/user/docker
-./lamp sugar-install --type Enterprise --version 6.5.0 --path www/SugarTest --demo_data --force
+lamp sugar-install --type Enterprise --version 6.5.0 --path www/SugarTest --demo_data --force
 ```
 
 The output will be for example :
