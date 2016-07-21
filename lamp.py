@@ -15,7 +15,7 @@ from pkg_resources import iter_entry_points
 to start / stop / get the status, etc .... of services.
 
 Based on a configuration file located into conf/""")
-@click.version_option('0.2')
+@click.version_option('0.3')
 @click.option('--debug/--no-debug', default=False)
 @click.pass_context
 def lamp(ctx, debug):
