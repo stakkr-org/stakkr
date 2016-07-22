@@ -11,6 +11,7 @@ Docker compose for a lamp stack (with MongoDB or MySQL).
 	- [Add binaries](#add-binaries)
 - [HostNames](#hostnames)
 - [Writing a plugin](#writing-a-plugin)
+- [Install a plugin](#install-a-plugin)
 - [Before running any command](#before-running-any-command)
 - [Usage](#usage)
 	- [Start the servers](#start-the-servers)
@@ -162,11 +163,11 @@ Once your plugin has been written you need to re-run:
 $ lamp refresh-plugins
 ```
 
-## Install Sugarcli as a plugin
-To have sugarcli as an external command you can clone the plugin:
+# Install a plugin
+To install a plugin
 ```bash
 $ cd plugins/
-$ git clone https://github.com/inetprocess/docker-lamp-sugarcli sugarcli
+$ git clone https://github.com/xyz/docker-lamp-myplugin myplugin
 $ cd ..
 $ lamp refresh-plugins
 ```
