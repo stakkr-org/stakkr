@@ -69,7 +69,7 @@ Else::
 
 * Install `autoenv` (Read https://github.com/kennethreitz/autoenv). Example:
 ```bash
-$ pip3 install autoenv click clint
+$ pip3 install autoenv
 ```
 
 * Create the virtualenv and activate it:
@@ -77,7 +77,7 @@ $ pip3 install autoenv click clint
 $ virtualenv -p /usr/bin/python3 ${PWD##*/}_lamp
 $ source ${PWD##*/}_lamp/bin/activate
 $ pip3 install click clint # because it could be needed at that stage
-$ pip3 install -e . > /dev/null
+$ pip3 install -e .
 ```
 
 
