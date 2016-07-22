@@ -37,18 +37,17 @@ $ apt-get purge lxc-docker
 $ apt-get install -y linux-image-extra-$(uname -r) docker-engine
 $ service docker start
 $ usermod -aG docker {USER}
+$ reboot # (or login / logout)
 ```
-
-**Reboot your computer** (or login / logout)
 
 
 # Docker compose installation
 Read https://docs.docker.com/compose/install/ and **take the link to the right version**. Below an example with the 1.6.2:
 ```bash
-sudo su -
-curl -L https://github.com/docker/compose/releases/download/1.6.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
-exit
+$ sudo su -
+$ curl -L https://github.com/docker/compose/releases/download/1.7.1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+$ chmod +x /usr/local/bin/docker-compose
+$ exit
 ```
 
 Verify with `docker-compose --version`
@@ -60,9 +59,9 @@ You can clone the repository as many times as you want as you can have multiple 
 ## Prerequisites
 Once cloned, you can run the `install.sh` script made for Ubuntu (tested on 16.04) that will install the dependencies:
 ```bash
-git clone https://github.com/inetprocess/docker-lamp
-cd docker-lamp
-./install.sh
+$ git clone https://github.com/inetprocess/docker-lamp
+$ cd docker-lamp
+$ ./install.sh
 ```
 
 Else::
