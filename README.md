@@ -3,8 +3,6 @@ Docker compose for a lamp stack (with MongoDB or MySQL).
 
 - [Docker-lamp](#docker-lamp)
 - [Docker installation](#docker-installation)
-- [add the right repo according to the doc. Such as:](#add-the-right-repo-according-to-the-doc-such-as)
-- [deb https://apt.dockerproject.org/repo ubuntu-trusty main](#deb-httpsaptdockerprojectorgrepo-ubuntu-trusty-main)
 - [Docker compose installation](#docker-compose-installation)
 - [Clone the repository](#clone-the-repository)
 - [Configuration](#configuration)
