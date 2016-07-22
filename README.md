@@ -68,7 +68,7 @@ cd docker-lamp
 Else::
 * Install the OS packages for Python3: `pip`, `setuptools` and `virtualenv`
 
-* Install `autoenv`, `click` and `clint` with pip (Read https://github.com/kennethreitz/autoenv). Example:
+* Install `autoenv` (Read https://github.com/kennethreitz/autoenv). Example:
 ```bash
 $ pip3 install autoenv click clint
 ```
@@ -77,6 +77,7 @@ $ pip3 install autoenv click clint
 ```bash
 $ virtualenv -p /usr/bin/python3 ${PWD##*/}_lamp
 $ source ${PWD##*/}_lamp/bin/activate
+$ pip3 install click clint # because it could be needed at that stage
 $ pip3 install -e . > /dev/null
 ```
 
