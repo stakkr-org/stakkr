@@ -22,20 +22,21 @@ Docker compose for a lamp stack (with MongoDB or MySQL).
 	- [MySQL usage](#mysql-usage)
 
 
-# Docker installation
-Read https://docs.docker.com/engine/installation/ubuntulinux/ but in summary (be careful to define the right user instead of {USER}):
-```
-sudo su -
-apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-nano /etc/apt/sources.list.d/docker.list
+# Docker installation (example for Ubuntu)
+Read https://docs.docker.com/engine/installation/ubuntulinux/ but in summary, if you have Ubuntu:
+_(be careful to define the right user instead of {USER})_
+
+```bash
+$ sudo su -
+$ apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 # add the right repo according to the doc. Such as:
-# deb https://apt.dockerproject.org/repo ubuntu-trusty main
-apt-get update
-apt-get purge lxc-docker
-apt-get install linux-image-extra-$(uname -r)
-apt-get install docker-engine
-service docker start
-usermod -aG docker {USER}
+$ source /etc/os-release
+$ echo "deb https://apt.dockerproject.org/repo ubuntu-${UBUNTU_CODENAME} main" > /etc/apt/sources.list.d/docker.list
+$ apt-get update
+$ apt-get purge lxc-docker
+$ apt-get install -y linux-image-extra-$(uname -r) docker-engine
+$ service docker start
+$ usermod -aG docker {USER}
 ```
 
 **Reboot your computer** (or login / logout)
