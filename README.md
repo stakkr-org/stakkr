@@ -163,12 +163,18 @@ Once your plugin has been written you need to re-run:
 $ lamp refresh-plugins
 ```
 
-# Install a plugin
+# Installing a plugin
 To install a plugin
 ```bash
 $ cd plugins/
 $ git clone https://github.com/xyz/docker-lamp-myplugin myplugin
-$ cd ..
+$ lamp refresh-plugins
+```
+
+You can, for example install the sugarcli plugin:
+```bash
+$ cd plugins/
+$ git clone https://github.com/inetprocess/docker-lamp-sugarcli sugarcli
 $ lamp refresh-plugins
 ```
 
