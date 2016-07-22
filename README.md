@@ -23,7 +23,7 @@ Docker compose for a lamp stack (with MongoDB or MySQL).
 
 
 # Docker installation
-Read https://docs.docker.com/engine/installation/ubuntulinux/ but in summary (be careful to define the right user instead of {LDAP USER}):
+Read https://docs.docker.com/engine/installation/ubuntulinux/ but in summary (be careful to define the right user instead of {USER}):
 ```
 sudo su -
 apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
@@ -35,10 +35,10 @@ apt-get purge lxc-docker
 apt-get install linux-image-extra-$(uname -r)
 apt-get install docker-engine
 service docker start
-usermod -aG docker {LDAP USER}
+usermod -aG docker {USER}
 ```
 
-**Reboot your computer**
+**Reboot your computer** (or login / logout)
 
 
 # Docker compose installation
@@ -55,11 +55,28 @@ Verify with `docker-compose --version`
 # Clone the repository
 You can clone the repository as many times as you want as you can have multiple instances at the same time. A good practice is too have one clone for one project or one clone for projects with the same versions of PHP / MySQL / Elasticsearch, etc ...
 
-Once cloned, you need to run the `install.sh` script:
+
+## Prerequisites
+Once cloned, you can run the `install.sh` script made for Ubuntu (tested on 16.04) that will install the dependencies:
 ```bash
-git clone ssh://git@git.inetcrm.com:22824/sysadmin/docker-lamp.git
+git clone https://github.com/inetprocess/docker-lamp
 cd docker-lamp
 ./install.sh
+```
+
+Else::
+* Install the OS packages for Python3: `pip`, `setuptools` and `virtualenv`
+
+* Install `autoenv`, `click` and `clint` with pip (Read https://github.com/kennethreitz/autoenv). Example:
+```bash
+$ pip3 install autoenv click clint
+```
+
+* Create the virtualenv and activate it:
+```bash
+$ virtualenv -p /usr/bin/python3 ${PWD##*/}_lamp
+$ source ${PWD##*/}_lamp/bin/activate
+$ pip3 install -e . > /dev/null
 ```
 
 
@@ -71,7 +88,7 @@ Copy the file `conf/compose.ini.tpl` to `conf/compose.ini` and set the right Con
 Everything should be defined in the `[main]` section. **Don't use double quotes to protect your values.**. All values are defined in the compose.ini.tpl.
 
 ### Services
-You can define the list of services you want to have. Each machin will have the same hostname than their service name. To reach, for example, the elasticsearch server from a web application use `elasticsearch` or to connect to mysql use as the server name `mysql`.
+You can define the list of services you want to have. Each container ("Virtual Machine") will have the same hostname than its service name. To reach, for example, the elasticsearch server from a web application use `elasticsearch` or to connect to mysql use as the server name `mysql`.
 ```ini
 ; Comma separated, valid values: mongo / mongoclient / mysql / mailcatcher / maildev / elasticsearch
 services=mongo,maildev,elasticsearch,mysql
@@ -80,7 +97,7 @@ services=mongo,maildev,elasticsearch,mysql
 A service can launch a post-start script that has the same name with an `.sh` extension (example: `service/mysql.sh`).
 
 ### Other useful parameters
-Machines prefix. It should be different for each project (else the folder name is used).
+Project name (will be used as container's prefix). It should be different for each project.
 ```ini
 ; Change Machines names only if you need it
 project_name=lamp
@@ -142,19 +159,28 @@ def hi():
 
 Once your plugin has been written you need to re-run:
 ```bash
-lamp refresh-plugins
+$ lamp refresh-plugins
+```
+
+## Install Sugarcli as a plugin
+To have sugarcli as an external command you can clone the plugin:
+```bash
+$ cd plugins/
+$ git clone https://github.com/inetprocess/docker-lamp-sugarcli sugarcli
+$ cd ..
+$ lamp refresh-plugins
 ```
 
 
 # Before running any command
-You have to be in a virtual environement:
+You have to be in a virtual environement. If you have autoenv, and if you kept the name of the virtualenv as described above, just enter the directory, and it'll be automatically activated. Else:
 ```bash
-source ${PWD##*/}_lamp/bin/activate
+$ source ${PWD##*/}_lamp/bin/activate
 ```
 
 To leave that environment:
 ```bash
-deactivate
+$ deactivate
 ```
 
 
@@ -182,7 +208,7 @@ Run `lamp stop` to stop all applications.
 
 
 ## Restart the servers
-Run `lamp restart` to restart all applications.
+Run `lamp restart` to restart all applications (_because you changed the config.ini or you overriden the php or mysql configuration_).
 
 
 ## Status
