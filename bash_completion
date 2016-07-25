@@ -1,0 +1,18 @@
+_lamp()
+{
+    local cur=${COMP_WORDS[COMP_CWORD]}
+    local prev=${COMP_WORDS[COMP_CWORD-1]}
+
+    case "$prev" in
+    "lamp")
+        COMPREPLY=( $(compgen -W "console fullstart refresh-plugins restart run start status stop restart" -- $cur) )
+        ;;
+    "run")
+        COMPREPLY=( $(compgen -W "mysql php" -- $cur) )
+        ;;
+    "console")
+        COMPREPLY=( $(compgen -W "mysql php" -- $cur) )
+        ;;
+    esac
+}
+complete -F _lamp lamp
