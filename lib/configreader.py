@@ -8,8 +8,11 @@ class Config():
 
     def read(self):
         if os.path.isfile(self.config_file) is False:
-            msg = 'Error: Missing ' + self.config_file + ' '
-            msg += 'Create it and override values from ' + self.config_file + '.tpl'
+            msg = 'Error: Missing "' + self.config_file + '". '
+            if self.config_file.endswith('.ini'):
+                msg += 'Create it and override values from ' + self.config_file + '.tpl'
+            else:
+                msg += 'Please restore it.'
             raise IOError(msg)
 
         return self.__parse()
