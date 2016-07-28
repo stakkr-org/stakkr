@@ -1,59 +1,24 @@
 #!/usr/bin/python3
-from argparse import ArgumentParser
-from configparser import ConfigParser
-from subprocess import call
 import os
 import sys
 
-
-MAIN_CONFIGURATION_FILE = 'conf/compose.ini'
-
-# TODO Utiliser la librairie configreader
-def read_mainconf_or_exit():
-    """Check if the configuration file exists"""
-    if os.path.isfile(MAIN_CONFIGURATION_FILE) is False:
-        print("Error: Missing " + MAIN_CONFIGURATION_FILE)
-        print("Create it and override values from " + MAIN_CONFIGURATION_FILE + ".tpl")
-        sys.exit(1)
-
-    return parse_config()
+from argparse import ArgumentParser
+from subprocess import call
 
 
-# TODO Utiliser la librairie configreader
-def parse_config():
-    config = ConfigParser()
-    config.read(MAIN_CONFIGURATION_FILE)
-    return config
+def set_env_values_from_conf(conf: list, default_conf: list):
+    for conf_parameter in default_conf:
+        env_variable = 'DOCKER_{}'.format(conf_parameter.replace('.', '_').upper())
+        env_value = conf.get(conf_parameter, default_conf.get(conf_parameter))
+        os.putenv(env_variable, env_value)
 
-
-# TODO Lire les paramètres par défaut de compose.ini.tpl
-# TODO Convertir les str(...) en ''.format(...)
-def set_env_values_from_conf(config: list):
-    os.putenv('DOCKER_UID', str(config.get('uid', os.getuid())))
-    os.putenv('DOCKER_GID', str(config.get('gid', os.getgid())))
-
-    # Services versions and options
-    os.putenv('DOCKER_APACHE_VERSION', str(config.get('apache.version', 2.2)))
-    os.putenv('DOCKER_APACHE_RAM', str(config.get('apache.ram', '512M')))
-
-    os.putenv('DOCKER_PHP_VERSION', str(config.get('php.version', 5.6)))
-    os.putenv('DOCKER_PHP_RAM', str(config.get('php.ram', '512M')))
-
-    os.putenv('DOCKER_MONGO_VERSION', str(config.get('mongo.version', 3.3)))
-
-    os.putenv('DOCKER_MYSQL_VERSION', str(config.get('mysql.version', 5.7)))
-    os.putenv('DOCKER_MYSQL_ROOT_PASSWORD', str(config.get('mysql.root_password', 'changeme')))
-    os.putenv('DOCKER_MYSQL_RAM', str(config.get('mysql.ram', '512M')))
-
-    os.putenv('DOCKER_ELASTICSEARCH_VERSION', str(config.get('elasticsearch.version', 2)))
-    os.putenv('DOCKER_ELASTICSEARCH_RAM', str(config.get('elasticsearch.ram', '512M')))
-
-    os.putenv('DOCKER_PMA_UPLOAD_MAX_FILESIZE', str(config.get('phpmyadmin.upload_max_filesize', '128M')))
+    os.putenv('DOCKER_UID', conf.get('uid', str(os.getuid())))
+    os.putenv('DOCKER_GID', conf.get('gid', str(os.getgid())))
 
 
 def get_cli_arguments():
     arg_parser = ArgumentParser(description="Process the only argument expected (The command)")
-    arg_parser.add_argument('command', help='Command for docker-compose')
+    arg_parser.add_argument('command', help='Command for docker-compose (example: "up" or "ps")')
     args = arg_parser.parse_args()
     command = [args.command]
     if args.command == 'up':
@@ -65,8 +30,7 @@ def get_cli_arguments():
     return command
 
 
-# TODO ajouter ici les post scripts et non dans le ./lamp
-def get_services(services: list):
+def get_services_conf_files(services: list):
     services_files = []
     for service in services:
         service_file = 'service/' + service + '.yml'
@@ -79,17 +43,24 @@ def get_services(services: list):
     return services_files
 
 
-if __name__ == '__main__':
-    config = read_mainconf_or_exit()
+def cli():
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+    from lib.configreader import Config
 
-    main_config = config['main']
-    set_env_values_from_conf(main_config)
+    user_config_main = Config('conf/compose.ini').read()['main']
+    default_config_main = Config('conf/compose.ini.tpl').read()['main']
 
-    project_name = str(main_config.get('project_name', 'inet' + os.path.basename(os.getcwd()).replace('-', '')))
-    cmd = ['docker-compose', '-f', 'docker-compose.yml']
+    set_env_values_from_conf(user_config_main, default_config_main)
+
+    project_name = str(user_config_main.get('project_name', 'inet' + os.path.basename(os.getcwd()).replace('-', '')))
     # get the services from an array that has been filtered to remove the empty values
-    cmd += get_services([service for service in main_config.get('services', '').split(',') if service != ''])
+    services = [service for service in user_config_main.get('services', '').split(',') if service != '']
+    # run docker compose
+    cmd = ['docker-compose', '-f', 'docker-compose.yml']
+    cmd += get_services_conf_files(services)
     cmd += ['-p', project_name] + get_cli_arguments()
     call(cmd)
 
-    # run the post scripts if needed
+
+if __name__ == '__main__':
+    cli()

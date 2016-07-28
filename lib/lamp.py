@@ -14,9 +14,9 @@ class Lamp():
         self.current_dir_relative = self.current_dir[len(self.lamp_base_dir):].lstrip('/')
         os.chdir(self.lamp_base_dir)
 
-        from lib import configreader
-        config_reader = configreader.Config('conf/compose.ini')
-        self.config = config_reader.read()
+        from lib.configreader import Config
+        self.default_config_main = Config('conf/compose.ini.tpl').read()['main']
+        self.user_config_main = Config('conf/compose.ini').read()['main']
 
         self.vms = docker.get_vms()
 
@@ -29,7 +29,7 @@ class Lamp():
 
 
     def run_services_post_scripts(self):
-        services = [service for service in self.config['main'].get('services', '').split(',') if service != '']
+        services = [service for service in self.user_config_main.get('services', '').split(',') if service != '']
         for service in services:
             service_script = 'service/' + service + '.sh'
             vm_name = self.get_vm_item(service, 'name')
@@ -142,7 +142,10 @@ class Lamp():
             raise Exception('mysql does not seem to be in your services or has crashed')
 
         tty = 't' if sys.stdin.isatty() else ''
-        password = self.config['main'].get('mysql.root_password', 'changeme')
+        password = self.user_config_main.get(
+            'mysql.root_password',
+            self.default_config_main.get('mysql.root_password')
+        )
         cmd = ['docker', 'exec', '-u', 'root', '-i' + tty, vm_name]
         cmd += ['mysql', '-u', 'root', '-p' + password, args]
         subprocess.call(cmd, stdin=sys.stdin)
