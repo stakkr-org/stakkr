@@ -178,6 +178,12 @@ $ git clone https://github.com/inetprocess/docker-lamp-sugarcli sugarcli
 $ lamp refresh-plugins
 ```
 
+As well as the composer one:
+```bash
+$ cd plugins/
+$ git clone https://github.com/inetprocess/docker-lamp-composer composer
+$ lamp refresh-plugins
+```
 
 # Before running any command
 You have to be in a virtual environement. If you have autoenv, and if you kept the name of the virtualenv as described above, just enter the directory, and it'll be automatically activated. Else:
