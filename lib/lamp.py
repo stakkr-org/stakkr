@@ -31,7 +31,7 @@ class Lamp():
     def run_services_post_scripts(self):
         services = [service for service in self.user_config_main.get('services', '').split(',') if service != '']
         for service in services:
-            service_script = 'service/' + service + '.sh'
+            service_script = 'services/' + service + '.sh'
             vm_name = self.get_vm_item(service, 'name')
             if os.path.isfile(service_script) is False:
                 continue
@@ -62,7 +62,7 @@ class Lamp():
 
 
     def start(self):
-        subprocess.call(['bin/compose', 'up'])
+        subprocess.call(['bin/compose', 'up', '-d'])
         self.vms = docker.get_vms()
         self.run_services_post_scripts()
 

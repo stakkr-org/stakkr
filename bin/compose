@@ -1,8 +1,10 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
+import click
 import os
 import sys
 
 from argparse import ArgumentParser
+from lib.configreader import Config
 from subprocess import call
 
 
@@ -16,24 +18,10 @@ def set_env_values_from_conf(conf: list, default_conf: list):
     os.putenv('DOCKER_GID', conf.get('gid', str(os.getgid())))
 
 
-def get_cli_arguments():
-    arg_parser = ArgumentParser(description="Process the only argument expected (The command)")
-    arg_parser.add_argument('command', help='Command for docker-compose (example: "up" or "ps")')
-    args = arg_parser.parse_args()
-    command = [args.command]
-    if args.command == 'up':
-        command.append('-d')
-        # for new compose : command.append('--remove-orphans')
-    elif args.command == 'ps':
-        command.append('-q')
-
-    return command
-
-
 def get_services_conf_files(services: list):
     services_files = []
     for service in services:
-        service_file = 'service/' + service + '.yml'
+        service_file = 'services/' + service + '.yml'
         if os.path.isfile(service_file) is False:
             print('Error: service ' + service + ' is invalid')
             sys.exit(1)
@@ -43,22 +31,19 @@ def get_services_conf_files(services: list):
     return services_files
 
 
-def cli():
-    sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-    from lib.configreader import Config
-
+@click.command(help="Run a command with docker-compose", context_settings=dict(ignore_unknown_options=True))
+@click.argument('command', nargs=-1, type=click.UNPROCESSED)
+def cli(command):
     user_config_main = Config('conf/compose.ini').read()['main']
     default_config_main = Config('conf/compose.ini.tpl').read()['main']
-
     set_env_values_from_conf(user_config_main, default_config_main)
 
-    project_name = str(user_config_main.get('project_name', 'inet' + os.path.basename(os.getcwd()).replace('-', '')))
+    project_name = user_config_main.get('project_name', 'inet' + os.path.basename(os.getcwd()).replace('-', ''))
     # get the services from an array that has been filtered to remove the empty values
     services = [service for service in user_config_main.get('services', '').split(',') if service != '']
-    # run docker compose
-    cmd = ['docker-compose', '-f', 'docker-compose.yml']
-    cmd += get_services_conf_files(services)
-    cmd += ['-p', project_name] + get_cli_arguments()
+
+    cmd = ['docker-compose', '-f', 'docker-compose.yml'] + get_services_conf_files(services)
+    cmd += ['-p', project_name] + list(command)
     call(cmd)
 
 
