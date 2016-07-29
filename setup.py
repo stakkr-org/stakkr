@@ -28,7 +28,7 @@ def get_plugins():
 
 
 setup(name='docker-lamp',
-      version='0.3',
+      version='0.5',
       description='A stack based on docker to run PHP Applications',
       url='http://github.com/inetprocess/lamp',
       author='Emmanuel Dyan',

@@ -7,15 +7,13 @@ from click_plugins import with_plugins
 from pkg_resources import iter_entry_points
 
 
-# TODO Utiliser click , virtualenv et setuptools
 # TODO Remplacer certaines options de configuration par @click.option('--uid', envvar='UID') ?
-# TODO Système de plugins avec https://github.com/click-contrib/click-plugins
 @with_plugins(iter_entry_points('lamp.plugins'))
 @click.group(help="""Wrapper for Docker Compose that helps
 to start / stop / get the status, etc .... of services.
 
 Based on a configuration file located into conf/""")
-@click.version_option('0.3')
+@click.version_option('0.5')
 @click.option('--debug/--no-debug', default=False)
 @click.pass_context
 def lamp(ctx, debug):
