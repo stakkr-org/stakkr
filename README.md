@@ -10,7 +10,7 @@ Docker compose for a lamp stack (with MongoDB or MySQL).
 	- [Add binaries](#add-binaries)
 - [HostNames](#hostnames)
 - [Writing a plugin](#writing-a-plugin)
-- [Install a plugin](#install-a-plugin)
+- [Install a plugin](#installing-a-plugin)
 - [Before running any command](#before-running-any-command)
 - [Usage](#usage)
 	- [Start the servers](#start-the-servers)
