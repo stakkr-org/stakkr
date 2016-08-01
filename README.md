@@ -42,7 +42,7 @@ $ reboot # (or login / logout)
 
 
 # Docker compose installation
-Read https://docs.docker.com/compose/install/ and **take the link to the right version**. Below an example with the 1.6.2:
+Read https://docs.docker.com/compose/install/ and **take the link to the right version**. The example below is with the 1.7.1 version.
 ```bash
 $ sudo su -
 $ curl -L https://github.com/docker/compose/releases/download/1.7.1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
