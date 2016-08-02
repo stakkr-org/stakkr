@@ -1,5 +1,6 @@
 [main]
-; Comma separated, valid values: mongo / mongoclient / mysql / mailcatcher (or maildev) / elasticsearch / phpmyadmin
+; Comma separated, valid values: mongo / mongoclient / mysql / mailcatcher (or maildev) /
+;                                elasticsearch / phpmyadmin / xhgui
 ; by default: nothing
 ; services=mongo,mailcatcher,elasticsearch,mysql
 
@@ -35,3 +36,7 @@ mysql.root_password=changeme
 ; Check https://hub.docker.com/_/elasticsearch/
 elasticsearch.version=2
 elasticsearch.ram=512M
+
+
+; Conf for xhgui
+xhgui.ram=512M

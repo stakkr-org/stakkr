@@ -1,7 +1,8 @@
 elasticsearch:
     image: elasticsearch:${DOCKER_ELASTICSEARCH_VERSION}
     mem_limit: ${DOCKER_ELASTICSEARCH_RAM}
-    
+    hostname: elasticsearch
+
 php:
     links:
         - elasticsearch

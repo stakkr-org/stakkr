@@ -1,5 +1,6 @@
 mailcatcher:
     image: tophfr/mailcatcher
+    hostname: mailcatcher
 
 php:
     links:

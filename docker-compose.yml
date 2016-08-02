@@ -8,6 +8,7 @@ data:
 apache:
     image: inetprocess/apache:${DOCKER_APACHE_VERSION}
     mem_limit: ${DOCKER_APACHE_RAM}
+    hostname: apache
     environment:
         PHP_GID: ${DOCKER_GID}
     volumes_from: [data]
@@ -17,6 +18,7 @@ apache:
 
 php:
     image: inetprocess/php:${DOCKER_PHP_VERSION}
+    hostname: php
     mem_limit: ${DOCKER_PHP_RAM}
     environment:
         FPM_UID: ${DOCKER_UID}

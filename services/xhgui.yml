@@ -1,0 +1,10 @@
+xhgui:
+    image: inetprocess/xhgui
+    hostname: xhgui
+    mem_limit: ${DOCKER_XHGUI_RAM}
+    environment:
+        FPM_UID: ${DOCKER_UID}
+        FPM_GID: ${DOCKER_GID}
+
+php:
+    volumes_from: [xhgui]

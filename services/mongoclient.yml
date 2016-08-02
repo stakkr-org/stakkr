@@ -2,3 +2,4 @@ mongoclient:
     image: mongoclient/mongoclient
     links:
         - mongo
+    hostname: mongoclient
