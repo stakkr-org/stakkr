@@ -1,6 +1,5 @@
 xhgui:
-    # image: inetprocess/xhgui
-    image: inetprocesstestxhgui
+    image: inetprocess/xhgui
     hostname: xhgui-ctn
     mem_limit: ${DOCKER_XHGUI_RAM}
     environment:
