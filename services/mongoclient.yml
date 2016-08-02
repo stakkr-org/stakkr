@@ -1,5 +1,5 @@
 mongoclient:
     image: mongoclient/mongoclient
     links:
-        - mongo
+        - mongo-ctn
     hostname: mongoclient

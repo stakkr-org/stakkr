@@ -2,7 +2,7 @@ mongo:
     image: mongo:${DOCKER_MONGO_VERSION}
     volumes:
         - ./mongo:/data/db
-    hostname: mongo
+    hostname: mongo-ctn
 
 php:
     links:

@@ -1,6 +1,6 @@
 mailcatcher:
     image: tophfr/mailcatcher
-    hostname: mailcatcher
+    hostname: mailcatcher-ctn
 
 php:
     links:

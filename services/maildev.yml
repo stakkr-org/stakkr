@@ -1,6 +1,6 @@
 maildev:
     image: djfarrelly/maildev
-    hostname: maildev
+    hostname: maildev-ctn
 
 php:
     links:
