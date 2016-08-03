@@ -26,3 +26,6 @@ remove_images=" ${remove[*]} "
 echo ${remove_images} | xargs -r docker rmi
 echo "Done"
 
+
+echo "Cleaning orphan volumes"
+docker volume rm $(docker volume ls -qf dangling=true)
