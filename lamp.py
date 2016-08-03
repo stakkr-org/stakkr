@@ -61,6 +61,8 @@ def restart(ctx):
     lamp.restart()
     print(click.style('docker-lamp has been restarted.\n', fg='green'))
 
+    lamp.display_services_ports()
+
 
 @lamp.command(help="Display the list of running servers")
 @click.pass_context
