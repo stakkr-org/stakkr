@@ -34,11 +34,12 @@ def fullstart(ctx):
 
 
 @lamp.command(help="Start the servers")
+@click.option('--pull', help="Force a pull of the latest images versions", is_flag=True)
 @click.pass_context
-def start(ctx):
+def start(ctx, pull: bool):
     print(click.style('Starting your lamp server ...', fg='green'))
     lamp = ctx.obj['LAMP']
-    lamp.start()
+    lamp.start(pull)
     print(click.style('lamp server has been started\n', fg='green'))
 
     lamp.display_services_ports()

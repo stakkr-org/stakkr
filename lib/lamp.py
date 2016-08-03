@@ -65,8 +65,11 @@ class Lamp():
             puts('For {} use : http://{}\n'.format(colored.yellow('xhgui'), xhgui_ip))
 
 
-    def start(self):
-        subprocess.call(['bin/compose', 'up', '-d'])
+    def start(self, pull: bool):
+        if pull is True:
+            subprocess.call(['bin/compose', 'pull'])
+
+        subprocess.call(['bin/compose', 'up', '-d', '--remove-orphans'])
         self.vms = docker.get_vms()
         self.run_services_post_scripts()
 
