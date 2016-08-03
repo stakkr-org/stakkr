@@ -17,8 +17,7 @@ apache:
     links: [php]
 
 php:
-    #image: inetprocess/php:${DOCKER_PHP_VERSION}
-    image: inet_php_test
+    image: inetprocess/php:${DOCKER_PHP_VERSION}
     hostname: php-ctn
     mem_limit: ${DOCKER_PHP_RAM}
     environment:
