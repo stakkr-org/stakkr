@@ -1,3 +1,6 @@
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/inetprocess/docker-lamp/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/inetprocess/docker-lamp/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/inetprocess/docker-lamp/badges/build.png?b=master)](https://scrutinizer-ci.com/g/inetprocess/docker-lamp/build-status/master)
+
 # Docker-lamp
 Docker compose for a lamp stack (with MongoDB or MySQL).
 
