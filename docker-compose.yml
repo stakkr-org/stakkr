@@ -10,7 +10,8 @@ apache:
     mem_limit: ${DOCKER_APACHE_RAM}
     hostname: apache-ctn
     environment:
-        PHP_GID: ${DOCKER_GID}
+        APACHE_UID: ${DOCKER_UID}
+        APACHE_GID: ${DOCKER_GID}
     volumes_from: [data]
     volumes:
         - ./logs/apache:/var/log/apache2
