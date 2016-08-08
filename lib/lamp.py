@@ -122,7 +122,7 @@ class Lamp():
             raise Exception('{} does not seem to be in your services or has crashed'.format(vm))
 
         tty = 't' if sys.stdin.isatty() else ''
-        subprocess.call(['docker', 'exec', '-u', user, '-i' + tty, vm_name, 'bash'])
+        subprocess.call(['docker', 'exec', '-u', user, '-i' + tty, vm_name, 'env', 'TERM=xterm', 'bash'])
 
 
     def run_php(self, user: str, args: str):
