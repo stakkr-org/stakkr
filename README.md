@@ -222,6 +222,8 @@ For maildev use : http://172.18.0.6
 For phpMyAdmin use : http://172.18.0.6
 ```
 
+**INFO**: If you want to make sure that you have the latest images, do a `lamp start --pull`
+
 
 ## Stop the servers
 Run `lamp stop` to stop all applications.
