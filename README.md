@@ -1,3 +1,6 @@
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/inetprocess/docker-lamp/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/inetprocess/docker-lamp/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/inetprocess/docker-lamp/badges/build.png?b=master)](https://scrutinizer-ci.com/g/inetprocess/docker-lamp/build-status/master)
+
 # Docker-lamp
 Docker compose for a lamp stack (with MongoDB or MySQL).
 
@@ -91,11 +94,15 @@ Everything should be defined in the `[main]` section. **Don't use double quotes 
 ### Services
 You can define the list of services you want to have. Each container ("Virtual Machine") will have the same hostname than its service name. To reach, for example, the elasticsearch server from a web application use `elasticsearch` or to connect to mysql use as the server name `mysql`.
 ```ini
-; Comma separated, valid values: mongo / mongoclient / mysql / mailcatcher / maildev / elasticsearch
+; Comma separated, valid values: mongo / mongoclient / mysql / mailcatcher / maildev / elasticsearch / xhgui
 services=mongo,maildev,elasticsearch,mysql
 ```
 
 A service can launch a post-start script that has the same name with an `.sh` extension (example: `service/mysql.sh`).
+
+### Special case of xhgui service
+To be able to profile your script, add the service xhgui and read the [documentation](https://github.com/inetprocess/docker-xhgui)
+
 
 ### Other useful parameters
 Project name (will be used as container's prefix). It should be different for each project.
@@ -214,6 +221,8 @@ For maildev use : http://172.18.0.6
 
 For phpMyAdmin use : http://172.18.0.6
 ```
+
+**INFO**: If you want to make sure that you have the latest images, do a `lamp start --pull`
 
 
 ## Stop the servers
