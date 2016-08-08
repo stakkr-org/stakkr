@@ -53,6 +53,14 @@ def stop(ctx):
     lamp.stop()
     print(click.style('docker-lamp has been stopped.\n', fg='green'))
 
+@lamp.command(help="Destroy the servers")
+@click.pass_context
+def destroy(ctx):
+    print(click.style('Destroying docker-lamp ...', fg='red'))
+    lamp = ctx.obj['LAMP']
+    lamp.destroy()
+    print(click.style('docker-lamp has been destroyed.\n', fg='red'))
+
 
 @lamp.command(help="Restart the servers")
 @click.pass_context

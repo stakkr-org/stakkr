@@ -78,6 +78,9 @@ class Lamp():
         self.check_vms_are_running()
         subprocess.call(['bin/compose', 'stop'])
 
+    def destroy(self):
+        subprocess.call(['bin/compose', 'down'])
+
 
     def restart(self):
         self.stop()
