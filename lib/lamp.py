@@ -65,11 +65,15 @@ class Lamp():
             puts('For {} use : http://{}\n'.format(colored.yellow('xhgui'), xhgui_ip))
 
 
-    def start(self, pull: bool):
+    def start(self, pull: bool, recreate: bool):
         if pull is True:
             subprocess.call(['bin/compose', 'pull'])
 
-        subprocess.call(['bin/compose', 'up', '-d', '--remove-orphans'])
+        recreate_param = '--no-recreate'
+        if recreate is True:
+            recreate_param = '--force-recreate'
+
+        subprocess.call(['bin/compose', 'up', '-d', recreate_param, '--remove-orphans'])
         self.vms = docker.get_vms()
         self.run_services_post_scripts()
 
@@ -79,9 +83,9 @@ class Lamp():
         subprocess.call(['bin/compose', 'stop'])
 
 
-    def restart(self):
+    def restart(self, pull: bool, recreate: bool):
         self.stop()
-        self.start()
+        self.start(pull, recreate)
 
 
     def status(self):

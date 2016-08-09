@@ -35,11 +35,12 @@ def fullstart(ctx):
 
 @lamp.command(help="Start the servers")
 @click.option('--pull', help="Force a pull of the latest images versions", is_flag=True)
+@click.option('--recreate', help="Remove images once stopped (useful for some disk space consuming services)", is_flag=True)
 @click.pass_context
-def start(ctx, pull: bool):
+def start(ctx, pull: bool, recreate: bool):
     print(click.style('Starting your lamp server ...', fg='green'))
     lamp = ctx.obj['LAMP']
-    lamp.start(pull)
+    lamp.start(pull, recreate)
     print(click.style('lamp server has been started\n', fg='green'))
 
     lamp.display_services_ports()
@@ -55,11 +56,13 @@ def stop(ctx):
 
 
 @lamp.command(help="Restart the servers")
+@click.option('--pull', help="Force a pull of the latest images versions", is_flag=True)
+@click.option('--recreate', help="Remove images once stopped (useful for some disk space consuming services)", is_flag=True)
 @click.pass_context
-def restart(ctx):
+def restart(ctx, pull: bool, recreate: bool):
     print(click.style('Restarting docker-lamp ...', fg='green'))
     lamp = ctx.obj['LAMP']
-    lamp.restart()
+    lamp.restart(pull, recreate)
     print(click.style('docker-lamp has been restarted.\n', fg='green'))
 
     lamp.display_services_ports()
