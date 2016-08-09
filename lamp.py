@@ -41,26 +41,23 @@ def start(ctx, pull: bool):
     lamp = ctx.obj['LAMP']
     lamp.start(pull)
     print(click.style('lamp server has been started\n', fg='green'))
-
     lamp.display_services_ports()
 
 
 @lamp.command(help="Stop the servers")
+@click.option('--destroy', help="Destroying docker-lamp", is_flag=True)
 @click.pass_context
-def stop(ctx):
-    print(click.style('Stopping docker-lamp ...', fg='green'))
+def stop(ctx, destroy: bool):
     lamp = ctx.obj['LAMP']
-    lamp.stop()
-    print(click.style('docker-lamp has been stopped.\n', fg='green'))
-
-@lamp.command(help="Destroy the servers")
-@click.pass_context
-def destroy(ctx):
-    print(click.style('Destroying docker-lamp ...', fg='red'))
-    lamp = ctx.obj['LAMP']
-    lamp.destroy()
-    print(click.style('docker-lamp has been destroyed.\n', fg='red'))
-
+    if destroy:
+        if click.confirm('Are you sure you want to destroy the containers?'):
+            print(click.style('Destroying docker-lamp ...', fg='red'))
+            lamp.destroy()
+            print(click.style('docker-lamp has been destroyed.\n', fg='red'))
+    else:
+        print(click.style('Stopping docker-lamp ...', fg='green'))
+        lamp.stop()
+        print(click.style('docker-lamp has been stopped.\n', fg='green'))
 
 @lamp.command(help="Restart the servers")
 @click.pass_context
