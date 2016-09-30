@@ -6,6 +6,7 @@ mysql:
     volumes:
         - ./mysql:/var/lib/mysql
         - ./conf/mysql-override:/etc/mysql/conf.d
+        - ./logs/mysql:/var/log/mysql
     hostname: mysql-ctn
 
 php:
