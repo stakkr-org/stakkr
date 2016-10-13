@@ -1,6 +1,6 @@
 [main]
 ; Comma separated, valid values: mongo / mongoclient / mysql / mailcatcher (or maildev) /
-;                                elasticsearch / phpmyadmin / xhgui
+;                                elasticsearch / phpmyadmin / xhgui / bonita
 ; by default: nothing
 ; services=mongo,mailcatcher,elasticsearch,mysql
 
