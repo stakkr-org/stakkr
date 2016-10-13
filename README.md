@@ -23,6 +23,7 @@ Docker compose for a lamp stack (with MongoDB or MySQL).
 	- [Enter a VM](#enter-a-vm)
 	- [PHP usage](#php-usage)
 	- [MySQL usage](#mysql-usage)
+    - [DNS](#dns)
 
 
 # Docker installation (example for Ubuntu)
@@ -280,3 +281,19 @@ If you need to import a file, read it and pipe the command like below:
 ```bash
 zcat file.sql.gz | lamp run mysql db
 ```
+
+## DNS
+If you want to have an access of your container via a hostname and not via its IP (mainly because the IP could change on each start),
+start the dns server that will update your /etc/resolv.conf
+
+To start it :
+```bash
+lamp dns start
+```
+
+To stop it :
+```bash
+lamp dns stop
+```
+
+**Warning**: you can start only one DNS for your host (if you have multiple docker-lamp instances, it'll work for all).

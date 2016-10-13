@@ -93,19 +93,22 @@ class Lamp():
 
     def status(self):
         self.check_vms_are_running()
+
+        dns_started = docker.container_running('docker_dns')
+
         puts(columns(
-            [(colored.green('VM')), 20],
-            [(colored.green('IP')), 15],
-            [(colored.green('Ports')), 30],
-            [(colored.green('Image')), 30],
+            [(colored.green('VM')), 16],
+            [(colored.green('HostName' if dns_started else 'IP')), 38],
+            [(colored.green('Ports')), 25],
+            [(colored.green('Image')), 25],
             [(colored.green('Docker ID')), 15],
             [(colored.green('Docker Name')), 25]
         ))
         puts(columns(
-            ['-'*20, 20],
-            ['-'*15, 15],
-            ['-'*30, 30],
-            ['-'*30, 30],
+            ['-'*16, 16],
+            ['-'*38, 38],
+            ['-'*25, 25],
+            ['-'*25, 25],
             ['-'*15, 15],
             ['-'*25, 25]
         ))
@@ -114,10 +117,10 @@ class Lamp():
                 continue
 
             puts(columns(
-                [vm_data['compose_name'], 20],
-                [vm_data['ip'], 15],
-                [', '.join(vm_data['ports']), 30],
-                [vm_data['image'], 30],
+                [vm_data['compose_name'], 16],
+                ['{}.docker'.format(vm_data['name']) if dns_started else vm_data['ip'], 38],
+                [', '.join(vm_data['ports']), 25],
+                [vm_data['image'], 25],
                 [vm_id[:12], 15],
                 [vm_data['name'], 25]
             ))
