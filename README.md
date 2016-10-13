@@ -95,7 +95,7 @@ Everything should be defined in the `[main]` section. **Don't use double quotes 
 ### Services
 You can define the list of services you want to have. Each container ("Virtual Machine") will have the same hostname than its service name. To reach, for example, the elasticsearch server from a web application use `elasticsearch` or to connect to mysql use as the server name `mysql`.
 ```ini
-; Comma separated, valid values: mongo / mongoclient / mysql / mailcatcher / maildev / elasticsearch / xhgui
+; Comma separated, valid values: mongo / mongoclient / mysql / mailcatcher / maildev / elasticsearch / xhgui / bonita
 services=mongo,maildev,elasticsearch,mysql
 ```
 
