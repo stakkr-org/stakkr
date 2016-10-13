@@ -40,28 +40,31 @@ class Lamp():
 
 
     def display_services_ports(self):
-        puts('To access the {} use : http://{}\n'.format(colored.yellow('web server'), self.get_vm_item('apache', 'ip')))
+        dns_started = docker.container_running('docker_dns')
 
-        mailcatcher_ip = self.get_vm_item('mailcatcher', 'ip')
-        if mailcatcher_ip != '':
+        apache_url = '{}.docker'.format(self.get_vm_item('apache', 'name')) if dns_started is True else self.get_vm_item('apache', 'ip')
+        puts('{} URL : http://{}'.format(colored.yellow('Web server'), apache_url))
+
+        if self.get_vm_item('mailcatcher', 'ip') != '':
+            mailcatcher_ip = '{}.docker'.format(self.get_vm_item('mailcatcher', 'name')) if dns_started is True else self.get_vm_item('mailcatcher', 'ip')
             puts('For {} use : http://{}'.format(colored.yellow('mailcatcher'), mailcatcher_ip))
             puts(' '*16 + 'and in your VM use the server "{}" with the port 25\n'.format(colored.yellow('mailcatcher')))
 
-        maildev_ip = self.get_vm_item('maildev', 'ip')
-        if maildev_ip != '':
+        if self.get_vm_item('maildev', 'ip') != '':
+            maildev_ip = '{}.docker'.format(self.get_vm_item('maildev', 'name')) if dns_started is True else self.get_vm_item('maildev', 'ip')
             puts('For {} use : http://{}'.format(colored.yellow('maildev'), maildev_ip))
             puts(' '*12 + 'and in your VM use the server "{}" with the port 25\n'.format(colored.yellow('maildev')))
 
-        mongoclient_ip = self.get_vm_item('mongoclient', 'ip')
-        if mongoclient_ip != '':
+        if self.get_vm_item('mongoclient', 'ip') != '':
+            mongoclient_ip = '{}.docker'.format(self.get_vm_item('mongoclient', 'name')) if dns_started is True else self.get_vm_item('mongoclient', 'ip')
             puts('For {} use : http://{}:3000\n'.format(colored.yellow('mongoclient'), mongoclient_ip))
 
-        pma_ip = self.get_vm_item('phpmyadmin', 'ip')
-        if pma_ip != '':
+        if self.get_vm_item('phpmyadmin', 'ip') != '':
+            pma_ip = '{}.docker'.format(self.get_vm_item('phpmyadmin', 'name')) if dns_started is True else self.get_vm_item('phpmyadmin', 'ip')
             puts('For {} use : http://{}\n'.format(colored.yellow('phpMyAdmin'), pma_ip))
 
-        xhgui_ip = self.get_vm_item('xhgui', 'ip')
-        if xhgui_ip != '':
+        if self.get_vm_item('xhgui', 'ip') != '':
+            xhgui_ip = '{}.docker'.format(self.get_vm_item('xhgui', 'name')) if dns_started is True else self.get_vm_item('xhgui', 'ip')
             puts('For {} use : http://{}\n'.format(colored.yellow('xhgui'), xhgui_ip))
 
 
@@ -160,6 +163,26 @@ class Lamp():
         cmd = ['docker', 'exec', '-u', 'root', '-i' + tty, vm_name]
         cmd += ['mysql', '-u', 'root', '-p' + password, args]
         subprocess.call(cmd, stdin=sys.stdin)
+
+
+    def manage_dns(self, action: str):
+        dns_started = docker.container_running('docker_dns')
+        if dns_started is True and action == 'start':
+            puts(colored.red("Can't start the dns container as it's already started"))
+            sys.exit(1)
+        elif dns_started is False and action == 'stop':
+            puts(colored.red("Can't stop the dns container as it's not running"))
+            sys.exit(1)
+        elif dns_started is True and action == 'stop':
+            cmd = ['docker', 'stop', 'docker_dns']
+            subprocess.call(cmd)
+            cmd = ['docker', 'rm', 'docker_dns']
+            subprocess.check_output(cmd)
+        elif dns_started is False and action == 'start':
+            cmd = ['docker', 'run', '-d', '--hostname', 'docker-dns', '--name', 'docker_dns']
+            cmd += ['-v', '/var/run/docker.sock:/tmp/docker.sock', '-v', '/etc/resolv.conf:/tmp/resolv.conf']
+            cmd += ['mgood/resolvable']
+            subprocess.check_output(cmd)
 
 
     def get_vm_item(self, compose_name: str, item_name: str):

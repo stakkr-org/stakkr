@@ -29,3 +29,12 @@ def extract_vm_info(vm_id: str):
         return vm_info
     except subprocess.CalledProcessError as e:
         return None
+
+
+def container_running(name: str):
+    cmd = ['docker', 'inspect', '-f', '{{.State.Running}}', name]
+    try:
+        result = subprocess.check_output(cmd, stderr=subprocess.STDOUT).splitlines()[0]
+        return False if result.decode("utf-8", "strict") == 'false' else True
+    except subprocess.CalledProcessError as e:
+        return False

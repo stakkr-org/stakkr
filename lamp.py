@@ -110,6 +110,21 @@ def run(ctx, vm: str, user: str, run_args: tuple):
         lamp.run_mysql(run_args)
 
 
+@lamp.command(help="Manage the DNS forwarder (only one per host)", name="dns")
+@click.argument('action', required=True, type=click.Choice(['start', 'stop']))
+@click.pass_context
+def dns(ctx, action: str):
+    lamp = ctx.obj['LAMP']
+    lamp.manage_dns(action)
+
+    if action == 'start':
+        str_action = 'Starting'
+    elif action == 'stop':
+        str_action = 'Stopping'
+
+    print(click.style('{} the DNS forwarder ...'.format(str_action), fg='green'))
+
+
 @lamp.command(help='Launch that command if you install a new plugin', name="refresh-plugins")
 def refresh_plugins():
     from subprocess import DEVNULL
