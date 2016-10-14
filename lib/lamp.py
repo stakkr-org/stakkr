@@ -178,7 +178,7 @@ class Lamp():
             sys.exit(1)
         elif dns_started is True and action == 'stop':
             cmd = ['docker', 'stop', 'docker_dns']
-            subprocess.call(cmd)
+            subprocess.check_output(cmd)
             cmd = ['docker', 'rm', 'docker_dns']
             subprocess.check_output(cmd)
         elif dns_started is False and action == 'start':
