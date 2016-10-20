@@ -182,10 +182,16 @@ class Lamp():
             cmd = ['docker', 'rm', 'docker_dns']
             subprocess.check_output(cmd)
         elif dns_started is False and action == 'start':
-            cmd = ['docker', 'run', '-d', '--hostname', 'docker-dns', '--name', 'docker_dns']
-            cmd += ['-v', '/var/run/docker.sock:/tmp/docker.sock', '-v', '/etc/resolv.conf:/tmp/resolv.conf']
-            cmd += ['mgood/resolvable']
-            subprocess.check_output(cmd)
+            try:
+                cmd = ['docker', 'run', '-d', '--hostname', 'docker-dns', '--name', 'docker_dns']
+                cmd += ['-v', '/var/run/docker.sock:/tmp/docker.sock', '-v', '/etc/resolv.conf:/tmp/resolv.conf']
+                cmd += ['mgood/resolvable']
+                subprocess.check_output(cmd)
+            except Exception as e:
+                puts(colored.red("Looks like a dns container is present, deleting it. Try to start the dns again."))
+                cmd = ['docker', 'rm', 'docker_dns']
+                subprocess.check_output(cmd)
+                sys.exit(0)
 
 
     def get_vm_item(self, compose_name: str, item_name: str):
