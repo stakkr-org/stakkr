@@ -4,7 +4,7 @@ set -e
 echo "Cleaning the old virtualenv"
 rm -rf *.egg-info
 rm -rf ${PWD##*/}_lamp
-
+rm -rf __pycache__
 
 echo "Installing various python packages"
 sudo apt-get -y install python3-pip python3-setuptools python3-virtualenv virtualenv > /dev/null
