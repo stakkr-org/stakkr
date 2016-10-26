@@ -41,31 +41,29 @@ class Lamp():
 
     def display_services_ports(self):
         dns_started = docker.container_running('docker_dns')
+        services_to_display = {
+            'apache': {'name': 'Web Server', 'url': 'http://{URL}'},
+            'mailcatcher': {'name': 'Mailcatcher (fake SMTP)', 'url': 'http://{URL}', 'extra_port': 25},
+            'maildev': {'name': 'Maildev (Fake SMTP)', 'url': 'http://{URL}', 'extra_port': 25},
+            'mongoclient': {'name': 'MongoDB Client', 'url': 'http://{URL}:3000'},
+            'phpmyadmin': {'name': 'PhpMyAdmin', 'url': 'http://{URL}'},
+            'xhgui': {'name': 'XHGui (PHP Profiling)', 'url': 'http://{URL}'}
+        }
 
-        apache_url = '{}.docker'.format(self.get_vm_item('apache', 'name')) if dns_started is True else self.get_vm_item('apache', 'ip')
-        puts('{} URL : http://{}'.format(colored.yellow('Web server'), apache_url))
+        for service, options in sorted(services_to_display.items()):
+            ip = self.get_vm_item(service, 'ip')
+            if ip == '':
+                continue
+            url = options['url'].replace('{URL}', self.get_vm_item(service, 'ip'))
 
-        if self.get_vm_item('mailcatcher', 'ip') != '':
-            mailcatcher_ip = '{}.docker'.format(self.get_vm_item('mailcatcher', 'name')) if dns_started is True else self.get_vm_item('mailcatcher', 'ip')
-            puts('For {} use : http://{}'.format(colored.yellow('mailcatcher'), mailcatcher_ip))
-            puts(' '*16 + 'and in your VM use the server "{}" with the port 25\n'.format(colored.yellow('mailcatcher')))
+            if dns_started is True:
+                url = options['url'].replace('{URL}', '{}.docker'.format(self.get_vm_item(service, 'name')))
 
-        if self.get_vm_item('maildev', 'ip') != '':
-            maildev_ip = '{}.docker'.format(self.get_vm_item('maildev', 'name')) if dns_started is True else self.get_vm_item('maildev', 'ip')
-            puts('For {} use : http://{}'.format(colored.yellow('maildev'), maildev_ip))
-            puts(' '*12 + 'and in your VM use the server "{}" with the port 25\n'.format(colored.yellow('maildev')))
+            puts('  • For {}'.format(colored.yellow(options['name'])).ljust(55, ' ') + ' : ' + url)
 
-        if self.get_vm_item('mongoclient', 'ip') != '':
-            mongoclient_ip = '{}.docker'.format(self.get_vm_item('mongoclient', 'name')) if dns_started is True else self.get_vm_item('mongoclient', 'ip')
-            puts('For {} use : http://{}:3000\n'.format(colored.yellow('mongoclient'), mongoclient_ip))
-
-        if self.get_vm_item('phpmyadmin', 'ip') != '':
-            pma_ip = '{}.docker'.format(self.get_vm_item('phpmyadmin', 'name')) if dns_started is True else self.get_vm_item('phpmyadmin', 'ip')
-            puts('For {} use : http://{}\n'.format(colored.yellow('phpMyAdmin'), pma_ip))
-
-        if self.get_vm_item('xhgui', 'ip') != '':
-            xhgui_ip = '{}.docker'.format(self.get_vm_item('xhgui', 'name')) if dns_started is True else self.get_vm_item('xhgui', 'ip')
-            puts('For {} use : http://{}\n'.format(colored.yellow('xhgui'), xhgui_ip))
+            if 'extra_port' in options:
+                puts(' '*3 + ' ... and in your VM use the port {}'.format(options['extra_port']))
+        exit(0)
 
 
     def start(self, pull: bool, recreate: bool):
@@ -173,25 +171,32 @@ class Lamp():
         if dns_started is True and action == 'start':
             puts(colored.red("Can't start the dns container as it's already started"))
             sys.exit(1)
-        elif dns_started is False and action == 'stop':
+
+        if dns_started is False and action == 'stop':
             puts(colored.red("Can't stop the dns container as it's not running"))
             sys.exit(1)
-        elif dns_started is True and action == 'stop':
+
+        if dns_started is True and action == 'stop':
             cmd = ['docker', 'stop', 'docker_dns']
             subprocess.check_output(cmd)
             cmd = ['docker', 'rm', 'docker_dns']
             subprocess.check_output(cmd)
         elif dns_started is False and action == 'start':
-            try:
-                cmd = ['docker', 'run', '-d', '--hostname', 'docker-dns', '--name', 'docker_dns']
-                cmd += ['-v', '/var/run/docker.sock:/tmp/docker.sock', '-v', '/etc/resolv.conf:/tmp/resolv.conf']
-                cmd += ['mgood/resolvable']
-                subprocess.check_output(cmd)
-            except Exception as e:
-                puts(colored.red("Looks like a dns container is present, deleting it. Try to start the dns again."))
-                cmd = ['docker', 'rm', 'docker_dns']
-                subprocess.check_output(cmd)
-                sys.exit(0)
+            self.docker_run_dns()
+
+
+    def docker_run_dns(self):
+        try:
+            cmd = ['docker', 'run', '-d', '--hostname', 'docker-dns', '--name', 'docker_dns']
+            cmd += ['-v', '/var/run/docker.sock:/tmp/docker.sock', '-v', '/etc/resolv.conf:/tmp/resolv.conf']
+            cmd += ['mgood/resolvable']
+            subprocess.check_output(cmd)
+        except Exception as e:
+            puts(colored.red("Looks like a dns container is present, deleting it. Try to start the dns again."))
+            cmd = ['docker', 'rm', 'docker_dns']
+            subprocess.check_output(cmd)
+            sys.exit(0)
+
 
 
     def get_vm_item(self, compose_name: str, item_name: str):
