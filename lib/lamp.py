@@ -169,12 +169,8 @@ class Lamp():
 
     def manage_dns(self, action: str):
         dns_started = docker.container_running('docker_dns')
-        if dns_started is True and action == 'start':
-            puts(colored.red("Can't start the dns container as it's already started"))
-            sys.exit(1)
-
-        if dns_started is False and action == 'stop':
-            puts(colored.red("Can't stop the dns container as it's not running"))
+        if (dns_started is True and action == 'start') or (dns_started is False and action == 'stop'):
+            puts(colored.red("Can't {} the dns container as (already done?)".format(action, action)))
             sys.exit(1)
 
         if dns_started is True and action == 'stop':
