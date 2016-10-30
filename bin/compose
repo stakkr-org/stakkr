@@ -14,8 +14,8 @@ def set_env_values_from_conf(conf: list, default_conf: list):
         env_value = conf.get(conf_parameter, default_conf.get(conf_parameter))
         os.putenv(env_variable, env_value)
 
-    os.putenv('DOCKER_UID', conf.get('uid', str(os.getuid())))
-    os.putenv('DOCKER_GID', conf.get('gid', str(os.getgid())))
+    os.putenv('DOCKER_UID', conf.get('uid', str(os.getuid()) if os.name != 'nt' else '1000'))
+    os.putenv('DOCKER_GID', conf.get('gid', str(os.getgid()) if os.name != 'nt' else '1000'))
 
 
 def get_services_conf_files(services: list):

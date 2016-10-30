@@ -17,7 +17,6 @@ class Lamp():
         from lib.configreader import Config
         self.default_config_main = Config('conf/compose.ini.tpl').read()['main']
         self.user_config_main = Config('conf/compose.ini').read()['main']
-
         self.vms = docker.get_vms()
 
         self.running_vms = 0
@@ -29,6 +28,10 @@ class Lamp():
 
 
     def run_services_post_scripts(self):
+        if os.name == 'nt':
+            puts(colored.red('Could not run service post scripts under Windows'))
+            return
+            
         services = [service for service in self.user_config_main.get('services', '').split(',') if service != '']
         for service in services:
             service_script = 'services/' + service + '.sh'
@@ -69,20 +72,20 @@ class Lamp():
 
     def start(self, pull: bool, recreate: bool):
         if pull is True:
-            subprocess.call(['bin/compose', 'pull'])
+            subprocess.call(['python', 'bin/compose', 'pull'])
 
         recreate_param = '--no-recreate'
         if recreate is True:
             recreate_param = '--force-recreate'
 
-        subprocess.call(['bin/compose', 'up', '-d', recreate_param, '--remove-orphans'])
+        subprocess.call(['python', 'bin/compose', 'up', '-d', recreate_param, '--remove-orphans'])
         self.vms = docker.get_vms()
         self.run_services_post_scripts()
 
 
     def stop(self):
         self.check_vms_are_running()
-        subprocess.call(['bin/compose', 'stop'])
+        subprocess.call(['python', 'bin/compose', 'stop'])
 
 
     def restart(self, pull: bool, recreate: bool):
@@ -126,7 +129,7 @@ class Lamp():
 
 
     def fullstart(self):
-        subprocess.call(['bin/compose', 'build'])
+        subprocess.call(['python', 'bin/compose', 'build'])
         self.start()
 
 

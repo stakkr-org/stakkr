@@ -3,8 +3,8 @@ import subprocess
 
 
 def get_vms():
-    cmd = ['bin/compose', 'ps', '-q']
-    vms_id = subprocess.check_output(cmd).splitlines()
+    cmd = ['python', 'bin/compose', 'ps', '-q']
+    vms_id = subprocess.check_output(cmd, shell=True).splitlines()
     vms_info = dict()
     for vm_id in vms_id:
         vm_id = vm_id.decode('utf-8', 'strict')
