@@ -1,8 +1,11 @@
-elasticsearch:
-    image: elasticsearch:${DOCKER_ELASTICSEARCH_VERSION}
-    mem_limit: ${DOCKER_ELASTICSEARCH_RAM}
-    hostname: elasticsearch-ctn
+version: '2'
 
-php:
-    links:
-        - elasticsearch
+services:
+    elasticsearch:
+        image: elasticsearch:${DOCKER_ELASTICSEARCH_VERSION}
+        mem_limit: ${DOCKER_ELASTICSEARCH_RAM}
+        hostname: elasticsearch-ctn
+
+    php:
+        links:
+            - elasticsearch

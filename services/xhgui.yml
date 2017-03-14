@@ -1,15 +1,18 @@
-xhgui:
-    image: inetprocess/xhgui
-    hostname: xhgui-ctn
-    mem_limit: ${DOCKER_XHGUI_RAM}
-    environment:
-        FPM_UID: ${DOCKER_UID}
-        FPM_GID: ${DOCKER_GID}
+version: '2'
 
-php:
-    links:
-        - xhgui
-    volumes_from: [xhgui]
-    # Local configuration to override the one which connects in local
-    volumes:
-        - ./conf/xhgui-override/config.php:/usr/local/src/xhgui/config/config.php
+services:
+    xhgui:
+        image: inetprocess/xhgui
+        hostname: xhgui-ctn
+        mem_limit: ${DOCKER_XHGUI_RAM}
+        environment:
+            FPM_UID: ${DOCKER_UID}
+            FPM_GID: ${DOCKER_GID}
+
+    php:
+        links:
+            - xhgui
+        volumes_from: [xhgui]
+        # Local configuration to override the one which connects in local
+        volumes:
+            - ./conf/xhgui-override/config.php:/usr/local/src/xhgui/config/config.php

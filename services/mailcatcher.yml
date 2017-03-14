@@ -1,8 +1,11 @@
-mailcatcher:
-    image: tophfr/mailcatcher
-    hostname: mailcatcher-ctn
+version: '2'
 
-php:
-    links:
-        - mailcatcher
-        - mailcatcher:smtp
+services:
+    mailcatcher:
+        image: tophfr/mailcatcher
+        hostname: mailcatcher-ctn
+
+    php:
+        links:
+            - mailcatcher
+            - mailcatcher:smtp

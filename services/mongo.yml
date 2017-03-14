@@ -1,9 +1,12 @@
-mongo:
-    image: mongo:${DOCKER_MONGO_VERSION}
-    volumes:
-        - ./mongo:/data/db
-    hostname: mongo
+version: '2'
 
-php:
-    links:
-        - mongo
+services:
+    mongo:
+        image: mongo:${DOCKER_MONGO_VERSION}
+        volumes:
+            - ./mongo:/data/db
+        hostname: mongo
+
+    php:
+        links:
+            - mongo

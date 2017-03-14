@@ -1,8 +1,11 @@
-maildev:
-    image: djfarrelly/maildev
-    hostname: maildev-ctn
+version: '2'
 
-php:
-    links:
-        - maildev
-        - maildev:smtp
+services:
+    maildev:
+        image: djfarrelly/maildev
+        hostname: maildev-ctn
+
+    php:
+        links:
+            - maildev
+            - maildev:smtp
