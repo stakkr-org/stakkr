@@ -1,8 +1,11 @@
-bonita:
-    image: bonita:latest
-    hostname: bonita-ctn
-    links:
-        - mysql:mysql
-php:
-    links:
-        - bonita
+version: '2'
+
+services:
+    bonita:
+        image: bonita:latest
+        hostname: bonita-ctn
+        links:
+            - mysql:mysql
+    php:
+        links:
+            - bonita

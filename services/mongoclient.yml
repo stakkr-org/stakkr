@@ -1,5 +1,8 @@
-mongoclient:
-    image: mongoclient/mongoclient
-    links:
-        - mongo
-    hostname: mongoclient
+version: '2'
+
+services:
+    mongoclient:
+        image: mongoclient/mongoclient
+        links:
+            - mongo
+        hostname: mongoclient

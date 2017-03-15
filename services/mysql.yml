@@ -1,13 +1,16 @@
-mysql:
-    image: mysql:${DOCKER_MYSQL_VERSION}
-    mem_limit: ${DOCKER_MYSQL_RAM}
-    environment:
-        MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_ROOT_PASSWORD}
-    volumes:
-        - ./mysql:/var/lib/mysql
-        - ./conf/mysql-override:/etc/mysql/conf.d
-    hostname: mysql-ctn
+version: '2'
 
-php:
-    links:
-        - mysql
+services:
+    mysql:
+        image: mysql:${DOCKER_MYSQL_VERSION}
+        mem_limit: ${DOCKER_MYSQL_RAM}
+        environment:
+            MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_ROOT_PASSWORD}
+        volumes:
+            - ./mysql:/var/lib/mysql
+            - ./conf/mysql-override:/etc/mysql/conf.d
+        hostname: mysql-ctn
+
+    php:
+        links:
+            - mysql
