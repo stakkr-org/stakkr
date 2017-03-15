@@ -26,12 +26,11 @@ class Lamp():
 
             self.running_vms += 1
 
-
     def run_services_post_scripts(self):
         if os.name == 'nt':
             puts(colored.red('Could not run service post scripts under Windows'))
             return
-            
+
         services = [service for service in self.user_config_main.get('services', '').split(',') if service != '']
         for service in services:
             service_script = 'services/' + service + '.sh'
