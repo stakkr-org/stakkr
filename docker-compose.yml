@@ -1,5 +1,13 @@
 version: '2'
 
+networks:
+  lamp:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: ${DOCKER_SUBNET}
+         gateway: ${DOCKER_GATEWAY}
+
 services:
     data:
         image: inetprocess/data
@@ -7,6 +15,8 @@ services:
         volumes:
             - ./home/www-data:/home/www-data
             - ./www:/var/www
+        networks:
+            - lamp
 
     apache:
         image: inetprocess/apache:${DOCKER_APACHE_VERSION}
@@ -19,6 +29,10 @@ services:
         volumes:
             - ./logs/apache:/var/log/apache2
         links: [php]
+        networks:
+            lamp:
+                aliases:
+                    - apache-ctn
 
     php:
         image: inetprocess/php:${DOCKER_PHP_VERSION}
@@ -32,3 +46,7 @@ services:
             - ./logs/php:/var/log/php
             - ./conf/php-fpm-override:/etc/php5/fpm/user-conf.d
             - ./conf/php-fpm-override:/etc/php/7.0/fpm/user-conf.d
+        networks:
+            lamp:
+                aliases:
+                    - php-ctn

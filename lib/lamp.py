@@ -17,8 +17,8 @@ class Lamp():
         from lib.configreader import Config
         self.default_config_main = Config('conf/compose.ini.tpl').read()['main']
         self.user_config_main = Config('conf/compose.ini').read()['main']
-        self.vms = docker.get_vms()
-
+        self.project_name = self.user_config_main.get('project_name')
+        self.vms = docker.get_vms(self.project_name)
         self.running_vms = 0
         for vm_id, vm_data in self.vms.items():
             if vm_data['running'] is False:
@@ -78,7 +78,7 @@ class Lamp():
             recreate_param = '--force-recreate'
 
         subprocess.call(['python', 'bin/compose', 'up', '-d', recreate_param, '--remove-orphans'])
-        self.vms = docker.get_vms()
+        self.vms = docker.get_vms(self.project_name)
         self.run_services_post_scripts()
 
 
@@ -185,8 +185,9 @@ class Lamp():
 
 
     def docker_run_dns(self):
+        network = self.project_name + '_lamp'
         try:
-            cmd = ['docker', 'run', '-d', '--hostname', 'docker-dns', '--name', 'docker_dns']
+            cmd = ['docker', 'run', '-d', '--hostname', 'docker-dns', '--name', 'docker_dns', '--network', network]
             cmd += ['-v', '/var/run/docker.sock:/tmp/docker.sock', '-v', '/etc/resolv.conf:/tmp/resolv.conf']
             cmd += ['mgood/resolvable']
             subprocess.check_output(cmd, stderr=subprocess.DEVNULL)

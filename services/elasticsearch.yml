@@ -5,7 +5,10 @@ services:
         image: elasticsearch:${DOCKER_ELASTICSEARCH_VERSION}
         mem_limit: ${DOCKER_ELASTICSEARCH_RAM}
         hostname: elasticsearch-ctn
-
+        networks:
+            lamp:
+                aliases:
+                    - elasticsearch-ctn
     php:
         links:
             - elasticsearch

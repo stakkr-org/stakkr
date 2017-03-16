@@ -8,7 +8,10 @@ services:
         environment:
             FPM_UID: ${DOCKER_UID}
             FPM_GID: ${DOCKER_GID}
-
+        networks:
+            lamp:
+                aliases:
+                    - xhgui-ctn
     php:
         links:
             - xhgui

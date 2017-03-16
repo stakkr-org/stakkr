@@ -10,7 +10,10 @@ services:
             - ./mysql:/var/lib/mysql
             - ./conf/mysql-override:/etc/mysql/conf.d
         hostname: mysql-ctn
-
+        networks:
+            lamp:
+                aliases:
+                    - mysql-ctn
     php:
         links:
             - mysql

@@ -6,7 +6,10 @@ services:
         volumes:
             - ./mongo:/data/db
         hostname: mongo
-
+        networks:
+            lamp:
+                aliases:
+                    - mongo-ctn
     php:
         links:
             - mongo

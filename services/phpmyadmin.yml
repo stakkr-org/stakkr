@@ -9,6 +9,10 @@ services:
             PHP_UPLOAD_MAX_FILESIZE: ${DOCKER_PMA_UPLOAD_MAX_FILESIZE}
             #PMA_ARBITRARY: 1
         hostname: phpmyadmin-ctn
+        networks:
+            lamp:
+                aliases:
+                    - phpmyadmin-ctn
 
         links:
             - mysql:db

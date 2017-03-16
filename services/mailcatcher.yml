@@ -4,7 +4,10 @@ services:
     mailcatcher:
         image: tophfr/mailcatcher
         hostname: mailcatcher-ctn
-
+        networks:
+            lamp:
+                aliases:
+                    - mailcatcher-ctn
     php:
         links:
             - mailcatcher

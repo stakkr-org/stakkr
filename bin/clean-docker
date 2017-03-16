@@ -28,5 +28,13 @@ else
     echo "No volume to remove"
 fi
 
+networks=$(docker network ls -q)
+if [ "$networks" != "" ]; then
+    echo "Cleaning networks"
+    docker network rm $networks > /dev/null 2>&1
+else
+    echo "No network to remove"
+fi
+
 
 echo "Done"

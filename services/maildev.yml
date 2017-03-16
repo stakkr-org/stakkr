@@ -4,7 +4,10 @@ services:
     maildev:
         image: djfarrelly/maildev
         hostname: maildev-ctn
-
+        networks:
+            lamp:
+                aliases:
+                    - maildev-ctn
     php:
         links:
             - maildev

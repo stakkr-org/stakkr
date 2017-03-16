@@ -11,6 +11,11 @@
 ; uid=1005
 ; gid=1005
 
+; Set your network
+subnet = 192.168.90.0/24
+gateway = 192.168.90.1
+
+
 ; Set your PHP version from 5.3 to 7.0 (5.6 by default)
 php.version=7.0
 php.ram=512M

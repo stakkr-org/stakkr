@@ -6,3 +6,7 @@ services:
         links:
             - mongo
         hostname: mongoclient
+        networks:
+            lamp:
+                aliases:
+                    - mongoclient-ctn

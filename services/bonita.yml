@@ -6,6 +6,7 @@ services:
         hostname: bonita-ctn
         links:
             - mysql:mysql
-    php:
-        links:
-            - bonita
+        networks:
+            lamp:
+                aliases:
+                    - bonita-ctn
