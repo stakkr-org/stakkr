@@ -16,24 +16,28 @@ def get_vms(project_name: str):
 def extract_vm_info(project_name: str, vm_id: str):
     try:
         result = subprocess.check_output(['docker', 'inspect', vm_id], stderr=subprocess.STDOUT)
-        data = json_loads(result.decode("utf-8", "strict").rstrip('\n'))
-
-        network_settings = {}
-        if '{}_lamp'.format(project_name) in data[0]['NetworkSettings']['Networks']:
-            network_settings = data[0]['NetworkSettings']['Networks']['{}_lamp'.format(project_name)]
+        vm_data = json_loads(result.decode("utf-8", "strict").rstrip('\n'))
 
         vm_info = {
-            'name': data[0]['Name'].lstrip('/'),
-            'compose_name': data[0]['Config']['Labels']['com.docker.compose.service'],
-            'ports': data[0]['Config']['ExposedPorts'].keys() if 'ExposedPorts' in data[0]['Config'] else [],
-            'image': data[0]['Config']['Image'],
-            'ip': network_settings['IPAddress'] if 'IPAddress' in network_settings else '',
-            'running': data[0]['State']['Running'],
+            'name': vm_data[0]['Name'].lstrip('/'),
+            'compose_name': vm_data[0]['Config']['Labels']['com.docker.compose.service'],
+            'ports': vm_data[0]['Config']['ExposedPorts'].keys() if 'ExposedPorts' in vm_data[0]['Config'] else [],
+            'image': vm_data[0]['Config']['Image'],
+            'ip': get_ip_from_networks(project_name, vm_data[0]['NetworkSettings']['Networks']),
+            'running': vm_data[0]['State']['Running'],
         }
 
         return vm_info
     except subprocess.CalledProcessError as e:
         return None
+
+
+def get_ip_from_networks(project_name: str, networks: list):
+    network_settings = {}
+    if '{}_lamp'.format(project_name) in networks:
+        network_settings = networks['{}_lamp'.format(project_name)]
+
+    return network_settings['IPAddress']
 
 
 def container_running(name: str):
