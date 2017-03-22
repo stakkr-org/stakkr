@@ -303,3 +303,4 @@ lamp dns stop
 ```
 
 **Warning**: you can start only one DNS for your host (if you have multiple docker-lamp instances, it'll work for all).
+We recommand to remove dnsmasq from Network Manager and to uninstall `libnss-mdns` (with `sudo apt-get remove libnss-mdns`)
