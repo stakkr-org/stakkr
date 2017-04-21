@@ -149,7 +149,7 @@ def main():
 
         print(msg)
         print("")
-        raise e
+        # raise e
         sys.exit(1)
 
 

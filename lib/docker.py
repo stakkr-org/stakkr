@@ -37,7 +37,7 @@ def get_ip_from_networks(project_name: str, networks: list):
     if '{}_lamp'.format(project_name) in networks:
         network_settings = networks['{}_lamp'.format(project_name)]
 
-    return network_settings['IPAddress']
+    return network_settings['IPAddress'] if 'IPAddress' in network_settings else ''
 
 
 def container_running(name: str):
