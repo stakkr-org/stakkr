@@ -192,9 +192,9 @@ class Lamp():
             cmd += ['mgood/resolvable']
             subprocess.check_output(cmd, stderr=subprocess.DEVNULL)
         except Exception as e:
-            puts(colored.red("Looks like a dns container is present, deleting it. Try to start the dns again."))
-            cmd = ['docker', 'rm', 'docker_dns']
-            subprocess.check_output(cmd)
+            puts(colored.red("Looks like a dns container is present, deleting it and starting it."))
+            subprocess.check_output(['docker', 'rm', 'docker_dns'])
+            self.manage_dns('start')
             sys.exit(0)
 
 
