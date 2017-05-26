@@ -4,6 +4,7 @@
 /conf/compose.ini
 !/conf/mysql-override/mysqld.cnf
 /conf/php-fpm-override/*
+!/conf/php-fpm-override/lamp.conf
 !/conf/php-fpm-override/README
 /conf/mysql-override/*
 /home/www-data/*

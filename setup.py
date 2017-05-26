@@ -40,6 +40,7 @@ setup(
     entry_points='''
         [console_scripts]
         lamp=lamp:main
+        docker-clean=docker_clean:main
         {}
       '''.format(get_plugins()),
     install_requires=[

@@ -95,7 +95,7 @@ Copy the file `conf/compose.ini.tpl` to `conf/compose.ini` and set the right Con
 Everything should be defined in the `[main]` section. **Don't use double quotes to protect your values.**. All values are defined in the compose.ini.tpl.
 
 ### Network
-You can define your own network in compose.ini (`subnet` and `gateway`). If you change that, run `bin/clean-docker` (**Be Careful: it removes orphans images, stopped container, etc ....**).
+You can define your own network in compose.ini (`subnet` and `gateway`). If you change that, run `docker-clean` (**Be Careful: it removes orphans images, stopped container, etc ....**).
 
 
 ### Services
