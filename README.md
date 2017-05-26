@@ -46,15 +46,10 @@ $ reboot # (or login / logout)
 
 
 # Docker compose installation
-Read https://docs.docker.com/compose/install/ and **take the link to the right version**. The example below is with the 1.8.0 version (always update to the latest version).
-```bash
-$ sudo su -
-$ curl -L "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-$ chmod +x /usr/local/bin/docker-compose
-$ exit
-```
+`docker-compose` is now installed in the virtualenv.
 
 Verify with `docker-compose --version`
+
 
 # Clone the repository
 You can clone the repository as many times as you want as you can have multiple instances at the same time. A good practice is too have one clone for one project or one clone for projects with the same versions of PHP / MySQL / Elasticsearch, etc ...
