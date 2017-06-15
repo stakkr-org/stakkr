@@ -203,12 +203,15 @@ class Lamp():
             tty = 't' if sys.stdin.isatty() else ''
             cmd = ['docker', 'run', '-i' + tty, '--rm', '--volume', self.current_dir + ':' + self.current_dir]
             cmd += ['inetprocess/phing', 'phing', '-f', self.current_dir + '/build.xml']
-            result = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            result = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            for line in result.stdout:
+                print(line.decode(), end='')
         except Exception as e:
-            puts(colored.red("Can't run the phing command : {}".format(e.output.decode("utf-8", "strict"))))
+            puts(colored.red("Can't run the phing command : {}".format(e.output.decode())))
             sys.exit(0)
 
-        print(result.decode("utf-8", "strict"))
+        for line in result.stderr:
+            print(colored.red(line.decode()), end='')
 
 
     def get_vm_item(self, compose_name: str, item_name: str):
