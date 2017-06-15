@@ -24,6 +24,7 @@ Docker compose for a lamp stack (with MongoDB or MySQL).
 	- [PHP usage](#php-usage)
 	- [MySQL usage](#mysql-usage)
     - [DNS](#dns)
+    - [Phing](#phing)
 
 
 # Docker installation (example for Ubuntu)
@@ -299,3 +300,7 @@ lamp dns stop
 
 **Warning**: you can start only one DNS for your host (if you have multiple docker-lamp instances, it'll work for all).
 We recommand to remove dnsmasq from Network Manager and to uninstall `libnss-mdns` (with `sudo apt-get remove libnss-mdns`)
+
+
+## Phing
+Runs the phing command on the current directory. You **need a build.xml** file, see the [Phing Documentation](https://www.phing.info/)

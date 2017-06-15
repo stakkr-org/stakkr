@@ -125,6 +125,13 @@ def dns(ctx, action: str):
     print(click.style('{} the DNS forwarder ...'.format(str_action), fg='green'))
 
 
+@lamp.command(help="Run Phing with the build.xml file located in the current directory", name="phing")
+@click.pass_context
+def phing(ctx):
+    lamp = ctx.obj['LAMP']
+    lamp.phing()
+
+
 @lamp.command(help='Launch that command if you install a new plugin', name="refresh-plugins")
 def refresh_plugins():
     from subprocess import DEVNULL
