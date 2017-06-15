@@ -24,9 +24,9 @@ def main(force: bool, verbose: bool):
     remove_networks(force, verbose)
 
     if force is False:
-        print(click.style("\n--force is not set so I won't do anything", fg='red'))
+        print(click.style("\n--force is not set so I won't do anything\n", fg='red'))
 
-    print(click.style('\nDone', fg='green'))
+    print(click.style('Done', fg='green'))
 
 
 def remove_containers(force: bool, verbose: bool):
@@ -47,8 +47,13 @@ def remove_containers(force: bool, verbose: bool):
 
             print('  Removing container {}'.format(container_name.decode("utf-8", "strict")))
 
-        if force is True:
-            subprocess.check_output(['docker', 'rm', container])
+        if force is False:
+            return
+
+        try:
+            subprocess.check_output(['docker', 'rm', container], stderr=subprocess.STDOUT)
+        except Exception as e:
+            print(click.style('Error removing a container: {}'.format(e.output.decode("utf-8", "strict")), fg='red'))
 
 
 def remove_images(force: bool, verbose: bool):
@@ -66,8 +71,13 @@ def remove_images(force: bool, verbose: bool):
         if verbose is True:
             print('  Removing image {}'.format(image))
 
-        if force is True:
-            subprocess.check_output(['docker', 'rmi', image])
+        if force is False:
+            return
+
+        try:
+            subprocess.check_output(['docker', 'rmi', image], stderr=subprocess.STDOUT)
+        except Exception as e:
+            print(click.style('Error removing an image: {}'.format(e.output.decode("utf-8", "strict")), fg='red'))
 
 
 def remove_volumes(force: bool, verbose: bool):
@@ -85,8 +95,13 @@ def remove_volumes(force: bool, verbose: bool):
         if verbose is True:
             print('  Removing volume {}'.format(volume))
 
-        if force is True:
-            subprocess.check_output(['docker', 'volume', 'rm', volume])
+        if force is False:
+            return
+
+        try:
+            subprocess.check_output(['docker', 'volume', 'rm', volume], stderr=subprocess.STDOUT)
+        except Exception as e:
+            print(click.style('Error removing a volume: {}'.format(e.output.decode("utf-8", "strict")), fg='red'))
 
 
 def remove_networks(force: bool, verbose: bool):
@@ -106,8 +121,13 @@ def remove_networks(force: bool, verbose: bool):
             network_name = subprocess.check_output(cmd, stderr=subprocess.STDOUT).splitlines()[0]
             print('  Removing network {}'.format(network_name.decode("utf-8", "strict")))
 
-        if force is True:
-            subprocess.check_output(['docker', 'network', 'rm', network])
+        if force is False:
+            return
+
+        try:
+            subprocess.check_output(['docker', 'network', 'rm', network], stderr=subprocess.STDOUT)
+        except Exception as e:
+            print(click.style('Error removing a network: {}'.format(e.output.decode("utf-8", "strict")), fg='red'))
 
 
 if __name__ == '__main__':
