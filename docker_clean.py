@@ -40,12 +40,12 @@ def remove_containers(force: bool, verbose: bool):
     print('Removing {} exited container(s)'.format(len(containers)))
 
     for container in containers:
-        container = container.decode("utf-8", "strict")
+        container = container.decode()
         if verbose is True:
             cmd = ['docker', 'inspect', '--format={{.Name}}', container]
             container_name = subprocess.check_output(cmd, stderr=subprocess.STDOUT).splitlines()[0]
 
-            print('  Removing container {}'.format(container_name.decode("utf-8", "strict")))
+            print('  Removing container {}'.format(container_name.decode()))
 
         if force is False:
             return
@@ -53,7 +53,7 @@ def remove_containers(force: bool, verbose: bool):
         try:
             subprocess.check_output(['docker', 'rm', container], stderr=subprocess.STDOUT)
         except Exception as e:
-            print(click.style('Error removing a container: {}'.format(e.output.decode("utf-8", "strict")), fg='red'))
+            print(click.style('Error removing a container: {}'.format(e.output.decode()), fg='red'))
 
 
 def remove_images(force: bool, verbose: bool):
@@ -67,7 +67,7 @@ def remove_images(force: bool, verbose: bool):
     print('Removing {} dangling image(s)'.format(len(images)))
 
     for image in images:
-        image = image.decode("utf-8", "strict")
+        image = image.decode()
         if verbose is True:
             print('  Removing image {}'.format(image))
 
@@ -77,7 +77,7 @@ def remove_images(force: bool, verbose: bool):
         try:
             subprocess.check_output(['docker', 'rmi', image], stderr=subprocess.STDOUT)
         except Exception as e:
-            print(click.style('Error removing an image: {}'.format(e.output.decode("utf-8", "strict")), fg='red'))
+            print(click.style('Error removing an image: {}'.format(e.output.decode()), fg='red'))
 
 
 def remove_volumes(force: bool, verbose: bool):
@@ -91,7 +91,7 @@ def remove_volumes(force: bool, verbose: bool):
     print('Removing {} exited volumes(s)'.format(len(volumes)))
 
     for volume in volumes:
-        volume = volume.decode("utf-8", "strict")
+        volume = volume.decode()
         if verbose is True:
             print('  Removing volume {}'.format(volume))
 
@@ -101,7 +101,7 @@ def remove_volumes(force: bool, verbose: bool):
         try:
             subprocess.check_output(['docker', 'volume', 'rm', volume], stderr=subprocess.STDOUT)
         except Exception as e:
-            print(click.style('Error removing a volume: {}'.format(e.output.decode("utf-8", "strict")), fg='red'))
+            print(click.style('Error removing a volume: {}'.format(e.output.decode()), fg='red'))
 
 
 def remove_networks(force: bool, verbose: bool):
@@ -115,11 +115,11 @@ def remove_networks(force: bool, verbose: bool):
     print('Removing {} exited networks(s)'.format(len(networks)))
 
     for network in networks:
-        network = network.decode("utf-8", "strict")
+        network = network.decode()
         if verbose is True:
             cmd = ['docker', 'network', 'inspect', '--format={{.Name}}', network]
             network_name = subprocess.check_output(cmd, stderr=subprocess.STDOUT).splitlines()[0]
-            print('  Removing network {}'.format(network_name.decode("utf-8", "strict")))
+            print('  Removing network {}'.format(network_name.decode()))
 
         if force is False:
             return
@@ -127,7 +127,7 @@ def remove_networks(force: bool, verbose: bool):
         try:
             subprocess.check_output(['docker', 'network', 'rm', network], stderr=subprocess.STDOUT)
         except Exception as e:
-            print(click.style('Error removing a network: {}'.format(e.output.decode("utf-8", "strict")), fg='red'))
+            print(click.style('Error removing a network: {}'.format(e.output.decode()), fg='red'))
 
 
 if __name__ == '__main__':
