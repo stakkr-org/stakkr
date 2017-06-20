@@ -59,7 +59,7 @@ class Lamp():
             url = options['url'].replace('{URL}', self.get_vm_item(service, 'ip'))
 
             if dns_started is True:
-                url = options['url'].replace('{URL}', '{}.docker'.format(self.get_vm_item(service, 'name')))
+                url = options['url'].replace('{URL}', '{}'.format(self.get_vm_item(service, 'name')))
 
             puts('  - For {}'.format(colored.yellow(options['name'])).ljust(55, ' ') + ' : ' + url)
 
