@@ -20,12 +20,8 @@ class Lamp():
         self.user_config_main = Config('conf/compose.ini').read()['main']
         self.project_name = self.user_config_main.get('project_name')
         self.vms = docker.get_vms(self.project_name)
-        self.running_vms = 0
-        for vm_id, vm_data in self.vms.items():
-            if vm_data['running'] is False:
-                continue
+        self.running_vms = sum(True for vm_id, vm_data in self.vms.items() if vm_data['running'] is True)
 
-            self.running_vms += 1
 
     def run_services_post_scripts(self):
         if os.name == 'nt':
@@ -215,5 +211,5 @@ class Lamp():
 
 
     def check_vms_are_running(self):
-        if self.running_vms == 0:
+        if not self.running_vms:
             raise Exception('Have you started your server with the start or fullstart action ?')
