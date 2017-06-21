@@ -303,4 +303,11 @@ We recommand to remove dnsmasq from Network Manager and to uninstall `libnss-mdn
 
 
 ## Phing
-Runs the phing command on the current directory. You **need a build.xml** file, see the [Phing Documentation](https://www.phing.info/)
+Runs the phing command on the current directory. You **need a build.xml** file, see the [Phing Documentation](https://www.phing.info/).
+
+As the report is generated inside a container, the permissions are set to root, to be able to delete the report folder,
+do the following as the final task in your `build.xml`:
+```xml
+    <!-- As we use a docker image, force the right uid / gid at the end on the report directory -->
+    <chmod file="report" mode="0777" />
+```

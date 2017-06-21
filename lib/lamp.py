@@ -119,7 +119,7 @@ class Lamp():
 
             puts(columns(
                 [vm_data['compose_name'], 16],
-                ['{}.docker'.format(vm_data['name']) if dns_started else vm_data['ip'], 38],
+                [vm_data['name'] if dns_started else vm_data['ip'], 38],
                 [', '.join(vm_data['ports']), 25],
                 [vm_data['image'], 25],
                 [vm_id[:12], 15],
