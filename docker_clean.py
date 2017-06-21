@@ -9,7 +9,7 @@ def clean():
     pass
 
 
-@clean.command(help="Restart the servers")
+@clean.command(help="Clean Docker containers, images, volumes and networks that are not in use")
 @click.option('--force', help="Do it", is_flag=True)
 @click.option('--verbose', help="Display more information about what is removed", is_flag=True)
 def main(force: bool, verbose: bool):
