@@ -67,13 +67,14 @@ class Lamp():
 
 
     def start(self, pull: bool, recreate: bool):
+        if self.running_vms:
+            puts(colored.yellow("Docker-Lamp is already started ..."))
+            sys.exit(0)
+
         if pull is True:
             subprocess.call(['python', 'bin/compose', 'pull'])
 
-        recreate_param = '--no-recreate'
-        if recreate is True:
-            recreate_param = '--force-recreate'
-
+        recreate_param = '--force-recreate' if recreate is True else '--no-recreate'
         subprocess.call(['python', 'bin/compose', 'up', '-d', recreate_param, '--remove-orphans'])
         self.vms = docker.get_vms(self.project_name)
         self.run_services_post_scripts()
@@ -85,12 +86,16 @@ class Lamp():
 
 
     def restart(self, pull: bool, recreate: bool):
-        self.stop()
+        if self.running_vms:
+            self.stop()
+
         self.start(pull, recreate)
 
 
     def status(self):
-        self.check_vms_are_running()
+        if not self.running_vms:
+            puts(colored.yellow("Docker-Lamp is currently stopped"))
+            sys.exit(0)
 
         dns_started = docker.container_running('docker_dns')
 
