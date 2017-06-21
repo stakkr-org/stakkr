@@ -176,11 +176,13 @@ class Lamp():
         if dns_started is True and action == 'stop':
             cmd = ['docker', 'stop', 'docker_dns']
             subprocess.check_output(cmd)
+            return
         elif dns_started is False and action == 'start':
             self.docker_run_dns()
-        else:
-            puts(colored.red("Can't {} the dns container as (already done?)".format(action, action)))
-            sys.exit(1)
+            return
+
+        puts(colored.red("Can't {} the dns container as (already done?)".format(action, action)))
+        sys.exit(1)
 
 
     def docker_run_dns(self):
