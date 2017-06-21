@@ -3,6 +3,7 @@ import sys
 import subprocess
 
 from clint.textui import colored, puts, columns
+from lib import command
 from lib import docker
 
 
@@ -171,23 +172,21 @@ class Lamp():
 
     def manage_dns(self, action: str):
         dns_started = docker.container_running('docker_dns')
-        if (dns_started is True and action == 'start') or (dns_started is False and action == 'stop'):
-            puts(colored.red("Can't {} the dns container as (already done?)".format(action, action)))
-            sys.exit(1)
 
         if dns_started is True and action == 'stop':
             cmd = ['docker', 'stop', 'docker_dns']
             subprocess.check_output(cmd)
-            cmd = ['docker', 'rm', 'docker_dns']
-            subprocess.check_output(cmd)
         elif dns_started is False and action == 'start':
             self.docker_run_dns()
+        else:
+            puts(colored.red("Can't {} the dns container as (already done?)".format(action, action)))
+            sys.exit(1)
 
 
     def docker_run_dns(self):
         network = self.project_name + '_lamp'
         try:
-            cmd = ['docker', 'run', '-d', '--hostname', 'docker-dns', '--name', 'docker_dns', '--network', network]
+            cmd = ['docker', 'run', '--rm', '-d', '--hostname', 'docker-dns', '--name', 'docker_dns', '--network', network]
             cmd += ['-v', '/var/run/docker.sock:/tmp/docker.sock', '-v', '/etc/resolv.conf:/tmp/resolv.conf']
             cmd += ['mgood/resolvable']
             subprocess.check_output(cmd, stderr=subprocess.DEVNULL)
@@ -199,19 +198,10 @@ class Lamp():
 
 
     def phing(self):
-        try:
-            tty = 't' if sys.stdin.isatty() else ''
-            cmd = ['docker', 'run', '-i' + tty, '--rm', '--volume', self.current_dir + ':' + self.current_dir]
-            cmd += ['inetprocess/phing', 'phing', '-f', self.current_dir + '/build.xml']
-            result = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            for line in result.stdout:
-                print(line.decode(), end='')
-        except Exception as e:
-            puts(colored.red("Can't run the phing command : {}".format(e.output.decode())))
-            sys.exit(0)
-
-        for line in result.stderr:
-            print(colored.red(line.decode()), end='')
+        tty = 't' if sys.stdin.isatty() else ''
+        cmd = ['docker', 'run', '-i' + tty, '--rm', '--volume', self.current_dir + ':' + self.current_dir]
+        cmd += ['inetprocess/phing', 'phing', '-f', self.current_dir + '/build.xml']
+        command.launch_cmd_displays_output(cmd)
 
 
     def get_vm_item(self, compose_name: str, item_name: str):
