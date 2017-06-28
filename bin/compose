@@ -39,6 +39,7 @@ def cli(command):
     set_env_values_from_conf(user_config_main, default_config_main)
 
     project_name = user_config_main.get('project_name', 'inet' + os.path.basename(os.getcwd()).replace('-', ''))
+    os.putenv('COMPOSE_PROJECT_NAME', project_name)
     # get the services from an array that has been filtered to remove the empty values
     services = [service for service in user_config_main.get('services', '').split(',') if service != '']
 

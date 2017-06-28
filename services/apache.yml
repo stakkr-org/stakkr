@@ -4,7 +4,8 @@ services:
     apache:
         image: inetprocess/apache:${DOCKER_APACHE_VERSION}
         mem_limit: ${DOCKER_APACHE_RAM}
-        hostname: apache-ctn
+        hostname: ${COMPOSE_PROJECT_NAME}_apache_1
+        networks: [lamp]
         links: [php]
         environment:
             APACHE_UID: ${DOCKER_UID}
@@ -12,7 +13,3 @@ services:
         volumes_from: [data]
         volumes:
             - ./logs/apache:/var/log/apache2
-        networks:
-            lamp:
-                aliases:
-                    - apache-ctn

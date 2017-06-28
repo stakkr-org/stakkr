@@ -3,9 +3,6 @@ version: '2'
 services:
     bonita:
         image: bonita:latest
-        hostname: bonita-ctn
+        hostname: ${COMPOSE_PROJECT_NAME}_bonita_1
+        networks: [lamp]
         links: [mysql]
-        networks:
-            lamp:
-                aliases:
-                    - bonita-ctn

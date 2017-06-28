@@ -3,15 +3,12 @@ version: '2'
 services:
     xhgui:
         image: inetprocess/xhgui
-        hostname: xhgui-ctn
+        hostname: ${COMPOSE_PROJECT_NAME}_xhgui_1
+        networks: [lamp]
         mem_limit: ${DOCKER_XHGUI_RAM}
         environment:
             FPM_UID: ${DOCKER_UID}
             FPM_GID: ${DOCKER_GID}
-        networks:
-            lamp:
-                aliases:
-                    - xhgui-ctn
     php:
         volumes_from: [xhgui]
         # Local configuration to override the one which connects in local
