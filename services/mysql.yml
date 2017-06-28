@@ -4,7 +4,8 @@ services:
     mysql:
         image: mysql:${DOCKER_MYSQL_VERSION}
         mem_limit: ${DOCKER_MYSQL_RAM}
-        hostname: ${COMPOSE_PROJECT_NAME}_mysql_1
+        container_name: ${COMPOSE_PROJECT_NAME}_mysql
+        hostname: ${COMPOSE_PROJECT_NAME}_mysql
         networks: [lamp]
         environment:
             MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_ROOT_PASSWORD}

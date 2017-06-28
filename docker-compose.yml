@@ -15,5 +15,6 @@ services:
         volumes:
             - ./home/www-data:/home/www-data
             - ./www:/var/www
-        networks:
-            - lamp
+        networks: [lamp]
+        container_name: ${COMPOSE_PROJECT_NAME}_data
+        hostname: ${COMPOSE_PROJECT_NAME}_data

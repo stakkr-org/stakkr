@@ -3,6 +3,7 @@ version: '2'
 services:
     bonita:
         image: bonita:latest
-        hostname: ${COMPOSE_PROJECT_NAME}_bonita_1
+        container_name: ${COMPOSE_PROJECT_NAME}_bonita
+        hostname: ${COMPOSE_PROJECT_NAME}_bonita
         networks: [lamp]
         links: [mysql]
