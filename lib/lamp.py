@@ -83,6 +83,7 @@ class Lamp():
     def stop(self):
         self.check_vms_are_running()
         subprocess.call(['python', 'bin/compose', 'stop'])
+        self.running_vms = 0
 
 
     def restart(self, pull: bool, recreate: bool):

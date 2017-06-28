@@ -4,8 +4,7 @@ services:
     bonita:
         image: bonita:latest
         hostname: bonita-ctn
-        links:
-            - mysql:mysql
+        links: [mysql]
         networks:
             lamp:
                 aliases:

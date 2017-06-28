@@ -13,8 +13,6 @@ services:
                 aliases:
                     - xhgui-ctn
     php:
-        links:
-            - xhgui
         volumes_from: [xhgui]
         # Local configuration to override the one which connects in local
         volumes:

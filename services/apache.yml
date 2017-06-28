@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+    apache:
+        image: inetprocess/apache:${DOCKER_APACHE_VERSION}
+        mem_limit: ${DOCKER_APACHE_RAM}
+        hostname: apache-ctn
+        links: [php]
+        environment:
+            APACHE_UID: ${DOCKER_UID}
+            APACHE_GID: ${DOCKER_GID}
+        volumes_from: [data]
+        volumes:
+            - ./logs/apache:/var/log/apache2
+        networks:
+            lamp:
+                aliases:
+                    - apache-ctn

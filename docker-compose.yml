@@ -4,9 +4,9 @@ networks:
   lamp:
     driver: bridge
     ipam:
-     config:
-       - subnet: ${DOCKER_SUBNET}
-         gateway: ${DOCKER_GATEWAY}
+        config:
+            - subnet: ${DOCKER_SUBNET}
+              gateway: ${DOCKER_GATEWAY}
 
 services:
     data:
@@ -17,36 +17,3 @@ services:
             - ./www:/var/www
         networks:
             - lamp
-
-    apache:
-        image: inetprocess/apache:${DOCKER_APACHE_VERSION}
-        mem_limit: ${DOCKER_APACHE_RAM}
-        hostname: apache-ctn
-        environment:
-            APACHE_UID: ${DOCKER_UID}
-            APACHE_GID: ${DOCKER_GID}
-        volumes_from: [data]
-        volumes:
-            - ./logs/apache:/var/log/apache2
-        links: [php]
-        networks:
-            lamp:
-                aliases:
-                    - apache-ctn
-
-    php:
-        image: inetprocess/php:${DOCKER_PHP_VERSION}
-        hostname: php-ctn
-        mem_limit: ${DOCKER_PHP_RAM}
-        environment:
-            FPM_UID: ${DOCKER_UID}
-            FPM_GID: ${DOCKER_GID}
-        volumes_from: [data]
-        volumes:
-            - ./logs/php:/var/log/php
-            - ./conf/php-fpm-override:/etc/php5/fpm/user-conf.d
-            - ./conf/php-fpm-override:/etc/php/7.0/fpm/user-conf.d
-        networks:
-            lamp:
-                aliases:
-                    - php-ctn

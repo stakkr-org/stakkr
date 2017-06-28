@@ -8,7 +8,3 @@ services:
             lamp:
                 aliases:
                     - maildev-ctn
-    php:
-        links:
-            - maildev
-            - maildev:smtp

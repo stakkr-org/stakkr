@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+    php:
+        image: inetprocess/php:${DOCKER_PHP_VERSION}
+        hostname: php-ctn
+        mem_limit: ${DOCKER_PHP_RAM}
+        environment:
+            FPM_UID: ${DOCKER_UID}
+            FPM_GID: ${DOCKER_GID}
+            ENVIRONMENT: ${DOCKER_ENVIRONMENT}
+        volumes_from: [data]
+        volumes:
+            - ./logs/php:/var/log/php
+            - ./conf/php-fpm-override:/etc/php5/fpm/user-conf.d
+            - ./conf/php-fpm-override:/etc/php/7.0/fpm/user-conf.d
+        networks:
+            lamp:
+                aliases:
+                    - php-ctn

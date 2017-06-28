@@ -9,6 +9,3 @@ services:
             lamp:
                 aliases:
                     - elasticsearch-ctn
-    php:
-        links:
-            - elasticsearch

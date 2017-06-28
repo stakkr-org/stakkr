@@ -3,13 +3,10 @@ version: '2'
 services:
     mongo:
         image: mongo:${DOCKER_MONGO_VERSION}
+        hostname: mongo-ctn
         volumes:
             - ./mongo:/data/db
-        hostname: mongo
         networks:
             lamp:
                 aliases:
                     - mongo-ctn
-    php:
-        links:
-            - mongo
