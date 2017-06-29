@@ -16,7 +16,7 @@ def get_vms(project_name: str):
 def extract_vm_info(project_name: str, vm_id: str):
     try:
         result = subprocess.check_output(['docker', 'inspect', vm_id], stderr=subprocess.STDOUT)
-        vm_data = json_loads(result.decode("utf-8", "strict").rstrip('\n'))
+        vm_data = json_loads(result.decode().rstrip('\n'))
 
         vm_info = {
             'name': vm_data[0]['Name'].lstrip('/'),
@@ -44,6 +44,43 @@ def container_running(name: str):
     cmd = ['docker', 'inspect', '-f', '{{.State.Running}}', name]
     try:
         result = subprocess.check_output(cmd, stderr=subprocess.STDOUT).splitlines()[0]
-        return False if result.decode("utf-8", "strict") == 'false' else True
+        return False if result.decode() == 'false' else True
     except subprocess.CalledProcessError as e:
         return False
+
+
+def add_container_to_network(container: str, network: str):
+    if container_in_network(container, network) is True:
+        return False
+
+    cmd = ['docker', 'network', 'connect', network, container]
+    subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    return True
+
+
+def create_network(network: str):
+    if network_exists(network) is True:
+        return False
+
+    cmd = ['docker', 'network', 'create', '--driver', 'bridge', network]
+    subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    return True
+
+
+def container_in_network(container: str, expected_network: str):
+    result = subprocess.check_output(['docker', 'inspect', container], stderr=subprocess.STDOUT)
+    vm_data = json_loads(result.decode().rstrip('\n'))
+    for connected_network in vm_data[0]['NetworkSettings']['Networks'].keys():
+        if connected_network == expected_network:
+            return True
+
+    return False
+
+
+def network_exists(network: str):
+    result = subprocess.check_output(['docker', 'network', 'ls', '--filter', 'name=dns'], stderr=subprocess.STDOUT)
+    networks_list = result.decode().splitlines()
+    if len(networks_list) > 1:
+        return True
+
+    return False

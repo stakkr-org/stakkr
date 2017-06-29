@@ -1,12 +1,12 @@
 version: '2'
 
 networks:
-  lamp:
-    driver: bridge
-    ipam:
-        config:
-            - subnet: ${DOCKER_SUBNET}
-              gateway: ${DOCKER_GATEWAY}
+    lamp:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: ${DOCKER_SUBNET}
+                  gateway: ${DOCKER_GATEWAY}
 
 services:
     data:

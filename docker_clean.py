@@ -1,3 +1,6 @@
+# Clean unused containers, images, volumes and networks
+# That saves a lot of space ... should be removed later by "docker ***** prune"
+
 import click
 import subprocess
 import sys

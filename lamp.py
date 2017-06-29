@@ -115,7 +115,6 @@ def run(ctx, vm: str, user: str, run_args: tuple):
 @click.pass_context
 def dns(ctx, action: str):
     lamp = ctx.obj['LAMP']
-    lamp.manage_dns(action)
 
     if action == 'start':
         str_action = 'Starting'
@@ -123,6 +122,7 @@ def dns(ctx, action: str):
         str_action = 'Stopping'
 
     print(click.style('{} the DNS forwarder ...'.format(str_action), fg='green'))
+    lamp.manage_dns(action)
 
 
 @lamp.command(help="Run Phing with the build.xml file located in the current directory", name="phing")

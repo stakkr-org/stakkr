@@ -15,6 +15,8 @@ class Lamp():
         self.current_dir_relative = self.current_dir[len(self.lamp_base_dir):].lstrip('/')
         os.chdir(self.lamp_base_dir)
 
+        self.dns_container_name = 'docker_dns'
+
         from lib.configreader import Config
         self.default_config_main = Config('conf/compose.ini.tpl').read()['main']
         self.user_config_main = Config('conf/compose.ini').read()['main']
@@ -173,7 +175,7 @@ class Lamp():
 
 
     def manage_dns(self, action: str):
-        dns_started = docker.container_running('docker_dns')
+        dns_started = docker.container_running(self.dns_container_name)
 
         if dns_started is True and action == 'stop':
             cmd = ['docker', 'stop', 'docker_dns']
@@ -183,22 +185,21 @@ class Lamp():
             self.docker_run_dns()
             return
 
-        puts(colored.red("Can't {} the dns container as (already done?)".format(action, action)))
+        puts(colored.red("Can't {} the dns container as (already done?)".format(action)))
         sys.exit(1)
 
 
     def docker_run_dns(self):
-        network = self.project_name + '_lamp'
         try:
-            cmd = ['docker', 'run', '--rm', '-d', '--hostname', 'docker-dns', '--name', 'docker_dns', '--network', network]
+            docker.create_network('dns')
+            cmd = ['docker', 'run', '--rm', '-d', '--hostname', 'docker-dns', '--name', self.dns_container_name]
+            cmd += ['--network', self.project_name + '_lamp']
             cmd += ['-v', '/var/run/docker.sock:/tmp/docker.sock', '-v', '/etc/resolv.conf:/tmp/resolv.conf']
             cmd += ['mgood/resolvable']
-            subprocess.check_output(cmd, stderr=subprocess.DEVNULL)
+            subprocess.check_output(cmd)
         except Exception as e:
-            puts(colored.red("Looks like a dns container is present, deleting it and starting it."))
-            subprocess.check_output(['docker', 'rm', 'docker_dns'])
-            self.manage_dns('start')
-            sys.exit(0)
+            puts(colored.red("Can't start the DNS, maybe it exists already ?"))
+            sys.exit(1)
 
 
     def phing(self):
