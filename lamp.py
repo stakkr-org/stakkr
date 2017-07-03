@@ -131,7 +131,7 @@ def refresh_plugins():
 
     subprocess.check_call(['pip', 'install', '-e', '.'], stdout=DEVNULL)
     print(click.style('Plugins refreshed.\n', fg='green'))
-
+    
 
 def main():
     try:

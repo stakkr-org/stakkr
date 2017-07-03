@@ -1,3 +1,14 @@
+# v1.1
+* Services apache and php are not required anymore
+* Cleaned all services yaml for useless parameters
+* We can now override services from plugins
+
+# v1.0.1
+* DNS displays the right hostname
+
+# v1.0
+* Stable release: Used for a long time, and it's stable !
+
 # v0.9
 * Minor issue with DNSes (docker error message was displayed)
 

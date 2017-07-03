@@ -29,7 +29,7 @@ def get_plugins():
 
 setup(
     name='docker-lamp',
-    version='0.5',
+    version='1.1',
     description='A stack based on docker to run PHP Applications',
     url='http://github.com/inetprocess/lamp',
     author='Emmanuel Dyan',
@@ -40,7 +40,7 @@ setup(
     entry_points='''
         [console_scripts]
         lamp=lamp:main
-        docker-clean=docker_clean:main
+        docker-clean=bin.docker_clean:main
         {}
       '''.format(get_plugins()),
     install_requires=[

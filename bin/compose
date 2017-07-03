@@ -19,16 +19,31 @@ def set_env_values_from_conf(conf: list, default_conf: list):
 
 
 def get_services_conf_files(services: list):
-    services_files = []
+    # Get Base services
+    services_files = dict()
     for service in services:
         service_file = 'services/' + service + '.yml'
         if os.path.isfile(service_file) is False:
             print('Error: service ' + service + ' is invalid')
             sys.exit(1)
-        services_files.append('-f')
-        services_files.append(service_file)
+        services_files[service] = service_file
 
     return services_files
+
+
+def get_services_conf_from_plugins(services: list):
+    from pkg_resources import iter_entry_points
+
+    # Override services with plugins
+    for entry in iter_entry_points('lamp.plugins'):
+        services_dir = 'plugins/' + str(entry).split('.')[1] + '/services'
+        if os.path.isdir(services_dir) is False:
+            continue
+        conf_files = [service for service in os.listdir(services_dir) if service.endswith('.yml')]
+        for conf_file in conf_files:
+            services[conf_file[:-4]] = services_dir + '/' + conf_file
+
+    return services
 
 
 @click.command(help="Run a command with docker-compose", context_settings=dict(ignore_unknown_options=True))
@@ -43,8 +58,17 @@ def cli(command):
     # get the services from an array that has been filtered to remove the empty values
     services = [service for service in user_config_main.get('services', '').split(',') if service != '']
 
-    cmd = ['docker-compose', '-f', 'docker-compose.yml'] + get_services_conf_files(services)
+    services = get_services_conf_files(services)
+    services = get_services_conf_from_plugins(services)
+
+    services_files = []
+    for service in services.values():
+        services_files.append('-f')
+        services_files.append(service)
+
+    cmd = ['docker-compose', '-f', 'docker-compose.yml'] + services_files
     cmd += ['-p', project_name] + list(command)
+
     call(cmd)
 
 
