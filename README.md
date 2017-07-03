@@ -12,8 +12,10 @@ Docker compose for a lamp stack (with MongoDB or MySQL).
 - [Files location](#files-location)
 	- [Add binaries](#add-binaries)
 - [HostNames](#hostnames)
-- [Writing a plugin](#writing-a-plugin)
-- [Install a plugin](#installing-a-plugin)
+- [Plugins](#plugins)
+	- [Writing a plugin](#writing-a-plugin)
+	- [Install a plugin](#installing-a-plugin)
+	- [List of existing plugins](#list-of-existing-plugins)
 - [Before running any command](#before-running-any-command)
 - [Usage](#usage)
 	- [Start the servers](#start-the-servers)
@@ -153,8 +155,8 @@ VM's urls are given once the servers are started.
 * Mongo Server : `mongo`
 * SMTP Server : `maildev` (or `mailcatcher`) with port `25`
 
-
-# Writing a plugin
+# Plugins
+## Writing a plugin
 To write a plugin you need to create a folder in the plugins/ directory that contains your commands. Each file with a
 `.py` extension will be taken as a plugin. The main function should be named exactly like the file.
 
@@ -173,7 +175,7 @@ Once your plugin has been written you need to re-run:
 $ lamp refresh-plugins
 ```
 
-# Installing a plugin
+## Installing a plugin
 To install a plugin
 ```bash
 $ cd plugins/
@@ -194,6 +196,12 @@ $ cd plugins/
 $ git clone https://github.com/inetprocess/docker-lamp-composer composer
 $ lamp refresh-plugins
 ```
+
+## List of existing plugins
+* [docker-lamp-composer](https://github.com/inetprocess/docker-lamp-composer) : Download and run composer
+* [docker-lamp-sugarcli](https://github.com/inetprocess/docker-lamp-sugarcli) : Download and run sugarcli
+* [docker-lamp-phing](https://github.com/inetprocess/docker-lamp-phing) : Download and run Phing
+
 
 # Before running any command
 You have to be in a virtual environement. If you have autoenv, and if you kept the name of the virtualenv as described above, just enter the directory, and it'll be automatically activated. Else:
@@ -298,18 +306,9 @@ To stop it :
 lamp dns stop
 ```
 
-**Warning**: you can start only one DNS for your host (if you have multiple docker-lamp instances, it'll work for all).
-We recommand to remove dnsmasq from Network Manager and to uninstall `libnss-mdns` (with `sudo apt-get remove libnss-mdns`)
+**Warning**: you can start only one DNS for one instance of docker-lamp. It looks like a limitation of *mgood/resolve* that is not able to handle multiple networks. 
+
+We also recommand to remove dnsmasq from Network Manager and to uninstall `libnss-mdns` (with `sudo apt-get remove libnss-mdns`)
 
 
-## Phing
-Plugin to install : https://github.com/inetprocess/docker-lamp-phing
 
-Runs the phing command on the current directory. You **need a build.xml** file, see the [Phing Documentation](https://www.phing.info/).
-
-As the report is generated inside a container, the permissions are set to root, to be able to delete the report folder,
-do the following as the final task in your `build.xml`:
-```xml
-    <!-- As we use a docker image, force the right uid / gid at the end on the report directory -->
-    <chmod file="report" mode="0777" />
-```
