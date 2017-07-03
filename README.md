@@ -16,6 +16,7 @@ Docker compose for a lamp stack (with MongoDB or MySQL).
 	- [Writing a plugin](#writing-a-plugin)
 	- [Install a plugin](#installing-a-plugin)
 	- [List of existing plugins](#list-of-existing-plugins)
+    - [Define services in your plugins](#define-services-in-your-plugins)
 - [Before running any command](#before-running-any-command)
 - [Usage](#usage)
 	- [Start the servers](#start-the-servers)
