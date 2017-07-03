@@ -202,13 +202,6 @@ class Lamp():
             sys.exit(1)
 
 
-    def phing(self):
-        tty = 't' if sys.stdin.isatty() else ''
-        cmd = ['docker', 'run', '-i' + tty, '--rm', '--volume', self.current_dir + ':' + self.current_dir]
-        cmd += ['inetprocess/phing', 'phing', '-f', self.current_dir + '/build.xml']
-        command.launch_cmd_displays_output(cmd)
-
-
     def get_vm_item(self, compose_name: str, item_name: str):
         for vm_id, vm_data in self.vms.items():
             if vm_data['compose_name'] == compose_name:

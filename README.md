@@ -303,6 +303,8 @@ We recommand to remove dnsmasq from Network Manager and to uninstall `libnss-mdn
 
 
 ## Phing
+Plugin to install : https://github.com/inetprocess/docker-lamp-phing
+
 Runs the phing command on the current directory. You **need a build.xml** file, see the [Phing Documentation](https://www.phing.info/).
 
 As the report is generated inside a container, the permissions are set to root, to be able to delete the report folder,
