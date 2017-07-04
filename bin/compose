@@ -71,11 +71,8 @@ def cli(command):
     # Services available from base and plugins
     available_services = get_available_services()
     available_services = add_available_services_from_plugins(available_services)
-
     services = get_enabled_services(configured_services, available_services)
 
-    print(services)
-    exit(0)
     cmd = ['docker-compose', '-f', 'docker-compose.yml'] + services_files
     cmd += ['-p', project_name] + list(command)
 
