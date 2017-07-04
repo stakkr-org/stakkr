@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Clean unused containers, images, volumes and networks
 # That saves a lot of space ... should be removed later by "docker ***** prune"
 
@@ -6,16 +7,10 @@ import subprocess
 import sys
 
 
-@click.group(help="Command to clean unused docker images, containers, etc ...")
-@click.version_option('0.1')
-def clean():
-    pass
-
-
-@clean.command(help="Clean Docker containers, images, volumes and networks that are not in use")
+@click.command(help="Clean Docker containers, images, volumes and networks that are not in use")
 @click.option('--force', help="Do it", is_flag=True)
 @click.option('--verbose', help="Display more information about what is removed", is_flag=True)
-def main(force: bool, verbose: bool):
+def clean(force: bool, verbose: bool):
     print(click.style('Clean Docker stopped containers, images, volumes and networks', fg='green'))
 
     remove_containers(force, verbose)

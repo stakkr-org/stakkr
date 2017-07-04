@@ -11,9 +11,10 @@ sudo pip3 install -q --upgrade pip > /dev/null
 sudo pip3 install -q autoenv > /dev/null
 echo ""
 
-echo "If you want to automatically load the current virtualenvironment, check that you have something like "
-echo "'echo \"source `which activate.sh`\"' in your ~/.bashrc"
-echo "then run 'source ~/.bashrc'"
+echo "If you want to automatically load the current virtualenvironment, check that you have in your .bashrc something like :"
+echo '    echo "source `which activate.sh`"'
+echo "then run "
+echo "    # source ~/.bashrc"
 echo ""
 
 echo "Creating the virtualenv"
@@ -24,5 +25,5 @@ pip3 install -e . > /dev/null
 echo ""
 
 echo "Deactivate and reactivate the virtualenv again by launching:"
-echo "deactivate && source \${PWD##*/}_lamp/bin/activate"
+echo "   # deactivate ; source \${PWD##*/}_lamp/bin/activate"
 
