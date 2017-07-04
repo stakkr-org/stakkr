@@ -100,8 +100,8 @@ You can define your own network in compose.ini (`subnet` and `gateway`). If you 
 ### Services
 You can define the list of services you want to have. Each container ("Virtual Machine") will have the same hostname than its service name. To reach, for example, the elasticsearch server from a web application use `elasticsearch` or to connect to mysql use as the server name `mysql`.
 ```ini
-; Comma separated, valid values: mongo / mongoclient / mysql / mailcatcher / maildev / elasticsearch / xhgui / bonita
-services=mongo,maildev,elasticsearch,mysql
+; Comma separated, valid values: apache / bonita / elasticsearch / mailcatcher / maildev / mongo / mysql / php / phpmyadmin / xhgui
+services=apache,php,mysql
 ```
 
 A service can launch a post-start script that has the same name with an `.sh` extension (example: `service/mysql.sh`).
