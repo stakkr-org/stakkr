@@ -1,8 +1,8 @@
 [main]
-; Comma separated, valid values: apache / php / mongo / mysql / mailcatcher (or maildev) /
-;                                elasticsearch / phpmyadmin / xhgui / bonita
+; Comma separated, valid values: apache / bonita / elasticsearch / mailcatcher / maildev / 
+;                                mongo / mysql / php / phpmyadmin / xhgui
 ; by default: nothing
-; services=apache,php,mongo,mailcatcher,elasticsearch,mysql
+; services=apache,php,mysql
 
 ; Change Machines prefix
 ; project_name=lamp
