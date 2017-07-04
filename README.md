@@ -202,6 +202,8 @@ $ lamp refresh-plugins
 By creating a `services/` directory you can either override or create new services with your plugins.
 Example: `plugins/myplugin/services/mysql.yml` will override the default mysql service while `plugins/myplugin/services/nginx.yml` will define a new service.
 
+Each service added by a plugin must be added in `compose.ini` to be started.
+
 
 ## List of existing plugins
 * [docker-lamp-composer](https://github.com/inetprocess/docker-lamp-composer) : Download and run composer
