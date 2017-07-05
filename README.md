@@ -12,6 +12,7 @@ Docker compose for a lamp stack (with MongoDB or MySQL).
 	- [Add binaries](#add-binaries)
 - [Before running any command](#before-running-any-command)
 - [Usage](#usage)
+	- [Get Help](#get-help)
 	- [Start the servers](#start-the-servers)
 	- [Stop the servers](#stop-the-servers)
 	- [Restart the servers](#restart-the-servers)
@@ -141,6 +142,10 @@ $ deactivate
 # Usage
 __WARNING: Make sure that you are in a virtual environment. To verify that, check that your prompt starts with something like `(xyz_lamp) `__
 
+## Get Help
+To get a list of commands do `lamp --help` and to get help for a specific command : `lamp start --help`
+
+
 ## Start the servers
 Run `lamp start` to start the docker environment.
 
@@ -156,7 +161,7 @@ For maildev use : http://172.18.0.6
 For phpMyAdmin use : http://172.18.0.6
 ```
 
-**INFO**: If you want to make sure that you have the latest images, do a `lamp start --pull`
+**INFO**: If you want to make sure that you have the latest images, do a `lamp start --pull --recreate` 
 
 
 ## Stop the servers
