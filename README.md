@@ -75,13 +75,13 @@ You can define your own network in compose.ini (`subnet` and `gateway`). If you 
 
 
 ### Services
-You can define the list of services you want to have. Each container ("Virtual Machine") will have the same hostname than its service name. To reach, for example, the elasticsearch server from a web application use `elasticsearch` or to connect to mysql use as the server name `mysql`.
+You can define the list of services you want to have. Each service consists of a yml file in the `services/` directory. Each container ("Virtual Machine") will have a hostname composed of the project name and the service name. To reach, for example, the elasticsearch server from a web application, and if your `project_name = lamp` use `lamp_elasticsearch` or to connect to mysql use `lamp_mysql`. The service names also works (_elasticsearch_ and _mysql_)
 ```ini
-; Comma separated, valid values: apache / bonita / elasticsearch / mailcatcher / maildev / mongo / mysql / php / phpmyadmin / xhgui
+; Comma separated list of services to start, valid values: apache / bonita / elasticsearch / mailcatcher / maildev / mongo / mysql / php / phpmyadmin / xhgui
 services=apache,php,mysql
 ```
 
-A service can launch a post-start script that has the same name with an `.sh` extension (example: `service/mysql.sh`).
+A service can launch a post-start script that has the same name with an `.sh` extension (example: `services/mysql.sh`).
 
 ### Special case of xhgui service
 To be able to profile your script, add the service xhgui and read the [documentation](https://github.com/inetprocess/docker-xhgui)
