@@ -5,18 +5,11 @@
 Docker compose for a lamp stack (with MongoDB or MySQL).
 
 - [Docker installation](#docker-installation)
-- [Docker compose installation](#docker-compose-installation)
 - [Clone the repository](#clone-the-repository)
 - [Configuration](#configuration)
 	- [Config Parameters](#config-parameters)
 - [Files location](#files-location)
 	- [Add binaries](#add-binaries)
-- [HostNames](#hostnames)
-- [Plugins](#plugins)
-	- [Writing a plugin](#writing-a-plugin)
-	- [Install a plugin](#installing-a-plugin)
-    - [Define services in your plugins](#define-services-in-your-plugins)
-	- [List of existing plugins](#list-of-existing-plugins)
 - [Before running any command](#before-running-any-command)
 - [Usage](#usage)
 	- [Start the servers](#start-the-servers)
@@ -26,8 +19,12 @@ Docker compose for a lamp stack (with MongoDB or MySQL).
 	- [Enter a VM](#enter-a-vm)
 	- [PHP usage](#php-usage)
 	- [MySQL usage](#mysql-usage)
-    - [DNS](#dns)
-    - [Phing](#phing)
+    	- [DNS](#dns)
+- [Plugins](#plugins)
+	- [Writing a plugin](#writing-a-plugin)
+	- [Install a plugin](#installing-a-plugin)
+   	- [Define services in your plugins](#define-services-in-your-plugins)
+	- [List of existing plugins](#list-of-existing-plugins)
 
 
 # Docker installation (example for Ubuntu)
