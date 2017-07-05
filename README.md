@@ -36,7 +36,7 @@ You can clone the repository as many times as you want as you can have multiple 
 
 
 ## Prerequisites
-### Automatic Configuration
+### Automatic Installation
 Once cloned, you can run the `install.sh` script made for Ubuntu (tested on 16.04) that will install the dependencies:
 ```bash
 $ git clone https://github.com/inetprocess/docker-lamp
@@ -44,7 +44,7 @@ $ cd docker-lamp
 $ ./install.sh
 ```
 
-### Manual Configuration
+### Manual Installation
 Else:
 * Install the OS packages for Python3: `pip`, `setuptools` and `virtualenv`
 
