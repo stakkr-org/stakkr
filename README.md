@@ -33,13 +33,14 @@ Read https://docs.docker.com/engine/installation/ubuntulinux/ for Ubuntu.
 
 # Clone the repository
 You can clone the repository as many times as you want as you can have multiple instances at the same time. A good practice is too have one clone for one project or one clone for projects with the same versions of PHP / MySQL / Elasticsearch, etc ...
-
+```bash
+$ git clone https://github.com/inetprocess/docker-lamp
+```
 
 ## Prerequisites
 ### Automatic Installation
 Once cloned, you can run the `install.sh` script made for Ubuntu (tested on 16.04) that will install the dependencies:
 ```bash
-$ git clone https://github.com/inetprocess/docker-lamp
 $ cd docker-lamp
 $ ./install.sh
 ```
