@@ -31,7 +31,7 @@ def add_available_services_from_plugins(available_services: list):
     from pkg_resources import iter_entry_points
 
     # Override services with plugins
-    for entry in iter_entry_points('lamp.plugins'):
+    for entry in iter_entry_points('marina.plugins'):
         services_dir = 'plugins/' + str(entry).split('.')[1] + '/services'
         if os.path.isdir(services_dir) is False:
             continue
@@ -73,7 +73,7 @@ def cli(command):
     available_services = add_available_services_from_plugins(available_services)
     services = get_enabled_services(configured_services, available_services)
 
-    cmd = ['docker-compose', '-f', 'docker-compose.yml'] + services
+    cmd = ['docker-compose', '-f', 'conf/docker-compose.yml'] + services
     cmd += ['-p', project_name] + list(command)
 
     call(cmd)

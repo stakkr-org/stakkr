@@ -24,22 +24,22 @@ def get_plugins():
     if len(plugins) is 0:
         return ''
 
-    return '[lamp.plugins]\n' + '\n'.join(plugins)
+    return '[marina.plugins]\n' + '\n'.join(plugins)
 
 
 setup(
-    name='docker-lamp',
-    version='1.1',
+    name='Marina',
+    version='2.0',
     description='A stack based on docker to run PHP Applications',
-    url='http://github.com/inetprocess/lamp',
+    url='http://github.com/inetprocess/marina',
     author='Emmanuel Dyan',
     author_email='emmanuel.dyan@inetprocess.com',
     license='Apache 2.0',
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
-    py_modules=['lamp'],
+    py_modules=['marina'],
     entry_points='''
         [console_scripts]
-        lamp=lamp:main
+        marina=marina:main
         {}
       '''.format(get_plugins()),
     install_requires=[

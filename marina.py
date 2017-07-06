@@ -12,8 +12,8 @@ from pkg_resources import iter_entry_points
 @click.group(help="""A recompose tool that uses docker compose to easily create / maintain
 a stack of services, for example for web development.
 
-Via a configuration file you can setup the required services and let marina link
-and start everything for you.""")
+Via a configuration file you can setup the required services and let marina
+link and start everything for you.""")
 @click.version_option('2.0')
 @click.option('--debug/--no-debug', default=False)
 @click.pass_context
@@ -34,9 +34,9 @@ def fullstart(ctx):
     print(click.style('Build done\n', fg='green'))
 
 
-@marina.command(help="Start services defined in conf/compose.ini")
+@marina.command(help="Start services defined in compose.ini")
 @click.option('--pull', help="Force a pull of the latest images versions", is_flag=True)
-@click.option('--recreate', help="Remove containers and create it again", is_flag=True)
+@click.option('--recreate', help="Remove images once stopped (useful for some disk space consuming services)", is_flag=True)
 @click.pass_context
 def start(ctx, pull: bool, recreate: bool):
     print(click.style('Starting your marina services ...', fg='green'))
@@ -47,18 +47,18 @@ def start(ctx, pull: bool, recreate: bool):
     marina.display_services_ports()
 
 
-@marina.command(help="Stop services")
+@marina.command(help="Stop the services")
 @click.pass_context
 def stop(ctx):
-    print(click.style('Stopping marina services ...', fg='green'))
+    print(click.style('Stopping marina services...', fg='green'))
     marina = ctx.obj['MARINA']
     marina.stop()
     print(click.style('marina services have been stopped.\n', fg='green'))
 
 
-@marina.command(help="Restart services")
+@marina.command(help="Restart the servers")
 @click.option('--pull', help="Force a pull of the latest images versions", is_flag=True)
-@click.option('--recreate', help="Remove containers and create it again", is_flag=True)
+@click.option('--recreate', help="Recreate all containers", is_flag=True)
 @click.pass_context
 def restart(ctx, pull: bool, recreate: bool):
     print(click.style('Restarting marina services ...', fg='green'))
@@ -76,14 +76,14 @@ def status(ctx):
     marina.status()
 
 
-@marina.command(help="Enter a VM")
+@marina.command(help="Enter a Container (apache, mysql or php)")
 @click.pass_context
 @click.option('--user', help="User's name", type=click.Choice(['www-data', 'root']))
 @click.argument('vm', required=True, type=click.Choice(['apache', 'mysql', 'php']))
 def console(ctx, vm: str, user: str):
-    if vm in ['apache', 'php'] and user is None:
+    if vm in ['php', 'apache'] and user is None:
         user = 'www-data'
-    elif vm not in ['apache', 'php'] and user == 'www-data':
+    elif vm not in ['php', 'apache'] and user == 'www-data':
         user = 'root'
     elif user is None:
         user = 'root'

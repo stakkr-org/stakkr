@@ -5,7 +5,7 @@ services:
         image: inetprocess/php:${DOCKER_PHP_VERSION}
         container_name: ${COMPOSE_PROJECT_NAME}_php
         hostname: ${COMPOSE_PROJECT_NAME}_php
-        networks: [lamp]
+        networks: [marina]
         mem_limit: ${DOCKER_PHP_RAM}
         environment:
             FPM_UID: ${DOCKER_UID}

@@ -1,8 +1,8 @@
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/inetprocess/docker-lamp/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/inetprocess/docker-lamp/?branch=master)
-[![Build Status](https://scrutinizer-ci.com/g/inetprocess/docker-lamp/badges/build.png?b=master)](https://scrutinizer-ci.com/g/inetprocess/docker-lamp/build-status/master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/inetprocess/marina/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/inetprocess/marina/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/inetprocess/marina/badges/build.png?b=master)](https://scrutinizer-ci.com/g/inetprocess/marina/build-status/master)
 
-# Docker-lamp
-Docker compose for a lamp stack (with MongoDB or MySQL).
+# Marina
+A recompose tool that uses docker compose to easily create / maintain a stack of services, for example for web development. Via a configuration file you can setup the required services and let marina link and start everything for you.
 
 - [Docker installation](#docker-installation)
 - [Clone the repository](#clone-the-repository)
@@ -35,14 +35,14 @@ Read https://docs.docker.com/engine/installation/ubuntulinux/ for Ubuntu.
 # Clone the repository
 You can clone the repository as many times as you want as you can have multiple instances at the same time. A good practice is too have one clone for one project or one clone for projects with the same versions of PHP / MySQL / Elasticsearch, etc ...
 ```bash
-$ git clone https://github.com/inetprocess/docker-lamp
+$ git clone https://github.com/inetprocess/marina
 ```
 
 ## Prerequisites
 ### Automatic Installation
 Once cloned, you can run the `install.sh` script made for Ubuntu (tested on 16.04) that will install the dependencies:
 ```bash
-$ cd docker-lamp
+$ cd marina
 $ ./install.sh
 ```
 
@@ -57,8 +57,8 @@ $ pip3 install autoenv
 
 * Create the virtualenv and activate it:
 ```bash
-$ virtualenv -p /usr/bin/python3 ${PWD##*/}_lamp
-$ source ${PWD##*/}_lamp/bin/activate
+$ virtualenv -p /usr/bin/python3 ${PWD##*/}_marina
+$ source ${PWD##*/}_marina/bin/activate
 $ pip3 install click clint # because it could be needed at that stage
 $ pip3 install -e .
 ```
@@ -76,7 +76,7 @@ You can define your own network in compose.ini (`subnet` and `gateway`). If you 
 
 
 ### Services
-You can define the list of services you want to have. Each service consists of a yml file in the `services/` directory. Each container ("Virtual Machine") will have a hostname composed of the project name and the service name. To reach, for example, the elasticsearch server from a web application, and if your `project_name = lamp` use `lamp_elasticsearch` or to connect to mysql use `lamp_mysql`. The service names also works (_elasticsearch_ and _mysql_)
+You can define the list of services you want to have. Each service consists of a yml file in the `services/` directory. Each container ("Virtual Machine") will have a hostname composed of the project name and the service name. To reach, for example, the elasticsearch server from a web application, and if your `project_name = marina` use `marina_elasticsearch` or to connect to mysql use `marina_mysql`. The service names also works (_elasticsearch_ and _mysql_)
 ```ini
 ; Comma separated list of services to start, valid values: apache / bonita / elasticsearch / mailcatcher / maildev / mongo / mysql / php / phpmyadmin / xhgui
 services=apache,php,mysql
@@ -92,7 +92,7 @@ To be able to profile your script, add the service xhgui and read the [documenta
 Project name (will be used as container's prefix). It should be different for each project.
 ```ini
 ; Change Machines names only if you need it
-project_name=lamp
+project_name=marina
 ```
 
 PHP Version :
@@ -130,7 +130,7 @@ You can add binaries (such as phpunit) that will automatically be available from
 # Before running any command
 You have to be in a virtual environement. If you have autoenv, and if you kept the name of the virtualenv as described above, just enter the directory, and it'll be automatically activated. Else:
 ```bash
-$ source ${PWD##*/}_lamp/bin/activate
+$ source ${PWD##*/}_marina/bin/activate
 ```
 
 To leave that environment:
@@ -140,18 +140,18 @@ $ deactivate
 
 
 # Usage
-__WARNING: Make sure that you are in a virtual environment. To verify that, check that your prompt starts with something like `(xyz_lamp) `__
+__WARNING: Make sure that you are in a virtual environment. To verify that, check that your prompt starts with something like `(xyz_marina) `__
 
 ## Get Help
-To get a list of commands do `lamp --help` and to get help for a specific command : `lamp start --help`
+To get a list of commands do `marina --help` and to get help for a specific command : `marina start --help`
 
 
 ## Start the servers
-Run `lamp start` to start the docker environment.
+Run `marina start` to start the docker environment.
 
 After the run you'll get something like that (contain all the useful URLs):
 ```bash
-lamp is running
+marina is running
 
 To access the web server use : http://172.18.0.7
 
@@ -161,27 +161,27 @@ For maildev use : http://172.18.0.6
 For phpMyAdmin use : http://172.18.0.6
 ```
 
-**INFO**: If you want to make sure that you have the latest images, do a `lamp start --pull --recreate` 
+**INFO**: If you want to make sure that you have the latest images, do a `marina start --pull --recreate`
 
 
 ## Stop the servers
-Run `lamp stop` to stop all applications.
+Run `marina stop` to stop all applications.
 
 
 ## Restart the servers
-Run `lamp restart` to restart all applications (_because you changed the config.ini or you overriden the php or mysql configuration_).
+Run `marina restart` to restart all applications (_because you changed the config.ini or you overriden the php or mysql configuration_).
 
 
 ## Status
-Run `lamp status` to see the list of running VMS
+Run `marina status` to see the list of running VMS
 
 
 ## Enter a VM
-If you need to run some commands into a VM you can use the console mode by running `lamp console` with the vm name at the end (only PHP and MySQL are supported).
+If you need to run some commands into a VM you can use the console mode by running `marina console` with the vm name at the end (only PHP and MySQL are supported).
 
 Example to enter the PHP Machine:
 ```bash
-lamp console php
+marina console php
 ```
 
 You can also define the user to run the commands with by setting `--user` (choices are _www-data_ or _root_)
@@ -190,34 +190,34 @@ You can also define the user to run the commands with by setting `--user` (choic
 
 
 ## PHP usage
-Use `lamp run php -f www/filename.php` to launch PHP scripts like if you were locally. The path is relative so launch everything from your docker project root (the same folder than this file). If you want to run it from a sub-directory, just use the full path of lamp (example: `/home/user/docker/lamp`) and the relative path of your file.
+Use `marina run php -f www/filename.php` to launch PHP scripts like if you were locally. The path is relative so launch everything from your docker project root (the same folder than this file). If you want to run it from a sub-directory, just use the full path of marina (example: `/home/user/docker/marina`) and the relative path of your file.
 
 That:
 ```bash
 cd /home/user/docker
-lamp run php -f www/filename.php
+marina run php -f www/filename.php
 ```
 Is equal to:
 ```bash
 cd /home/user/docker/www
-/home/user/docker/lamp run php -f filename.php
+/home/user/docker/marina run php -f filename.php
 ```
 
-You can also use that command to run any PHP command (example: `lamp run php -v`). You can also define the user to run the commands with by setting `--user` (choices are _www-data_ or _root_)
+You can also use that command to run any PHP command (example: `marina run php -v`). You can also define the user to run the commands with by setting `--user` (choices are _www-data_ or _root_)
 
 
 ## MySQL usage
-Use `lamp run mysql` to enter the mysql console.
+Use `marina run mysql` to enter the mysql console.
 
 
 If you want to create a Database (You can also use the phpMyAdmin service of course):
 ```bash
-lamp run mysql -e "CREATE DATABASE my_db;"
+marina run mysql -e "CREATE DATABASE my_db;"
 ```
 
 If you need to import a file, read it and pipe the command like below:
 ```bash
-zcat file.sql.gz | lamp run mysql db
+zcat file.sql.gz | marina run mysql db
 ```
 
 ## DNS
@@ -226,15 +226,15 @@ start the dns server that will update your /etc/resolv.conf
 
 To start it :
 ```bash
-lamp dns start
+marina dns start
 ```
 
 To stop it :
 ```bash
-lamp dns stop
+marina dns stop
 ```
 
-**Warning**: you can start only one DNS for one instance of docker-lamp. It looks like a limitation of *mgood/resolve* that is not able to handle multiple networks. 
+**Warning**: you can start only one DNS for one instance of marina. It looks like a limitation of *mgood/resolve* that is not able to handle multiple networks.
 
 We also recommand to remove dnsmasq from Network Manager and to uninstall `libnss-mdns` (with `sudo apt-get remove libnss-mdns`)
 
@@ -256,29 +256,29 @@ def hi():
 
 Once your plugin has been written you need to re-run:
 ```bash
-$ lamp refresh-plugins
+$ marina refresh-plugins
 ```
 
 ## Installing a plugin
 To install a plugin
 ```bash
 $ cd plugins/
-$ git clone https://github.com/xyz/docker-lamp-myplugin myplugin
-$ lamp refresh-plugins
+$ git clone https://github.com/xyz/marina-myplugin myplugin
+$ marina refresh-plugins
 ```
 
 You can, for example install the sugarcli plugin:
 ```bash
 $ cd plugins/
-$ git clone https://github.com/inetprocess/docker-lamp-sugarcli sugarcli
-$ lamp refresh-plugins
+$ git clone https://github.com/inetprocess/marina-sugarcli sugarcli
+$ marina refresh-plugins
 ```
 
 As well as the composer one:
 ```bash
 $ cd plugins/
-$ git clone https://github.com/inetprocess/docker-lamp-composer composer
-$ lamp refresh-plugins
+$ git clone https://github.com/edyan/marina-composer composer
+$ marina refresh-plugins
 ```
 
 ## Define services in your plugins
@@ -289,8 +289,6 @@ Each service added by a plugin must be added in `compose.ini` to be started.
 
 
 ## List of existing plugins
-* [docker-lamp-composer](https://github.com/inetprocess/docker-lamp-composer) : Download and run composer
-* [docker-lamp-sugarcli](https://github.com/inetprocess/docker-lamp-sugarcli) : Download and run sugarcli
-* [docker-lamp-phing](https://github.com/inetprocess/docker-lamp-phing) : Download and run Phing
-
-
+* [marina-composer](https://github.com/edyan/marina-composer) : Download and run composer
+* [marina-sugarcli](https://github.com/inetprocess/marina-sugarcli) : Download and run sugarcli
+* [marina-phing](https://github.com/edyan/marina-phing) : Download and run Phing

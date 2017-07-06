@@ -3,17 +3,16 @@ import sys
 import subprocess
 
 from clint.textui import colored, puts, columns
-from lib import command
 from lib import docker
 
 
-class Lamp():
+class Marina():
     def __init__(self, base_dir: str):
-        self.lamp_base_dir = base_dir
+        self.marina_base_dir = base_dir
         self.current_dir = os.getcwd()
         # Make sure we are in the right directory
-        self.current_dir_relative = self.current_dir[len(self.lamp_base_dir):].lstrip('/')
-        os.chdir(self.lamp_base_dir)
+        self.current_dir_relative = self.current_dir[len(self.marina_base_dir):].lstrip('/')
+        os.chdir(self.marina_base_dir)
 
         self.dns_container_name = 'docker_dns'
 
@@ -46,7 +45,6 @@ class Lamp():
             'apache': {'name': 'Web Server', 'url': 'http://{URL}'},
             'mailcatcher': {'name': 'Mailcatcher (fake SMTP)', 'url': 'http://{URL}', 'extra_port': 25},
             'maildev': {'name': 'Maildev (Fake SMTP)', 'url': 'http://{URL}', 'extra_port': 25},
-            'mongoclient': {'name': 'MongoDB Client', 'url': 'http://{URL}:3000'},
             'phpmyadmin': {'name': 'PhpMyAdmin', 'url': 'http://{URL}'},
             'xhgui': {'name': 'XHGui (PHP Profiling)', 'url': 'http://{URL}'}
         }
@@ -70,7 +68,7 @@ class Lamp():
 
     def start(self, pull: bool, recreate: bool):
         if self.running_vms:
-            puts(colored.yellow("Docker-Lamp is already started ..."))
+            puts(colored.yellow("marina is already started ..."))
             sys.exit(0)
 
         if pull is True:
@@ -97,7 +95,7 @@ class Lamp():
 
     def status(self):
         if not self.running_vms:
-            puts(colored.yellow("Docker-Lamp is currently stopped"))
+            puts(colored.yellow("marina is currently stopped"))
             sys.exit(0)
 
         dns_started = docker.container_running('docker_dns')
@@ -193,7 +191,7 @@ class Lamp():
         try:
             docker.create_network('dns')
             cmd = ['docker', 'run', '--rm', '-d', '--hostname', 'docker-dns', '--name', self.dns_container_name]
-            cmd += ['--network', self.project_name + '_lamp']
+            cmd += ['--network', self.project_name + '_marina']
             cmd += ['-v', '/var/run/docker.sock:/tmp/docker.sock', '-v', '/etc/resolv.conf:/tmp/resolv.conf']
             cmd += ['mgood/resolvable']
             subprocess.check_output(cmd)

@@ -1,7 +1,7 @@
 version: '2'
 
 networks:
-    lamp:
+    marina:
         driver: bridge
         ipam:
             config:
@@ -15,6 +15,6 @@ services:
         volumes:
             - ./home/www-data:/home/www-data
             - ./www:/var/www
-        networks: [lamp]
+        networks: [marina]
         container_name: ${COMPOSE_PROJECT_NAME}_data
         hostname: ${COMPOSE_PROJECT_NAME}_data
