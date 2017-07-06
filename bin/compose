@@ -18,20 +18,16 @@ def set_env_values_from_conf(conf: list, default_conf: list):
     os.putenv('DOCKER_GID', conf.get('gid', str(os.getgid()) if os.name != 'nt' else '1000'))
 
 
-def get_services_conf_files(services: list):
-    # Get Base services
-    services_files = dict()
-    for service in services:
-        service_file = 'services/' + service + '.yml'
-        if os.path.isfile(service_file) is False:
-            print('Error: service ' + service + ' is invalid')
-            sys.exit(1)
-        services_files[service] = service_file
+def get_available_services():
+    conf_files = [service for service in os.listdir('services/') if service.endswith('.yml')]
+    services = dict()
+    for conf_file in conf_files:
+        services[conf_file[:-4]] = 'services/' + conf_file
 
-    return services_files
+    return services
 
 
-def get_services_conf_from_plugins(services: list):
+def add_available_services_from_plugins(available_services: list):
     from pkg_resources import iter_entry_points
 
     # Override services with plugins
@@ -39,11 +35,24 @@ def get_services_conf_from_plugins(services: list):
         services_dir = 'plugins/' + str(entry).split('.')[1] + '/services'
         if os.path.isdir(services_dir) is False:
             continue
+
         conf_files = [service for service in os.listdir(services_dir) if service.endswith('.yml')]
         for conf_file in conf_files:
-            services[conf_file[:-4]] = services_dir + '/' + conf_file
+            available_services[conf_file[:-4]] = services_dir + '/' + conf_file
 
-    return services
+    return available_services
+
+
+def get_enabled_services(configured_services: list, available_services: list):
+    services_files = []
+    for service in configured_services:
+        if service not in available_services:
+            print(click.style('Error: service "{}" has no configuration file. Check your compose.ini'.format(service), fg='red'))
+            sys.exit(1)
+        services_files.append('-f')
+        services_files.append(available_services[service])
+
+    return services_files
 
 
 @click.command(help="Run a command with docker-compose", context_settings=dict(ignore_unknown_options=True))
@@ -55,18 +64,16 @@ def cli(command):
 
     project_name = user_config_main.get('project_name', 'inet' + os.path.basename(os.getcwd()).replace('-', ''))
     os.putenv('COMPOSE_PROJECT_NAME', project_name)
-    # get the services from an array that has been filtered to remove the empty values
-    services = [service for service in user_config_main.get('services', '').split(',') if service != '']
 
-    services = get_services_conf_files(services)
-    services = get_services_conf_from_plugins(services)
+    # Services from config
+    configured_services = [service for service in user_config_main.get('services', '').split(',') if service != '']
 
-    services_files = []
-    for service in services.values():
-        services_files.append('-f')
-        services_files.append(service)
+    # Services available from base and plugins
+    available_services = get_available_services()
+    available_services = add_available_services_from_plugins(available_services)
+    services = get_enabled_services(configured_services, available_services)
 
-    cmd = ['docker-compose', '-f', 'docker-compose.yml'] + services_files
+    cmd = ['docker-compose', '-f', 'docker-compose.yml'] + services
     cmd += ['-p', project_name] + list(command)
 
     call(cmd)
