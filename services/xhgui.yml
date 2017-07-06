@@ -2,7 +2,7 @@ version: '2'
 
 services:
     xhgui:
-        image: inetprocess/xhgui
+        image: edyan/xhgui
         container_name: ${COMPOSE_PROJECT_NAME}_xhgui
         hostname: ${COMPOSE_PROJECT_NAME}_xhgui
         networks: [marina]
