@@ -45,7 +45,6 @@ class Marina():
             'apache': {'name': 'Web Server', 'url': 'http://{URL}'},
             'mailcatcher': {'name': 'Mailcatcher (fake SMTP)', 'url': 'http://{URL}', 'extra_port': 25},
             'maildev': {'name': 'Maildev (Fake SMTP)', 'url': 'http://{URL}', 'extra_port': 25},
-            'mongoclient': {'name': 'MongoDB Client', 'url': 'http://{URL}:3000'},
             'phpmyadmin': {'name': 'PhpMyAdmin', 'url': 'http://{URL}'},
             'xhgui': {'name': 'XHGui (PHP Profiling)', 'url': 'http://{URL}'}
         }
