@@ -1,8 +1,8 @@
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/inetprocess/docker-lamp/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/inetprocess/docker-lamp/?branch=master)
-[![Build Status](https://scrutinizer-ci.com/g/inetprocess/docker-lamp/badges/build.png?b=master)](https://scrutinizer-ci.com/g/inetprocess/docker-lamp/build-status/master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/inetprocess/marina/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/inetprocess/marina/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/inetprocess/marina/badges/build.png?b=master)](https://scrutinizer-ci.com/g/inetprocess/marina/build-status/master)
 
-# Docker-lamp
-Docker compose for a lamp stack (with MongoDB or MySQL).
+# Marina
+A recompose tool that uses docker compose to easily create / maintain a stack of services, for example for web development. Via a configuration file you can setup the required services and let marina link and start everything for you.
 
 - [Docker installation](#docker-installation)
 - [Clone the repository](#clone-the-repository)
@@ -35,14 +35,14 @@ Read https://docs.docker.com/engine/installation/ubuntulinux/ for Ubuntu.
 # Clone the repository
 You can clone the repository as many times as you want as you can have multiple instances at the same time. A good practice is too have one clone for one project or one clone for projects with the same versions of PHP / MySQL / Elasticsearch, etc ...
 ```bash
-$ git clone https://github.com/inetprocess/docker-lamp
+$ git clone https://github.com/inetprocess/marina
 ```
 
 ## Prerequisites
 ### Automatic Installation
 Once cloned, you can run the `install.sh` script made for Ubuntu (tested on 16.04) that will install the dependencies:
 ```bash
-$ cd docker-lamp
+$ cd marina
 $ ./install.sh
 ```
 
@@ -234,7 +234,7 @@ To stop it :
 lamp dns stop
 ```
 
-**Warning**: you can start only one DNS for one instance of docker-lamp. It looks like a limitation of *mgood/resolve* that is not able to handle multiple networks. 
+**Warning**: you can start only one DNS for one instance of marina. It looks like a limitation of *mgood/resolve* that is not able to handle multiple networks. 
 
 We also recommand to remove dnsmasq from Network Manager and to uninstall `libnss-mdns` (with `sudo apt-get remove libnss-mdns`)
 
@@ -263,21 +263,21 @@ $ lamp refresh-plugins
 To install a plugin
 ```bash
 $ cd plugins/
-$ git clone https://github.com/xyz/docker-lamp-myplugin myplugin
+$ git clone https://github.com/xyz/marina-myplugin myplugin
 $ lamp refresh-plugins
 ```
 
 You can, for example install the sugarcli plugin:
 ```bash
 $ cd plugins/
-$ git clone https://github.com/inetprocess/docker-lamp-sugarcli sugarcli
+$ git clone https://github.com/inetprocess/marina-sugarcli sugarcli
 $ lamp refresh-plugins
 ```
 
 As well as the composer one:
 ```bash
 $ cd plugins/
-$ git clone https://github.com/edyan/docker-lamp-composer composer
+$ git clone https://github.com/edyan/marina-composer composer
 $ lamp refresh-plugins
 ```
 
@@ -289,8 +289,8 @@ Each service added by a plugin must be added in `compose.ini` to be started.
 
 
 ## List of existing plugins
-* [docker-lamp-composer](https://github.com/edyan/dockerlamp-composer) : Download and run composer
-* [docker-lamp-sugarcli](https://github.com/inetprocess/docker-lamp-sugarcli) : Download and run sugarcli
-* [docker-lamp-phing](https://github.com/edyan/dockerlamp-phing) : Download and run Phing
+* [marina-composer](https://github.com/edyan/marina-composer) : Download and run composer
+* [marina-sugarcli](https://github.com/inetprocess/marina-sugarcli) : Download and run sugarcli
+* [marina-phing](https://github.com/edyan/marina-phing) : Download and run Phing
 
 
