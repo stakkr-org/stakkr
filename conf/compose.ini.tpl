@@ -5,7 +5,7 @@
 ; services=apache,php,mongo,mailcatcher,elasticsearch,mysql
 
 ; Change Machines prefix
-; project_name=lamp
+; project_name=marina
 
 ; Change your group id and user id only if needed (the defaults are the one from the current user)
 ; uid=1005

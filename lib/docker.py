@@ -34,8 +34,8 @@ def extract_vm_info(project_name: str, vm_id: str):
 
 def get_ip_from_networks(project_name: str, networks: list):
     network_settings = {}
-    if '{}_lamp'.format(project_name) in networks:
-        network_settings = networks['{}_lamp'.format(project_name)]
+    if '{}_marina'.format(project_name) in networks:
+        network_settings = networks['{}_marina'.format(project_name)]
 
     return network_settings['IPAddress'] if 'IPAddress' in network_settings else ''
 

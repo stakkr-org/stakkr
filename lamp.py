@@ -8,7 +8,7 @@ from pkg_resources import iter_entry_points
 
 
 # TODO Remplacer certaines options de configuration par @click.option('--uid', envvar='UID') ?
-@with_plugins(iter_entry_points('lamp.plugins'))
+@with_plugins(iter_entry_points('marina.plugins'))
 @click.group(help="""Wrapper for Docker Compose that helps
 to start / stop / get the status, etc .... of services.
 
@@ -16,66 +16,66 @@ Based on a configuration file located into conf/""")
 @click.version_option('0.5')
 @click.option('--debug/--no-debug', default=False)
 @click.pass_context
-def lamp(ctx, debug):
-    from lib import lamp
+def marina(ctx, debug):
+    from lib import marina
 
     ctx.obj['DEBUG'] = debug
-    ctx.obj['LAMP'] = lamp.Lamp(os.path.dirname(os.path.realpath(__file__)))
+    ctx.obj['MARINA'] = marina.Marina(os.path.dirname(os.path.realpath(__file__)))
 
 
-@lamp.command(help="""In case you don't use images but Git repos, run that command
+@marina.command(help="""In case you don't use images but Git repos, run that command
 to build your images.""")
 @click.pass_context
 def fullstart(ctx):
     print(click.style('Building required images ...', fg='green'))
-    lamp = ctx.obj['LAMP']
-    lamp.fullstart()
+    marina = ctx.obj['MARINA']
+    marina.fullstart()
     print(click.style('Build done\n', fg='green'))
 
 
-@lamp.command(help="Start the servers")
+@marina.command(help="Start the servers")
 @click.option('--pull', help="Force a pull of the latest images versions", is_flag=True)
 @click.option('--recreate', help="Remove images once stopped (useful for some disk space consuming services)", is_flag=True)
 @click.pass_context
 def start(ctx, pull: bool, recreate: bool):
-    print(click.style('Starting your lamp server ...', fg='green'))
-    lamp = ctx.obj['LAMP']
-    lamp.start(pull, recreate)
-    print(click.style('lamp server has been started\n', fg='green'))
+    print(click.style('Starting your marina server ...', fg='green'))
+    marina = ctx.obj['MARINA']
+    marina.start(pull, recreate)
+    print(click.style('marina server has been started\n', fg='green'))
 
-    lamp.display_services_ports()
+    marina.display_services_ports()
 
 
-@lamp.command(help="Stop the servers")
+@marina.command(help="Stop the servers")
 @click.pass_context
 def stop(ctx):
-    print(click.style('Stopping docker-lamp ...', fg='green'))
-    lamp = ctx.obj['LAMP']
-    lamp.stop()
-    print(click.style('docker-lamp has been stopped.\n', fg='green'))
+    print(click.style('Stopping docker-marina ...', fg='green'))
+    marina = ctx.obj['MARINA']
+    marina.stop()
+    print(click.style('docker-marina has been stopped.\n', fg='green'))
 
 
-@lamp.command(help="Restart the servers")
+@marina.command(help="Restart the servers")
 @click.option('--pull', help="Force a pull of the latest images versions", is_flag=True)
 @click.option('--recreate', help="Remove images once stopped (useful for some disk space consuming services)", is_flag=True)
 @click.pass_context
 def restart(ctx, pull: bool, recreate: bool):
-    print(click.style('Restarting docker-lamp ...', fg='green'))
-    lamp = ctx.obj['LAMP']
-    lamp.restart(pull, recreate)
-    print(click.style('docker-lamp has been restarted.\n', fg='green'))
+    print(click.style('Restarting docker-marina ...', fg='green'))
+    marina = ctx.obj['MARINA']
+    marina.restart(pull, recreate)
+    print(click.style('docker-marina has been restarted.\n', fg='green'))
 
-    lamp.display_services_ports()
+    marina.display_services_ports()
 
 
-@lamp.command(help="Display the list of running servers")
+@marina.command(help="Display the list of running servers")
 @click.pass_context
 def status(ctx):
-    lamp = ctx.obj['LAMP']
-    lamp.status()
+    marina = ctx.obj['MARINA']
+    marina.status()
 
 
-@lamp.command(help="Enter a VM")
+@marina.command(help="Enter a VM")
 @click.pass_context
 @click.option('--user', help="User's name", type=click.Choice(['www-data', 'root']))
 @click.argument('vm', required=True, type=click.Choice(['mysql', 'php']))
@@ -87,11 +87,11 @@ def console(ctx, vm: str, user: str):
     elif user is None:
         user = 'root'
 
-    lamp = ctx.obj['LAMP']
-    lamp.console(vm, user)
+    marina = ctx.obj['MARINA']
+    marina.console(vm, user)
 
 
-@lamp.command(help="Run a command to a VM", context_settings=dict(ignore_unknown_options=True))
+@marina.command(help="Run a command to a VM", context_settings=dict(ignore_unknown_options=True))
 @click.pass_context
 @click.option('--user', '-u', help="User's name", type=click.Choice(['www-data', 'root']))
 @click.argument('vm', required=True, type=click.Choice(['mysql', 'php']))
@@ -103,18 +103,18 @@ def run(ctx, vm: str, user: str, run_args: tuple):
         user = 'root'
 
     run_args = ' '.join(run_args)
-    lamp = ctx.obj['LAMP']
+    marina = ctx.obj['MARINA']
     if vm == 'php':
-        lamp.run_php(user, run_args)
+        marina.run_php(user, run_args)
     elif vm == 'mysql':
-        lamp.run_mysql(run_args)
+        marina.run_mysql(run_args)
 
 
-@lamp.command(help="Manage the DNS forwarder (only one per host)", name="dns")
+@marina.command(help="Manage the DNS forwarder (only one per host)", name="dns")
 @click.argument('action', required=True, type=click.Choice(['start', 'stop']))
 @click.pass_context
 def dns(ctx, action: str):
-    lamp = ctx.obj['LAMP']
+    marina = ctx.obj['MARINA']
 
     if action == 'start':
         str_action = 'Starting'
@@ -122,10 +122,10 @@ def dns(ctx, action: str):
         str_action = 'Stopping'
 
     print(click.style('{} the DNS forwarder ...'.format(str_action), fg='green'))
-    lamp.manage_dns(action)
+    marina.manage_dns(action)
 
 
-@lamp.command(help='Launch that command if you install a new plugin', name="refresh-plugins")
+@marina.command(help='Launch that command if you install a new plugin', name="refresh-plugins")
 def refresh_plugins():
     from subprocess import DEVNULL
 
@@ -135,7 +135,7 @@ def refresh_plugins():
 
 def main():
     try:
-        lamp(obj={})
+        marina(obj={})
     except Exception as e:
         msg = click.style(r""" ______ _____  _____   ____  _____
 |  ____|  __ \|  __ \ / __ \|  __ \
