@@ -277,7 +277,7 @@ $ lamp refresh-plugins
 As well as the composer one:
 ```bash
 $ cd plugins/
-$ git clone https://github.com/inetprocess/docker-lamp-composer composer
+$ git clone https://github.com/edyan/docker-lamp-composer composer
 $ lamp refresh-plugins
 ```
 
@@ -289,8 +289,8 @@ Each service added by a plugin must be added in `compose.ini` to be started.
 
 
 ## List of existing plugins
-* [docker-lamp-composer](https://github.com/inetprocess/docker-lamp-composer) : Download and run composer
+* [docker-lamp-composer](https://github.com/edyan/dockerlamp-composer) : Download and run composer
 * [docker-lamp-sugarcli](https://github.com/inetprocess/docker-lamp-sugarcli) : Download and run sugarcli
-* [docker-lamp-phing](https://github.com/inetprocess/docker-lamp-phing) : Download and run Phing
+* [docker-lamp-phing](https://github.com/edyan/dockerlamp-phing) : Download and run Phing
 
 
