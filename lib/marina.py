@@ -102,17 +102,17 @@ class Marina():
 
         puts(columns(
             [(colored.green('VM')), 16],
-            [(colored.green('HostName' if dns_started else 'IP')), 38],
+            [(colored.green('HostName' if dns_started else 'IP')), 25],
             [(colored.green('Ports')), 25],
-            [(colored.green('Image')), 25],
+            [(colored.green('Image')), 32],
             [(colored.green('Docker ID')), 15],
             [(colored.green('Docker Name')), 25]
         ))
         puts(columns(
             ['-'*16, 16],
-            ['-'*38, 38],
             ['-'*25, 25],
             ['-'*25, 25],
+            ['-'*32, 32],
             ['-'*15, 15],
             ['-'*25, 25]
         ))
@@ -122,9 +122,9 @@ class Marina():
 
             puts(columns(
                 [vm_data['compose_name'], 16],
-                [vm_data['name'] if dns_started else vm_data['ip'], 38],
+                [vm_data['name'] if dns_started else vm_data['ip'], 25],
                 [', '.join(vm_data['ports']), 25],
-                [vm_data['image'], 25],
+                [vm_data['image'], 32],
                 [vm_id[:12], 15],
                 [vm_data['name'], 25]
             ))

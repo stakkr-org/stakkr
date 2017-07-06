@@ -73,7 +73,7 @@ def cli(command):
     available_services = add_available_services_from_plugins(available_services)
     services = get_enabled_services(configured_services, available_services)
 
-    cmd = ['docker-compose', '-f', 'conf/docker-compose.yml'] + services
+    cmd = ['docker-compose', '-f', 'docker-compose.yml'] + services
     cmd += ['-p', project_name] + list(command)
 
     call(cmd)
