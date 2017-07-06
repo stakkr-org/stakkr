@@ -5,20 +5,14 @@
 Docker compose for a lamp stack (with MongoDB or MySQL).
 
 - [Docker installation](#docker-installation)
-- [Docker compose installation](#docker-compose-installation)
 - [Clone the repository](#clone-the-repository)
 - [Configuration](#configuration)
 	- [Config Parameters](#config-parameters)
 - [Files location](#files-location)
 	- [Add binaries](#add-binaries)
-- [HostNames](#hostnames)
-- [Plugins](#plugins)
-	- [Writing a plugin](#writing-a-plugin)
-	- [Install a plugin](#installing-a-plugin)
-    - [Define services in your plugins](#define-services-in-your-plugins)
-	- [List of existing plugins](#list-of-existing-plugins)
 - [Before running any command](#before-running-any-command)
 - [Usage](#usage)
+	- [Get Help](#get-help)
 	- [Start the servers](#start-the-servers)
 	- [Stop the servers](#stop-the-servers)
 	- [Restart the servers](#restart-the-servers)
@@ -26,49 +20,33 @@ Docker compose for a lamp stack (with MongoDB or MySQL).
 	- [Enter a VM](#enter-a-vm)
 	- [PHP usage](#php-usage)
 	- [MySQL usage](#mysql-usage)
-    - [DNS](#dns)
-    - [Phing](#phing)
+    	- [DNS](#dns)
+- [Plugins](#plugins)
+	- [Writing a plugin](#writing-a-plugin)
+	- [Install a plugin](#installing-a-plugin)
+   	- [Define services in your plugins](#define-services-in-your-plugins)
+	- [List of existing plugins](#list-of-existing-plugins)
 
 
 # Docker installation (example for Ubuntu)
-Read https://docs.docker.com/engine/installation/ubuntulinux/ but in summary, if you have Ubuntu:
-_(be careful to define the right user instead of {USER})_
-
-```bash
-$ sudo su -
-$ apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-# add the right repo according to the doc. Such as:
-$ source /etc/os-release
-$ echo "deb https://apt.dockerproject.org/repo ubuntu-${UBUNTU_CODENAME} main" > /etc/apt/sources.list.d/docker.list
-$ apt-get update
-$ apt-get purge lxc-docker
-$ apt-get install -y linux-image-extra-$(uname -r) docker-engine
-$ service docker start
-$ usermod -aG docker {USER}
-$ reboot # (or login / logout)
-```
-
-
-# Docker compose installation
-`docker-compose` is now installed in the virtualenv.
-
-Verify with `docker-compose --version`
+Read https://docs.docker.com/engine/installation/ubuntulinux/ for Ubuntu.
 
 
 # Clone the repository
 You can clone the repository as many times as you want as you can have multiple instances at the same time. A good practice is too have one clone for one project or one clone for projects with the same versions of PHP / MySQL / Elasticsearch, etc ...
-
-
-## Prerequisites
-### Automatic Configuration
-Once cloned, you can run the `install.sh` script made for Ubuntu (tested on 16.04) that will install the dependencies:
 ```bash
 $ git clone https://github.com/inetprocess/docker-lamp
+```
+
+## Prerequisites
+### Automatic Installation
+Once cloned, you can run the `install.sh` script made for Ubuntu (tested on 16.04) that will install the dependencies:
+```bash
 $ cd docker-lamp
 $ ./install.sh
 ```
 
-### Manual Configuration
+### Manual Installation
 Else:
 * Install the OS packages for Python3: `pip`, `setuptools` and `virtualenv`
 
@@ -98,13 +76,13 @@ You can define your own network in compose.ini (`subnet` and `gateway`). If you 
 
 
 ### Services
-You can define the list of services you want to have. Each container ("Virtual Machine") will have the same hostname than its service name. To reach, for example, the elasticsearch server from a web application use `elasticsearch` or to connect to mysql use as the server name `mysql`.
+You can define the list of services you want to have. Each service consists of a yml file in the `services/` directory. Each container ("Virtual Machine") will have a hostname composed of the project name and the service name. To reach, for example, the elasticsearch server from a web application, and if your `project_name = lamp` use `lamp_elasticsearch` or to connect to mysql use `lamp_mysql`. The service names also works (_elasticsearch_ and _mysql_)
 ```ini
-; Comma separated, valid values: mongo / mongoclient / mysql / mailcatcher / maildev / elasticsearch / xhgui / bonita
-services=mongo,maildev,elasticsearch,mysql
+; Comma separated list of services to start, valid values: apache / bonita / elasticsearch / mailcatcher / maildev / mongo / mysql / php / phpmyadmin / xhgui
+services=apache,php,mysql
 ```
 
-A service can launch a post-start script that has the same name with an `.sh` extension (example: `service/mysql.sh`).
+A service can launch a post-start script that has the same name with an `.sh` extension (example: `services/mysql.sh`).
 
 ### Special case of xhgui service
 To be able to profile your script, add the service xhgui and read the [documentation](https://github.com/inetprocess/docker-xhgui)
@@ -149,68 +127,6 @@ You can add binaries (such as phpunit) that will automatically be available from
 `home/www-data/bin/`
 
 
-# HostNames
-VM's urls are given once the servers are started.
-* ElasticSearch Server: `elasticsearch`
-* MySQL Server: `mysql`
-* Mongo Server : `mongo`
-* SMTP Server : `maildev` (or `mailcatcher`) with port `25`
-
-# Plugins
-## Writing a plugin
-To write a plugin you need to create a folder in the plugins/ directory that contains your commands. Each file with a
-`.py` extension will be taken as a plugin. The main function should be named exactly like the file.
-
-Example for a file that is in `plugins/my_command/hi.py`:
-```python
-import click
-
-
-@click.command(help="Example")
-def hi():
-    print('Hi!')
-```
-
-Once your plugin has been written you need to re-run:
-```bash
-$ lamp refresh-plugins
-```
-
-## Installing a plugin
-To install a plugin
-```bash
-$ cd plugins/
-$ git clone https://github.com/xyz/docker-lamp-myplugin myplugin
-$ lamp refresh-plugins
-```
-
-You can, for example install the sugarcli plugin:
-```bash
-$ cd plugins/
-$ git clone https://github.com/inetprocess/docker-lamp-sugarcli sugarcli
-$ lamp refresh-plugins
-```
-
-As well as the composer one:
-```bash
-$ cd plugins/
-$ git clone https://github.com/inetprocess/docker-lamp-composer composer
-$ lamp refresh-plugins
-```
-
-## Define services in your plugins
-By creating a `services/` directory you can either override or create new services with your plugins.
-Example: `plugins/myplugin/services/mysql.yml` will override the default mysql service while `plugins/myplugin/services/nginx.yml` will define a new service.
-
-Each service added by a plugin must be added in `compose.ini` to be started.
-
-
-## List of existing plugins
-* [docker-lamp-composer](https://github.com/inetprocess/docker-lamp-composer) : Download and run composer
-* [docker-lamp-sugarcli](https://github.com/inetprocess/docker-lamp-sugarcli) : Download and run sugarcli
-* [docker-lamp-phing](https://github.com/inetprocess/docker-lamp-phing) : Download and run Phing
-
-
 # Before running any command
 You have to be in a virtual environement. If you have autoenv, and if you kept the name of the virtualenv as described above, just enter the directory, and it'll be automatically activated. Else:
 ```bash
@@ -225,6 +141,10 @@ $ deactivate
 
 # Usage
 __WARNING: Make sure that you are in a virtual environment. To verify that, check that your prompt starts with something like `(xyz_lamp) `__
+
+## Get Help
+To get a list of commands do `lamp --help` and to get help for a specific command : `lamp start --help`
+
 
 ## Start the servers
 Run `lamp start` to start the docker environment.
@@ -241,7 +161,7 @@ For maildev use : http://172.18.0.6
 For phpMyAdmin use : http://172.18.0.6
 ```
 
-**INFO**: If you want to make sure that you have the latest images, do a `lamp start --pull`
+**INFO**: If you want to make sure that you have the latest images, do a `lamp start --pull --recreate` 
 
 
 ## Stop the servers
@@ -318,5 +238,59 @@ lamp dns stop
 
 We also recommand to remove dnsmasq from Network Manager and to uninstall `libnss-mdns` (with `sudo apt-get remove libnss-mdns`)
 
+
+# Plugins
+## Writing a plugin
+To write a plugin you need to create a folder in the plugins/ directory that contains your commands. Each file with a
+`.py` extension will be taken as a plugin. The main function should be named exactly like the file.
+
+Example for a file that is in `plugins/my_command/hi.py`:
+```python
+import click
+
+
+@click.command(help="Example")
+def hi():
+    print('Hi!')
+```
+
+Once your plugin has been written you need to re-run:
+```bash
+$ lamp refresh-plugins
+```
+
+## Installing a plugin
+To install a plugin
+```bash
+$ cd plugins/
+$ git clone https://github.com/xyz/docker-lamp-myplugin myplugin
+$ lamp refresh-plugins
+```
+
+You can, for example install the sugarcli plugin:
+```bash
+$ cd plugins/
+$ git clone https://github.com/inetprocess/docker-lamp-sugarcli sugarcli
+$ lamp refresh-plugins
+```
+
+As well as the composer one:
+```bash
+$ cd plugins/
+$ git clone https://github.com/inetprocess/docker-lamp-composer composer
+$ lamp refresh-plugins
+```
+
+## Define services in your plugins
+By creating a `services/` directory you can either override or create new services with your plugins.
+Example: `plugins/myplugin/services/mysql.yml` will override the default mysql service while `plugins/myplugin/services/nginx.yml` will define a new service.
+
+Each service added by a plugin must be added in `compose.ini` to be started.
+
+
+## List of existing plugins
+* [docker-lamp-composer](https://github.com/inetprocess/docker-lamp-composer) : Download and run composer
+* [docker-lamp-sugarcli](https://github.com/inetprocess/docker-lamp-sugarcli) : Download and run sugarcli
+* [docker-lamp-phing](https://github.com/inetprocess/docker-lamp-phing) : Download and run Phing
 
 

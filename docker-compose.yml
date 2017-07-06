@@ -10,8 +10,8 @@ networks:
 
 services:
     data:
-        image: inetprocess/data
-        #build: https://github.com/inetprocess/docker-data
+        image: edyan/data
+        #build: https://github.com/edyan/docker-data
         volumes:
             - ./home/www-data:/home/www-data
             - ./www:/var/www
