@@ -69,7 +69,7 @@ class Marina():
 
     def start(self, pull: bool, recreate: bool):
         if self.running_vms:
-            puts(colored.yellow("Docker-Marina is already started ..."))
+            puts(colored.yellow("marina is already started ..."))
             sys.exit(0)
 
         if pull is True:
@@ -96,7 +96,7 @@ class Marina():
 
     def status(self):
         if not self.running_vms:
-            puts(colored.yellow("Docker-Marina is currently stopped"))
+            puts(colored.yellow("marina is currently stopped"))
             sys.exit(0)
 
         dns_started = docker.container_running('docker_dns')

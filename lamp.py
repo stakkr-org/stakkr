@@ -9,11 +9,12 @@ from pkg_resources import iter_entry_points
 
 # TODO Remplacer certaines options de configuration par @click.option('--uid', envvar='UID') ?
 @with_plugins(iter_entry_points('marina.plugins'))
-@click.group(help="""Wrapper for Docker Compose that helps
-to start / stop / get the status, etc .... of services.
+@click.group(help="""A recompose tool that uses docker compose to easily create / maintain
+a stack of services, for example for web development.
 
-Based on a configuration file located into conf/""")
-@click.version_option('0.5')
+Via a configuration file you can setup the required services and let marina link
+and start everything for you.""")
+@click.version_option('2.0')
 @click.option('--debug/--no-debug', default=False)
 @click.pass_context
 def marina(ctx, debug):
@@ -33,42 +34,42 @@ def fullstart(ctx):
     print(click.style('Build done\n', fg='green'))
 
 
-@marina.command(help="Start the servers")
+@marina.command(help="Start services defined in conf/compose.ini")
 @click.option('--pull', help="Force a pull of the latest images versions", is_flag=True)
-@click.option('--recreate', help="Remove images once stopped (useful for some disk space consuming services)", is_flag=True)
+@click.option('--recreate', help="Remove containers and create it again", is_flag=True)
 @click.pass_context
 def start(ctx, pull: bool, recreate: bool):
-    print(click.style('Starting your marina server ...', fg='green'))
+    print(click.style('Starting your marina services ...', fg='green'))
     marina = ctx.obj['MARINA']
     marina.start(pull, recreate)
-    print(click.style('marina server has been started\n', fg='green'))
+    print(click.style('marina services have been started\n', fg='green'))
 
     marina.display_services_ports()
 
 
-@marina.command(help="Stop the servers")
+@marina.command(help="Stop services")
 @click.pass_context
 def stop(ctx):
-    print(click.style('Stopping docker-marina ...', fg='green'))
+    print(click.style('Stopping marina services ...', fg='green'))
     marina = ctx.obj['MARINA']
     marina.stop()
-    print(click.style('docker-marina has been stopped.\n', fg='green'))
+    print(click.style('marina services have been stopped.\n', fg='green'))
 
 
-@marina.command(help="Restart the servers")
+@marina.command(help="Restart services")
 @click.option('--pull', help="Force a pull of the latest images versions", is_flag=True)
-@click.option('--recreate', help="Remove images once stopped (useful for some disk space consuming services)", is_flag=True)
+@click.option('--recreate', help="Remove containers and create it again", is_flag=True)
 @click.pass_context
 def restart(ctx, pull: bool, recreate: bool):
-    print(click.style('Restarting docker-marina ...', fg='green'))
+    print(click.style('Restarting marina services ...', fg='green'))
     marina = ctx.obj['MARINA']
     marina.restart(pull, recreate)
-    print(click.style('docker-marina has been restarted.\n', fg='green'))
+    print(click.style('marina services have been restarted.\n', fg='green'))
 
     marina.display_services_ports()
 
 
-@marina.command(help="Display the list of running servers")
+@marina.command(help="Display the list of running services")
 @click.pass_context
 def status(ctx):
     marina = ctx.obj['MARINA']
@@ -78,11 +79,11 @@ def status(ctx):
 @marina.command(help="Enter a VM")
 @click.pass_context
 @click.option('--user', help="User's name", type=click.Choice(['www-data', 'root']))
-@click.argument('vm', required=True, type=click.Choice(['mysql', 'php']))
+@click.argument('vm', required=True, type=click.Choice(['apache', 'mysql', 'php']))
 def console(ctx, vm: str, user: str):
-    if vm == 'php' and user is None:
+    if vm in ['apache', 'php'] and user is None:
         user = 'www-data'
-    elif vm != 'php' and user == 'www-data':
+    elif vm not in ['apache', 'php'] and user == 'www-data':
         user = 'root'
     elif user is None:
         user = 'root'
@@ -110,7 +111,7 @@ def run(ctx, vm: str, user: str, run_args: tuple):
         marina.run_mysql(run_args)
 
 
-@marina.command(help="Manage the DNS forwarder (only one per host)", name="dns")
+@marina.command(help="Manage the DNS forwarder", name="dns")
 @click.argument('action', required=True, type=click.Choice(['start', 'stop']))
 @click.pass_context
 def dns(ctx, action: str):
@@ -131,7 +132,7 @@ def refresh_plugins():
 
     subprocess.check_call(['pip', 'install', '-e', '.'], stdout=DEVNULL)
     print(click.style('Plugins refreshed.\n', fg='green'))
-    
+
 
 def main():
     try:
