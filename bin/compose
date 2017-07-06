@@ -35,7 +35,7 @@ def get_services_conf_from_plugins(services: list):
     from pkg_resources import iter_entry_points
 
     # Override services with plugins
-    for entry in iter_entry_points('lamp.plugins'):
+    for entry in iter_entry_points('marina.plugins'):
         services_dir = 'plugins/' + str(entry).split('.')[1] + '/services'
         if os.path.isdir(services_dir) is False:
             continue
