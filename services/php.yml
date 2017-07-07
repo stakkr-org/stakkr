@@ -16,3 +16,4 @@ services:
             - ./logs/php:/var/log/php
             - ./conf/php-fpm-override:/etc/php5/fpm/user-conf.d
             - ./conf/php-fpm-override:/etc/php/7.0/fpm/user-conf.d
+            - ./conf/php-fpm-override:/etc/php/7.1/fpm/user-conf.d
