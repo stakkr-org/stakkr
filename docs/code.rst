@@ -1,6 +1,7 @@
-.. automodule:: marina
-.. autoclass:: Marina
-    :members:
+Marina's code structure
+==================================
 
-.. automodule:: docker
-    :members:
+Marina works with a few modules / classes:
+
+* `lib/docker.py <code-docker.html>`__ : actions to get info from docker daemon
+* `lib/marina.py <code-marina.html>`__ : main class that does the actions asked in the cli
