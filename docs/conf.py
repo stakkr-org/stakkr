@@ -21,6 +21,7 @@ import os
 import sphinx_rtd_theme
 import sys
 sys.path.insert(0, os.path.abspath('../lib'))
+sys.path.insert(0, os.path.abspath('../bin'))
 
 
 # -- General configuration ------------------------------------------------

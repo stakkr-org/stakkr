@@ -192,6 +192,8 @@ class Marina():
 
 
     def docker_run_dns(self):
+        self.check_vms_are_running()
+
         try:
             docker.create_network('dns')
             cmd = ['docker', 'run', '--rm', '-d', '--hostname', 'docker-dns', '--name', self.dns_container_name]
