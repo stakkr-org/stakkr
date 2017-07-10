@@ -40,6 +40,7 @@ setup(
     entry_points='''
         [console_scripts]
         marina=marina:main
+        docker-clean=docker_clean:main
         {}
       '''.format(get_plugins()),
     install_requires=[
@@ -47,6 +48,5 @@ setup(
         'click', 'click-plugins',
         'requests>=2.11.0,<2.12',
         'docker-compose'
-        ],
-    scripts=['bin/docker-clean']
+        ]
 )

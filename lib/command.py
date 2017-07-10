@@ -1,4 +1,9 @@
-import os
+"""
+A command wrapper to get a live output displayed. Useful when you need to write a plugin that outputs some progress
+bar or info.
+"""
+
+
 import sys
 import subprocess
 
@@ -7,6 +12,8 @@ from io import BufferedReader
 
 
 def launch_cmd_displays_output(cmd: list, displays_messages=True, displays_errors=True):
+    """Launch a command and displays conditionnaly messages and / or errors"""
+
     try:
         result = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except Exception as e:
@@ -14,19 +21,23 @@ def launch_cmd_displays_output(cmd: list, displays_messages=True, displays_error
         sys.exit(1)
 
     if displays_messages is True:
-        print_messages(result)
+        _print_messages(result)
     if displays_errors is True:
-        print_errors(result)
+        _print_errors(result)
 
     return result
 
 
-def print_messages(result: BufferedReader):
+def _print_messages(result: BufferedReader):
+    """Print messages sent to the STDOUT"""
+
     for line in result.stdout:
         print(line.decode(), end='')
 
 
-def print_errors(result: BufferedReader):
+def _print_errors(result: BufferedReader):
+    """Print messages sent to the STDERR"""
+
     i = 0
     for line in result.stderr:
         if i == 0:

@@ -3,10 +3,14 @@ import os
 
 
 class Config():
+    """Config Parser of Marina. Set default values from conf/compose.ini.tpl overriden by conf/compose.ini"""
+
     def __init__(self, config_file):
         self.config_file = config_file
 
     def read(self):
+        """Read the default values and overriden ones"""
+
         if os.path.isfile(self.config_file) is False:
             msg = 'Error: Missing "' + self.config_file + '". '
             if self.config_file.endswith('.ini'):
@@ -16,6 +20,7 @@ class Config():
             raise IOError(msg)
 
         return self.__parse()
+
 
     def __parse(self):
         config = ConfigParser()

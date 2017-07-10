@@ -7,9 +7,7 @@ from lib import docker
 
 
 class Marina():
-    """
-    Main class that does actions asked in the cli
-    """
+    """Main class that does actions asked in the cli"""
 
     def __init__(self, base_dir: str):
         self.marina_base_dir = base_dir
@@ -24,26 +22,13 @@ class Marina():
         self.default_config_main = Config('conf/compose.ini.tpl').read()['main']
         self.user_config_main = Config('conf/compose.ini').read()['main']
         self.project_name = self.user_config_main.get('project_name')
-        self.vms = docker.get_vms(self.project_name)
+        self.vms = docker.get_running_containers(self.project_name)
         self.running_vms = sum(True for vm_id, vm_data in self.vms.items() if vm_data['running'] is True)
 
 
-    def run_services_post_scripts(self):
-        if os.name == 'nt':
-            puts(colored.red('Could not run service post scripts under Windows'))
-            return
-
-        services = [service for service in self.user_config_main.get('services', '').split(',') if service != '']
-        for service in services:
-            service_script = 'services/' + service + '.sh'
-            vm_name = self.get_vm_item(service, 'name')
-            if os.path.isfile(service_script) is False:
-                continue
-
-            subprocess.call(['bash', service_script, vm_name])
-
-
     def display_services_ports(self):
+        """Once started, marina displays a message with the list of launched containers."""
+
         dns_started = docker.container_running('docker_dns')
         services_to_display = {
             'apache': {'name': 'Web Server', 'url': 'http://{URL}'},
@@ -54,13 +39,13 @@ class Marina():
         }
 
         for service, options in sorted(services_to_display.items()):
-            ip = self.get_vm_item(service, 'ip')
+            ip = self._get_vm_item(service, 'ip')
             if ip == '':
                 continue
-            url = options['url'].replace('{URL}', self.get_vm_item(service, 'ip'))
+            url = options['url'].replace('{URL}', self._get_vm_item(service, 'ip'))
 
             if dns_started is True:
-                url = options['url'].replace('{URL}', '{}'.format(self.get_vm_item(service, 'name')))
+                url = options['url'].replace('{URL}', '{}'.format(self._get_vm_item(service, 'name')))
 
             puts('  - For {}'.format(colored.yellow(options['name'])).ljust(55, ' ') + ' : ' + url)
 
@@ -71,6 +56,8 @@ class Marina():
 
 
     def start(self, pull: bool, recreate: bool):
+        """If not started, start the containers defined in config"""
+
         if self.running_vms:
             puts(colored.yellow("marina is already started ..."))
             sys.exit(0)
@@ -80,17 +67,21 @@ class Marina():
 
         recreate_param = '--force-recreate' if recreate is True else '--no-recreate'
         subprocess.call(['python', 'bin/compose', 'up', '-d', recreate_param, '--remove-orphans'])
-        self.vms = docker.get_vms(self.project_name)
+        self.vms = docker.get_running_containers(self.project_name)
         self.run_services_post_scripts()
 
 
     def stop(self):
-        self.check_vms_are_running()
+        """If started, stop the containers defined in config. Else throw an error"""
+
+        self._check_vms_are_running()
         subprocess.call(['python', 'bin/compose', 'stop'])
         self.running_vms = 0
 
 
     def restart(self, pull: bool, recreate: bool):
+        """Restart (smartly) the containers defined in config : stop=start and start=stop+start"""
+
         if self.running_vms:
             self.stop()
 
@@ -98,6 +89,8 @@ class Marina():
 
 
     def status(self):
+        """Returns a nice table with the list of started containers"""
+
         if not self.running_vms:
             puts(colored.yellow("marina is currently stopped"))
             sys.exit(0)
@@ -135,14 +128,18 @@ class Marina():
 
 
     def fullstart(self):
+        """Build the image dynamically if git repos are given for a service"""
+
         subprocess.call(['python', 'bin/compose', 'build'])
         self.start()
 
 
     def console(self, vm: str, user: str):
-        self.check_vms_are_running()
+        """Enter a container (marina allows only apache / php and mysql)"""
 
-        vm_name = self.get_vm_item(vm, 'name')
+        self._check_vms_are_running()
+
+        vm_name = self._get_vm_item(vm, 'name')
         if vm_name == '':
             raise Exception('{} does not seem to be in your services or has crashed'.format(vm))
 
@@ -151,18 +148,22 @@ class Marina():
 
 
     def run_php(self, user: str, args: str):
-        self.check_vms_are_running()
+        """Run a script or PHP command from outside"""
+
+        self._check_vms_are_running()
 
         tty = 't' if sys.stdin.isatty() else ''
-        cmd = ['docker', 'exec', '-u', user, '-i' + tty, self.get_vm_item('php', 'name'), 'bash', '-c', '--']
+        cmd = ['docker', 'exec', '-u', user, '-i' + tty, self._get_vm_item('php', 'name'), 'bash', '-c', '--']
         cmd += ['cd /var/' + self.current_dir_relative + '; exec /usr/bin/php ' + args]
         subprocess.call(cmd, stdin=sys.stdin)
 
 
     def run_mysql(self, args: str):
-        self.check_vms_are_running()
+        """Run a MySQL command from outside. Useful to import an SQL File."""
 
-        vm_name = self.get_vm_item('mysql', 'name')
+        self._check_vms_are_running()
+
+        vm_name = self._get_vm_item('mysql', 'name')
         if vm_name == '':
             raise Exception('mysql does not seem to be in your services or has crashed')
 
@@ -177,6 +178,8 @@ class Marina():
 
 
     def manage_dns(self, action: str):
+        """Starts or stop the DNS forwarder"""
+
         dns_started = docker.container_running(self.dns_container_name)
 
         if dns_started is True and action == 'stop':
@@ -184,15 +187,37 @@ class Marina():
             subprocess.check_output(cmd)
             return
         elif dns_started is False and action == 'start':
-            self.docker_run_dns()
+            self._docker_run_dns()
             return
 
         puts(colored.red("Can't {} the dns container as (already done?)".format(action)))
         sys.exit(1)
 
 
-    def docker_run_dns(self):
-        self.check_vms_are_running()
+    def _run_services_post_scripts(self):
+        """
+        A service can have a .sh file that will be executed once it's started.
+        Useful to override some actions of the classical /run.sh
+        """
+
+        if os.name == 'nt':
+            puts(colored.red('Could not run service post scripts under Windows'))
+            return
+
+        services = [service for service in self.user_config_main.get('services', '').split(',') if service != '']
+        for service in services:
+            service_script = 'services/' + service + '.sh'
+            vm_name = self._get_vm_item(service, 'name')
+            if os.path.isfile(service_script) is False:
+                continue
+
+            subprocess.call(['bash', service_script, vm_name])
+
+
+    def _docker_run_dns(self):
+        """Starts the DNS"""
+
+        self._check_vms_are_running()
 
         try:
             docker.create_network('dns')
@@ -206,7 +231,9 @@ class Marina():
             sys.exit(1)
 
 
-    def get_vm_item(self, compose_name: str, item_name: str):
+    def _get_vm_item(self, compose_name: str, item_name: str):
+        """Get a value frrom a VM, such as name or IP"""
+
         for vm_id, vm_data in self.vms.items():
             if vm_data['compose_name'] == compose_name:
                 return vm_data[item_name]
@@ -214,6 +241,8 @@ class Marina():
         return ''
 
 
-    def check_vms_are_running(self):
+    def _check_vms_are_running(self):
+        """Throws an error if vms are not running"""
+
         if not self.running_vms:
             raise Exception('Have you started your server with the start or fullstart action ?')

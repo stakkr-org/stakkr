@@ -3,5 +3,11 @@ Marina's code structure
 
 Marina works with a few modules / classes:
 
-* `lib/docker.py <code-docker.html>`__ : actions to get info from docker daemon
-* `lib/marina.py <code-marina.html>`__ : main class that does the actions asked in the cli
+.. toctree::
+   :maxdepth: 2
+   :caption: List of modules:
+
+   code-command.rst
+   code-config.rst
+   code-docker.rst
+   code-marina.rst

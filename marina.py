@@ -24,94 +24,31 @@ def marina(ctx, debug):
     ctx.obj['MARINA'] = marina.Marina(os.path.dirname(os.path.realpath(__file__)))
 
 
-@marina.command(help="""In case you don't use images but Git repos, run that command
-to build your images.""")
+@marina.command(help="""Enter a container to perform direct actions such as install packages, run commands ...
+
+Valid values for CONTAINER : 'apache', 'mysql' or 'php'""")
+@click.option('--user', help="User's name. Valid choices : www-data or root", type=click.Choice(['www-data', 'root']))
+@click.argument('container', required=True, type=click.Choice(['apache', 'mysql', 'php']))
 @click.pass_context
-def fullstart(ctx):
-    print(click.style('Building required images ...', fg='green'))
-    marina = ctx.obj['MARINA']
-    marina.fullstart()
-    print(click.style('Build done\n', fg='green'))
-
-
-@marina.command(help="Start services defined in compose.ini")
-@click.option('--pull', help="Force a pull of the latest images versions", is_flag=True)
-@click.option('--recreate', help="Remove images once stopped (useful for some disk space consuming services)", is_flag=True)
-@click.pass_context
-def start(ctx, pull: bool, recreate: bool):
-    print(click.style('Starting your marina services ...', fg='green'))
-    marina = ctx.obj['MARINA']
-    marina.start(pull, recreate)
-    print(click.style('marina services have been started\n', fg='green'))
-
-    marina.display_services_ports()
-
-
-@marina.command(help="Stop the services")
-@click.pass_context
-def stop(ctx):
-    print(click.style('Stopping marina services...', fg='green'))
-    marina = ctx.obj['MARINA']
-    marina.stop()
-    print(click.style('marina services have been stopped.\n', fg='green'))
-
-
-@marina.command(help="Restart the servers")
-@click.option('--pull', help="Force a pull of the latest images versions", is_flag=True)
-@click.option('--recreate', help="Recreate all containers", is_flag=True)
-@click.pass_context
-def restart(ctx, pull: bool, recreate: bool):
-    print(click.style('Restarting marina services ...', fg='green'))
-    marina = ctx.obj['MARINA']
-    marina.restart(pull, recreate)
-    print(click.style('marina services have been restarted.\n', fg='green'))
-
-    marina.display_services_ports()
-
-
-@marina.command(help="Display the list of running services")
-@click.pass_context
-def status(ctx):
-    marina = ctx.obj['MARINA']
-    marina.status()
-
-
-@marina.command(help="Enter a Container (apache, mysql or php)")
-@click.pass_context
-@click.option('--user', help="User's name", type=click.Choice(['www-data', 'root']))
-@click.argument('vm', required=True, type=click.Choice(['apache', 'mysql', 'php']))
-def console(ctx, vm: str, user: str):
-    if vm in ['php', 'apache'] and user is None:
+def console(ctx, container: str, user: str):
+    if container in ['php', 'apache'] and user is None:
         user = 'www-data'
-    elif vm not in ['php', 'apache'] and user == 'www-data':
+    elif container not in ['php', 'apache'] and user == 'www-data':
         user = 'root'
     elif user is None:
         user = 'root'
 
     marina = ctx.obj['MARINA']
-    marina.console(vm, user)
+    marina.console(container, user)
 
 
-@marina.command(help="Run a command to a VM", context_settings=dict(ignore_unknown_options=True))
-@click.pass_context
-@click.option('--user', '-u', help="User's name", type=click.Choice(['www-data', 'root']))
-@click.argument('vm', required=True, type=click.Choice(['mysql', 'php']))
-@click.argument('run_args', nargs=-1, type=click.UNPROCESSED)
-def run(ctx, vm: str, user: str, run_args: tuple):
-    if vm == 'php' and user is None:
-        user = 'www-data'
-    elif user is None:
-        user = 'root'
+@marina.command(
+    help="""Start or Stop the DNS forwarder.
+Only one DNS Forwarded by host is possible. Done with mgood/resolvable.
 
-    run_args = ' '.join(run_args)
-    marina = ctx.obj['MARINA']
-    if vm == 'php':
-        marina.run_php(user, run_args)
-    elif vm == 'mysql':
-        marina.run_mysql(run_args)
-
-
-@marina.command(help="Manage the DNS forwarder", name="dns")
+Valid values for ACTION : 'start' or 'stop'""",
+    name="dns"
+    )
 @click.argument('action', required=True, type=click.Choice(['start', 'stop']))
 @click.pass_context
 def dns(ctx, action: str):
@@ -126,12 +63,95 @@ def dns(ctx, action: str):
     marina.manage_dns(action)
 
 
-@marina.command(help='Launch that command if you install a new plugin', name="refresh-plugins")
+@marina.command(help="In case you don't use images but Git repos, run that command to build your images.")
+@click.pass_context
+def fullstart(ctx):
+    print(click.style('Building required images ...', fg='green'))
+    marina = ctx.obj['MARINA']
+    marina.fullstart()
+    print(click.style('Build done\n', fg='green'))
+
+
+@marina.command(help='Required to be launched if you install a new plugin', name="refresh-plugins")
 def refresh_plugins():
     from subprocess import DEVNULL
 
     subprocess.check_call(['pip', 'install', '-e', '.'], stdout=DEVNULL)
     print(click.style('Plugins refreshed.\n', fg='green'))
+
+
+@marina.command(help="Restart all containers")
+@click.option('--pull', help="Force a pull of the latest images versions", is_flag=True)
+@click.option('--recreate', help="Recreate all containers", is_flag=True)
+@click.pass_context
+def restart(ctx, pull: bool, recreate: bool):
+    print(click.style('Restarting marina services ...', fg='green'))
+    marina = ctx.obj['MARINA']
+    marina.restart(pull, recreate)
+    print(click.style('marina services have been restarted.\n', fg='green'))
+
+    marina.display_services_ports()
+
+
+@marina.command(
+    help="""Run a command to a container.
+
+Valid values for CONTAINER : 'mysql' or 'php'. You can add more arguments after the container name.
+
+Examples:\n
+- marina run php -v\n
+- zcat dump.sql.gz | marina run mysql my_database\n
+- marina run php www/myfile.php\n
+""",
+    context_settings=dict(ignore_unknown_options=True))
+@click.pass_context
+@click.option('--user', '-u', help="User's name. Valid values: www-data or root", type=click.Choice(['www-data', 'root']))
+@click.argument('container', required=True, type=click.Choice(['mysql', 'php']))
+@click.argument('run_args', nargs=-1, type=click.UNPROCESSED)
+def run(ctx, container: str, user: str, run_args: tuple):
+    if container == 'php' and user is None:
+        user = 'www-data'
+    elif user is None:
+        user = 'root'
+
+    run_args = ' '.join(run_args)
+    marina = ctx.obj['MARINA']
+    if container == 'php':
+        marina.run_php(user, run_args)
+    elif container == 'mysql':
+        marina.run_mysql(run_args)
+
+
+@marina.command(help="Start containers defined in compose.ini")
+@click.option('--pull', help="Force a pull of the latest images versions", is_flag=True)
+@click.option(
+    '--recreate',
+    help="Remove images once stopped (useful for containers that consumes spaces)",
+    is_flag=True)
+@click.pass_context
+def start(ctx, pull: bool, recreate: bool):
+    print(click.style('Starting your marina services ...', fg='green'))
+    marina = ctx.obj['MARINA']
+    marina.start(pull, recreate)
+    print(click.style('marina services have been started\n', fg='green'))
+
+    marina.display_services_ports()
+
+
+@marina.command(help="Display a list of running containers")
+@click.pass_context
+def status(ctx):
+    marina = ctx.obj['MARINA']
+    marina.status()
+
+
+@marina.command(help="Stop the services")
+@click.pass_context
+def stop(ctx):
+    print(click.style('Stopping marina services...', fg='green'))
+    marina = ctx.obj['MARINA']
+    marina.stop()
+    print(click.style('marina services have been stopped.\n', fg='green'))
 
 
 def main():

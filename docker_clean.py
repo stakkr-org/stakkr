@@ -118,7 +118,7 @@ def remove_networks(force: bool, verbose: bool):
             print(click.style('Error removing a network: {}'.format(e.output.decode()), fg='red'))
 
 
-if __name__ == '__main__':
+def main():
     try:
         clean()
     except Exception as e:
@@ -136,3 +136,7 @@ if __name__ == '__main__':
         print("")
         # raise e
         sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()

@@ -10,6 +10,8 @@ Via a configuration file you can setup the required services and let marina link
    :caption: Contents:
 
    code.rst
+   cli.rst
+   plugin-development.rst
 
 
 

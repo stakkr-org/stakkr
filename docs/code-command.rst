@@ -1,5 +1,5 @@
-Module lib.docker
+Module lib.command
 ==================================
 
-.. automodule:: lib.docker
+.. automodule:: lib.command
     :members:
