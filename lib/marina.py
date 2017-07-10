@@ -7,6 +7,10 @@ from lib import docker
 
 
 class Marina():
+    """
+    Main class that does actions asked in the cli
+    """
+
     def __init__(self, base_dir: str):
         self.marina_base_dir = base_dir
         self.current_dir = os.getcwd()

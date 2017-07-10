@@ -1,14 +1,15 @@
-.. Marina documentation master file, created by
-   sphinx-quickstart on Mon Jul 10 13:30:18 2017.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to Marina's documentation!
+Welcome to marina's documentation!
 ==================================
+
+Marina is a a docker recompose tool that uses docker compose to easily create / maintain a stack of services, for example for web development.
+Via a configuration file you can setup the required services and let marina link and start everything for you.
+
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+   code.rst
 
 
 

@@ -17,9 +17,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../lib'))
 
 
 # -- General configuration ------------------------------------------------
@@ -51,7 +51,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Marina'
+project = 'marina'
 copyright = '2017, Emmanuel Dyan'
 author = 'Emmanuel Dyan'
 
@@ -108,11 +108,11 @@ html_static_path = ['_static']
 # refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
 html_sidebars = {
     '**': [
-        'about.html',
-        'navigation.html',
-        'relations.html',  # needs 'show_related': True theme option to display
         'searchbox.html',
-        'donate.html',
+        # 'about.html',
+        'navigation.html',
+        # 'relations.html',  # needs 'show_related': True theme option to display
+        # 'donate.html',
     ]
 }
 
@@ -172,6 +172,3 @@ texinfo_documents = [
      author, 'Marina', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-
