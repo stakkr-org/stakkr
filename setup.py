@@ -47,6 +47,7 @@ setup(
         'clint',
         'click', 'click-plugins',
         'requests>=2.11.0,<2.12',
-        'docker-compose'
+        'docker-compose',
+        'sphinx-click'
         ]
 )

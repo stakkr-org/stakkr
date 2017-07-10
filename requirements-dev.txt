@@ -1,5 +1,4 @@
 Pygments
 sphinx
 sphinx-autobuild
-sphinx-click
 sphinx-rtd-theme
