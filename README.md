@@ -66,7 +66,7 @@ $ pip3 install -e .
 ### Development
 To develop :
 ```bash
-pip install -r requirements-dev.txt
+pip install -r requirements.txt
 ```
 
 

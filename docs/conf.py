@@ -113,9 +113,10 @@ html_static_path = ['_static']
 html_sidebars = {
     '**': [
         'searchbox.html',
-        # 'about.html',
         'navigation.html',
-        # 'relations.html',  # needs 'show_related': True theme option to display
+        'cli.html',
+        'code.html',
+        'plugin-development.html',
         # 'donate.html',
     ]
 }
