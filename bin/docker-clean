@@ -55,27 +55,17 @@ def remove_containers(force: bool, verbose: bool):
 
 
 def remove_images(force: bool, verbose: bool):
-    cmd = ['docker', 'images', '--no-trunc', '-q', '-f', 'dangling=true']
+    cmd = ['docker', 'image', 'ls']
     images = subprocess.check_output(cmd, stderr=subprocess.STDOUT).splitlines()
 
     if len(images) == 0:
         print('No image to remove')
         return
 
-    print('Removing {} dangling image(s)'.format(len(images)))
+    print('Removing {} image(s)'.format(len(images)))
 
-    for image in images:
-        image = image.decode()
-        if verbose is True:
-            print('  Removing image {}'.format(image))
-
-        if force is False:
-            return
-
-        try:
-            subprocess.check_output(['docker', 'rmi', image], stderr=subprocess.STDOUT)
-        except Exception as e:
-            print(click.style('Error removing an image: {}'.format(e.output.decode()), fg='red'))
+    cmd = ['docker', 'image', 'prune', '--all', '--force']
+    subprocess.check_output(cmd, stderr=subprocess.STDOUT)
 
 
 def remove_volumes(force: bool, verbose: bool):
