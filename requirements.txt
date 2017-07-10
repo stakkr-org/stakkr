@@ -1,3 +1,4 @@
+guzzle_sphinx_theme
 Pygments
 sphinx
 sphinx-click

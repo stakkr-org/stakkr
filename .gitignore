@@ -34,4 +34,5 @@ __pycache__
 
 # ReadTheDocs
 /docs/_build
+/docs/_build_html
 /docs/_templates

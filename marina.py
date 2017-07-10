@@ -9,11 +9,11 @@ from pkg_resources import iter_entry_points
 
 # TODO Remplacer certaines options de configuration par @click.option('--uid', envvar='UID') ?
 @with_plugins(iter_entry_points('marina.plugins'))
-@click.group(help="""A recompose tool that uses docker compose to easily create / maintain
+@click.group(help="""Main CLI Tool that easily create / maintain
 a stack of services, for example for web development.
 
-Via a configuration file you can setup the required services and let marina
-link and start everything for you.""")
+Read the configuration file and setup the required services by 
+linking and managing everything for you.""")
 @click.version_option('2.0')
 @click.option('--debug/--no-debug', default=False)
 @click.pass_context
