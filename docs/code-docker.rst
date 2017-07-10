@@ -1,0 +1,4 @@
+.. CodeDockerDoc:
+
+.. automodule:: docker
+    :members:
