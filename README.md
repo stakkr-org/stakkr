@@ -63,6 +63,12 @@ $ pip3 install click clint # because it could be needed at that stage
 $ pip3 install -e .
 ```
 
+### Development
+To develop :
+```bash
+pip install -r requirements-dev.txt
+```
+
 
 # Configuration
 Copy the file `conf/compose.ini.tpl` to `conf/compose.ini` and set the right Configuration parameters.
