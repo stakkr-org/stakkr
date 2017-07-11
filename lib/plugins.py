@@ -5,6 +5,8 @@ from os import listdir, path
 
 
 def get_plugins_configuration():
+    """Write a string understandable by setuptools and click"""
+
     plugins = get_plugins()
 
     return '' if len(plugins) is 0 else '[marina.plugins]\n' + '\n'.join(plugins)
