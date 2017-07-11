@@ -26,7 +26,7 @@ from a web application, and if your ``project_name = marina`` use
 ``marina_elasticsearch`` or to connect to mysql use ``marina_mysql``.
 The service names also works (*elasticsearch* and *mysql*)
 
-.. code:: ini
+.. code:: cfg
 
     ; Comma separated list of services to start, valid values: apache / bonita / elasticsearch / mailcatcher / maildev / mongo / mysql / php / phpmyadmin / xhgui
     services=apache,php,mysql
@@ -93,7 +93,7 @@ Files location
    the fpm configuration files one. Example:
    ``php_value[memory_limit] = 127M``.
 
-   
+
 Add binaries
 ------------
 

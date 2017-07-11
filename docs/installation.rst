@@ -4,7 +4,7 @@ Installation
 
 Docker
 ----------
-You must have Docker installed on your computer. 
+You must have Docker installed on your computer.
 
 Example for Ubuntu: https://docs.docker.com/engine/installation/ubuntulinux/_
 
@@ -18,11 +18,11 @@ multiple instances at the same time. A good practice is too have one
 clone for one project or one clone for projects with the same versions
 of PHP / MySQL / Elasticsearch, etc ...
 
-.. code:: bash
+.. code:: shell
 
     $ git clone https://github.com/inetprocess/marina
 
-    
+
 Prerequisites
 -------------
 
@@ -32,7 +32,7 @@ Automatic Installation
 Once cloned, you can run the ``install.sh`` script made for Ubuntu
 (tested on 16.04) that will install the dependencies:
 
-.. code:: bash
+.. code:: shell
 
     $ cd marina
     $ ./install.sh
@@ -44,18 +44,18 @@ If you want to manually install the dependencies, first install OS packages for 
 and ``virtualenv``.
 
 
-Then: 
+Then:
 
 -  Install ``autoenv`` (Read https://github.com/kennethreitz/autoenv).
    Example:
 
-   .. code:: bash
+   .. code:: shell
 
        $ pip3 install autoenv
 
 -  Create the virtualenv and activate it:
 
-   .. code:: bash
+   .. code:: shell
 
        $ virtualenv -p /usr/bin/python3 ${PWD##*/}_marina
        $ source ${PWD##*/}_marina/bin/activate
@@ -68,14 +68,14 @@ Development
 
 To develop :
 
-.. code:: bash
+.. code:: shell
 
-    pip install -r requirements.txt
+    $ pip install -r requirements.txt
 
 
-And to generate that doc : 
+And to generate that doc :
 
-.. code:: bash
+.. code:: shell
 
     $ cd docs
     $ sphinx-autobuild . _build_html
