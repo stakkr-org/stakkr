@@ -40,18 +40,11 @@ def remove_containers(force: bool, verbose: bool):
     for container in containers:
         container = container.decode()
         if verbose is True:
-            cmd = ['docker', 'inspect', '--format={{.Name}}', container]
-            container_name = subprocess.check_output(cmd, stderr=subprocess.STDOUT).splitlines()[0]
+            _display_container_info(container)
 
-            print('  Removing container {}'.format(container_name.decode()))
+        if force is True:
+            _remove_container(container)
 
-        if force is False:
-            return
-
-        try:
-            subprocess.check_output(['docker', 'rm', container], stderr=subprocess.STDOUT)
-        except Exception as e:
-            print(click.style('Error removing a container: {}'.format(e.output.decode()), fg='red'))
 
 
 def remove_images(force: bool, verbose: bool):
@@ -64,8 +57,27 @@ def remove_images(force: bool, verbose: bool):
 
     print('Removing {} image(s)'.format(len(images)))
 
-    cmd = ['docker', 'image', 'prune', '--all', '--force']
-    subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    if force is True:
+        _prune_images()
+
+
+def remove_networks(force: bool, verbose: bool):
+    cmd = ['docker', 'network', 'ls', '--no-trunc', '-q', '--filter', 'type=custom']
+    networks = subprocess.check_output(cmd, stderr=subprocess.STDOUT).splitlines()
+
+    if len(networks) == 0:
+        print('No network to remove')
+        return
+
+    print('Removing {} exited networks(s)'.format(len(networks)))
+
+    for network in networks:
+        network = network.decode()
+        if verbose is True:
+            _display_network_info(network)
+
+        if force is True:
+            _remove_network(network)
 
 
 def remove_volumes(force: bool, verbose: bool):
@@ -83,39 +95,50 @@ def remove_volumes(force: bool, verbose: bool):
         if verbose is True:
             print('  Removing volume {}'.format(volume))
 
-        if force is False:
-            return
-
-        try:
-            subprocess.check_output(['docker', 'volume', 'rm', volume], stderr=subprocess.STDOUT)
-        except Exception as e:
-            print(click.style('Error removing a volume: {}'.format(e.output.decode()), fg='red'))
+        if force is True:
+            _remove_volume(volume)
 
 
-def remove_networks(force: bool, verbose: bool):
-    cmd = ['docker', 'network', 'ls', '--no-trunc', '-q', '--filter', 'type=custom']
-    networks = subprocess.check_output(cmd, stderr=subprocess.STDOUT).splitlines()
+def _display_container_info(container: str):
+    cmd = ['docker', 'inspect', '--format={{.Name}}', container]
+    container_name = subprocess.check_output(cmd, stderr=subprocess.STDOUT).splitlines()[0]
 
-    if len(networks) == 0:
-        print('No network to remove')
-        return
+    print('  Removing container {}'.format(container_name.decode()))
 
-    print('Removing {} exited networks(s)'.format(len(networks)))
 
-    for network in networks:
-        network = network.decode()
-        if verbose is True:
-            cmd = ['docker', 'network', 'inspect', '--format={{.Name}}', network]
-            network_name = subprocess.check_output(cmd, stderr=subprocess.STDOUT).splitlines()[0]
-            print('  Removing network {}'.format(network_name.decode()))
+def _display_network_info(network: str):
+    cmd = ['docker', 'network', 'inspect', '--format={{.Name}}', network]
+    network_name = subprocess.check_output(cmd, stderr=subprocess.STDOUT).splitlines()[0]
+    print('  Removing network {}'.format(network_name.decode()))
 
-        if force is False:
-            return
 
-        try:
-            subprocess.check_output(['docker', 'network', 'rm', network], stderr=subprocess.STDOUT)
-        except Exception as e:
-            print(click.style('Error removing a network: {}'.format(e.output.decode()), fg='red'))
+def _prune_images():
+    try:
+        cmd = ['docker', 'image', 'prune', '--all', '--force']
+        subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    except Exception as e:
+        print(click.style('Error removing images'), fg='red')
+
+
+def _remove_container(container: str):
+    try:
+        subprocess.check_output(['docker', 'rm', container], stderr=subprocess.STDOUT)
+    except Exception as e:
+        print(click.style('Error removing a container: {}'.format(e.output.decode()), fg='red'))
+
+
+def _remove_network(network: str):
+    try:
+        subprocess.check_output(['docker', 'network', 'rm', network], stderr=subprocess.STDOUT)
+    except Exception as e:
+        print(click.style('Error removing a network: {}'.format(e.output.decode()), fg='red'))
+
+
+def _remove_volume(volume: str):
+    try:
+        subprocess.check_output(['docker', 'volume', 'rm', volume], stderr=subprocess.STDOUT)
+    except Exception as e:
+        print(click.style('Error removing a volume: {}'.format(e.output.decode()), fg='red'))
 
 
 def main():

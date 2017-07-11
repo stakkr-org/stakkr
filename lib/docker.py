@@ -5,6 +5,17 @@ from json import loads as json_loads
 import subprocess
 
 
+def container_running(name: str):
+    """Returns True if the container is running else False"""
+
+    cmd = ['docker', 'inspect', '-f', '{{.State.Running}}', name]
+    try:
+        result = subprocess.check_output(cmd, stderr=subprocess.STDOUT).splitlines()[0]
+        return False if result.decode() == 'false' else True
+    except subprocess.CalledProcessError as e:
+        return False
+
+
 def get_running_containers(project_name: str):
     """Get a list of IDs of running containers for the current marina instance"""
 
@@ -81,17 +92,6 @@ def _container_in_network(container: str, expected_network: str):
             return True
 
     return False
-
-
-def _container_running(name: str):
-    """Returns True if the container is running else False"""
-
-    cmd = ['docker', 'inspect', '-f', '{{.State.Running}}', name]
-    try:
-        result = subprocess.check_output(cmd, stderr=subprocess.STDOUT).splitlines()[0]
-        return False if result.decode() == 'false' else True
-    except subprocess.CalledProcessError as e:
-        return False
 
 
 def _network_exists(network: str):

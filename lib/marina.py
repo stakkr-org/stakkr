@@ -68,7 +68,7 @@ class Marina():
         recreate_param = '--force-recreate' if recreate is True else '--no-recreate'
         subprocess.call(['python', 'bin/compose', 'up', '-d', recreate_param, '--remove-orphans'])
         self.vms = docker.get_running_containers(self.project_name)
-        self.run_services_post_scripts()
+        self._run_services_post_scripts()
 
 
     def stop(self):
@@ -206,12 +206,16 @@ class Marina():
 
         services = [service for service in self.user_config_main.get('services', '').split(',') if service != '']
         for service in services:
-            service_script = 'services/' + service + '.sh'
-            vm_name = self._get_vm_item(service, 'name')
-            if os.path.isfile(service_script) is False:
-                continue
+            self._call_service_post_script(service)
 
-            subprocess.call(['bash', service_script, vm_name])
+
+    def _call_service_post_script(self, service: str):
+        service_script = 'services/' + service + '.sh'
+        vm_name = self._get_vm_item(service, 'name')
+        if os.path.isfile(service_script) is False:
+            return
+
+        subprocess.call(['bash', service_script, vm_name])
 
 
     def _docker_run_dns(self):
