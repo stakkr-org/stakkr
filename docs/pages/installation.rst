@@ -20,7 +20,7 @@ of PHP / MySQL / Elasticsearch, etc ...
 
 .. code:: shell
 
-    $ git clone https://github.com/inetprocess/marina
+    $ git clone https://github.com/edyan/marina
 
 
 Prerequisites

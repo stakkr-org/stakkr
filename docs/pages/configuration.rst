@@ -75,7 +75,7 @@ Memory assigned to the VMS:
     mysql.ram=512M
     php.ram=512M
 
-.. _documentation: https://github.com/inetprocess/docker-xhgui
+.. _documentation: https://github.com/edyan/docker-xhgui
 
 
 
