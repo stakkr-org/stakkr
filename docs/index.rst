@@ -15,11 +15,11 @@ It works only in CLI.
    :maxdepth: 1
    :caption: Contents:
 
-   installation.rst
-   configuration.rst
-   cli.rst
-   plugin-development.rst
-   code.rst
+   pages/installation.rst
+   pages/configuration.rst
+   pages/cli.rst
+   pages/plugin-development.rst
+   pages/code.rst
 
 
 
