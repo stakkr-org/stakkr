@@ -4,18 +4,25 @@ from importlib import import_module
 from os import listdir, path
 
 
+def get_plugins_configuration():
+    plugins = get_plugins()
+
+    return '' if len(plugins) is 0 else '[marina.plugins]\n' + '\n'.join(plugins)
+
+
 def get_plugins():
-    """Read the plugins directory and get the subfolders from it"""
+    """Read the plugins directory, get the subfolders from it and look for .py files"""
+
     if path.isdir('plugins') is False:
         return ''
 
-    folders = [folder for folder in listdir('plugins') if path.isdir('plugins/{}'.format(folder))]
+    folders = _get_subfolders('plugins')
 
     plugins = []
     for folder in folders:
         plugins = _add_plugin_from_dir(plugins, 'plugins/{}/'.format(folder))
 
-    return '' if len(plugins) is 0 else '[marina.plugins]\n' + '\n'.join(plugins)
+    return sorted(plugins)
 
 
 def _add_plugin_from_dir(plugins: list, full_path: str):
@@ -33,3 +40,9 @@ def _get_files_from_folder(full_path: str):
     files = listdir(full_path)
 
     return [filename for filename in files if path.isfile(full_path + filename) and filename.endswith('.py')]
+
+
+def _get_subfolders(directory: str):
+    subfolders = listdir(directory)
+
+    return [folder for folder in subfolders if path.isdir('{}/{}'.format(directory, folder))]

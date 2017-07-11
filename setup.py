@@ -1,4 +1,4 @@
-from lib.plugins import get_plugins
+from lib.plugins import get_plugins_configuration
 from setuptools import setup, find_packages
 
 
@@ -17,7 +17,7 @@ setup(
         marina=marina:main
         docker-clean=docker_clean:main
         {}
-      '''.format(get_plugins()),
+      '''.format(get_plugins_configuration()),
     install_requires=[
         'clint',
         'click', 'click-plugins',

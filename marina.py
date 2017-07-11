@@ -12,7 +12,7 @@ from pkg_resources import iter_entry_points
 @click.group(help="""Main CLI Tool that easily create / maintain
 a stack of services, for example for web development.
 
-Read the configuration file and setup the required services by 
+Read the configuration file and setup the required services by
 linking and managing everything for you.""")
 @click.version_option('2.0')
 @click.option('--debug/--no-debug', default=False)
@@ -75,6 +75,13 @@ def fullstart(ctx):
 @marina.command(help='Required to be launched if you install a new plugin', name="refresh-plugins")
 def refresh_plugins():
     from subprocess import DEVNULL
+    from lib.plugins import get_plugins
+
+    print('Will add to setup.py :')
+    plugins = get_plugins()
+    for plugin in plugins:
+        print('  -> {}'.format(plugin.split('=')[0]))
+    print()
 
     subprocess.check_call(['pip', 'install', '-e', '.'], stdout=DEVNULL)
     print(click.style('Plugins refreshed.\n', fg='green'))
