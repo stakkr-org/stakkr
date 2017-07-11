@@ -11,3 +11,4 @@ Marina works with a few modules / classes:
    code/config.rst
    code/docker.rst
    code/marina.rst
+   code/plugins.rst
