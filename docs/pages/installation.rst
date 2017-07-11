@@ -6,7 +6,7 @@ Docker
 ----------
 You must have Docker installed on your computer.
 
-Example for Ubuntu: https://docs.docker.com/engine/installation/ubuntulinux/_
+Example for Ubuntu: https://docs.docker.com/engine/installation/ubuntulinux/
 
 
 Marina
