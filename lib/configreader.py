@@ -6,7 +6,8 @@ from validate import Validator
 
 
 class Config():
-    """Config Parser of Marina. Set default values from conf/compose.ini.tpl overriden by conf/compose.ini"""
+    """Config Parser of Marina. Set default values and validate conf/compose.ini
+    with conf/configspec.ini"""
 
     def __init__(self, config_file):
         self.config_file = config_file
