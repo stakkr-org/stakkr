@@ -19,9 +19,9 @@ To leave that environment:
     $ deactivate
 
 
-**WARNING: Make sure that you are in a virtual environment. To verify
-that, check that your prompt starts with something like
-``(xyz_marina)``**
+.. WARNING::
+    Make sure that you are in a virtual environment. To verify
+    that, check that your prompt starts with something like ``(xyz_marina)``
 
 
 Get Help
