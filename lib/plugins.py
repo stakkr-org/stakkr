@@ -4,14 +4,6 @@ from importlib import import_module
 from os import listdir, path
 
 
-def get_plugins_configuration():
-    """Write a string understandable by setuptools and click"""
-
-    plugins = get_plugins()
-
-    return '' if len(plugins) is 0 else '[marina.plugins]\n' + '\n'.join(plugins)
-
-
 def get_plugins():
     """Read the plugins directory, get the subfolders from it and look for .py files"""
 
@@ -25,6 +17,14 @@ def get_plugins():
         plugins = _add_plugin_from_dir(plugins, 'plugins/{}/'.format(folder))
 
     return sorted(plugins)
+
+
+def get_plugins_configuration():
+    """Write a string understandable by setuptools and click"""
+
+    plugins = get_plugins()
+
+    return '' if len(plugins) is 0 else '[marina.plugins]\n' + '\n'.join(plugins)
 
 
 def _add_plugin_from_dir(plugins: list, full_path: str):

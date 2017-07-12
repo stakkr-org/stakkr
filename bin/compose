@@ -8,23 +8,27 @@ from lib.configreader import Config
 from subprocess import call
 
 
-def set_env_values_from_conf(conf: list, default_conf: list):
-    for conf_parameter in default_conf:
-        env_variable = 'DOCKER_{}'.format(conf_parameter.replace('.', '_').upper())
-        env_value = conf.get(conf_parameter, default_conf.get(conf_parameter))
-        os.putenv(env_variable, env_value)
+@click.command(help="Run a command with docker-compose", context_settings=dict(ignore_unknown_options=True))
+@click.argument('command', nargs=-1, type=click.UNPROCESSED)
+def cli(command):
+    user_config_main = Config('conf/compose.ini').read()['main']
+    set_env_values_from_conf(user_config_main)
 
-    os.putenv('DOCKER_UID', conf.get('uid', str(os.getuid()) if os.name != 'nt' else '1000'))
-    os.putenv('DOCKER_GID', conf.get('gid', str(os.getgid()) if os.name != 'nt' else '1000'))
+    project_name = user_config_main.get('project_name')
+    os.putenv('COMPOSE_PROJECT_NAME', project_name)
 
+    # Services from config
+    configured_services = user_config_main.get('services')
 
-def get_available_services():
-    conf_files = [service for service in os.listdir('services/') if service.endswith('.yml')]
-    services = dict()
-    for conf_file in conf_files:
-        services[conf_file[:-4]] = 'services/' + conf_file
+    # Services available from base and plugins
+    available_services = get_available_services()
+    available_services = add_available_services_from_plugins(available_services)
+    services = get_enabled_services(configured_services, available_services)
 
-    return services
+    cmd = ['docker-compose', '-f', 'docker-compose.yml'] + services
+    cmd += ['-p', project_name] + list(command)
+
+    call(cmd)
 
 
 def add_available_services_from_plugins(available_services: list):
@@ -43,6 +47,15 @@ def add_available_services_from_plugins(available_services: list):
     return available_services
 
 
+def get_available_services():
+    conf_files = [service for service in os.listdir('services/') if service.endswith('.yml')]
+    services = dict()
+    for conf_file in conf_files:
+        services[conf_file[:-4]] = 'services/' + conf_file
+
+    return services
+
+
 def get_enabled_services(configured_services: list, available_services: list):
     services_files = []
     for service in configured_services:
@@ -55,28 +68,27 @@ def get_enabled_services(configured_services: list, available_services: list):
     return services_files
 
 
-@click.command(help="Run a command with docker-compose", context_settings=dict(ignore_unknown_options=True))
-@click.argument('command', nargs=-1, type=click.UNPROCESSED)
-def cli(command):
-    user_config_main = Config('conf/compose.ini').read()['main']
-    default_config_main = Config('conf/compose.ini.tpl').read()['main']
-    set_env_values_from_conf(user_config_main, default_config_main)
+def set_env_values_from_conf(config: list):
+    os.environ['DOCKER_UID'] = _get_uid(config.pop('uid'))
+    os.environ['DOCKER_GID'] = _get_gid(config.pop('gid'))
 
-    project_name = user_config_main.get('project_name', 'inet' + os.path.basename(os.getcwd()).replace('-', ''))
-    os.putenv('COMPOSE_PROJECT_NAME', project_name)
+    for parameter, value in config.items():
+        parameter = 'DOCKER_{}'.format(parameter.replace('.', '_').upper())
+        os.environ[parameter] = str(value)
 
-    # Services from config
-    configured_services = [service for service in user_config_main.get('services', '').split(',') if service != '']
 
-    # Services available from base and plugins
-    available_services = get_available_services()
-    available_services = add_available_services_from_plugins(available_services)
-    services = get_enabled_services(configured_services, available_services)
+def _get_uid(uid):
+    if uid is not None:
+        return str(uid)
 
-    cmd = ['docker-compose', '-f', 'docker-compose.yml'] + services
-    cmd += ['-p', project_name] + list(command)
+    return 1000 if os.name == 'nt' else str(os.getuid())
 
-    call(cmd)
+
+def _get_gid(gid):
+    if gid is not None:
+        return str(gid)
+
+    return 1000 if os.name == 'nt' else str(os.getgid())
 
 
 if __name__ == '__main__':

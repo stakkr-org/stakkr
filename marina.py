@@ -161,6 +161,13 @@ def stop(ctx):
     print(click.style('marina services have been stopped.\n', fg='green'))
 
 
+def debug_mode():
+    if '--debug' in sys.argv:
+        return True
+
+    return False
+
+
 def main():
     try:
         marina(obj={})
@@ -177,7 +184,11 @@ def main():
 
         print(msg)
         print("")
-        # raise e
+
+
+        if debug_mode() is True:
+            raise e
+
         sys.exit(1)
 
 

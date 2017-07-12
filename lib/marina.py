@@ -19,7 +19,7 @@ class Marina():
         self.dns_container_name = 'docker_dns'
 
         from lib.configreader import Config
-        self.default_config_main = Config('conf/compose.ini.tpl').read()['main']
+        # self.default_config_main = Config('conf/compose.ini.tpl').read()['main']
         self.user_config_main = Config('conf/compose.ini').read()['main']
         self.project_name = self.user_config_main.get('project_name')
         self.vms = docker.get_running_containers(self.project_name)
@@ -168,10 +168,7 @@ class Marina():
             raise Exception('mysql does not seem to be in your services or has crashed')
 
         tty = 't' if sys.stdin.isatty() else ''
-        password = self.user_config_main.get(
-            'mysql.root_password',
-            self.default_config_main.get('mysql.root_password')
-        )
+        password = self.user_config_main.get('mysql.root_password')
         cmd = ['docker', 'exec', '-u', 'root', '-i' + tty, vm_name]
         cmd += ['mysql', '-u', 'root', '-p' + password, args]
         subprocess.call(cmd, stdin=sys.stdin)
@@ -204,8 +201,7 @@ class Marina():
             puts(colored.red('Could not run service post scripts under Windows'))
             return
 
-        services = [service for service in self.user_config_main.get('services', '').split(',') if service != '']
-        for service in services:
+        for service in self.user_config_main.get('services'):
             self._call_service_post_script(service)
 
 
