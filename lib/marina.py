@@ -39,13 +39,13 @@ class Marina():
         }
 
         for service, options in sorted(services_to_display.items()):
-            ip = self._get_vm_item(service, 'ip')
+            ip = self.get_vm_item(service, 'ip')
             if ip == '':
                 continue
-            url = options['url'].replace('{URL}', self._get_vm_item(service, 'ip'))
+            url = options['url'].replace('{URL}', self.get_vm_item(service, 'ip'))
 
             if dns_started is True:
-                url = options['url'].replace('{URL}', '{}'.format(self._get_vm_item(service, 'name')))
+                url = options['url'].replace('{URL}', '{}'.format(self.get_vm_item(service, 'name')))
 
             puts('  - For {}'.format(colored.yellow(options['name'])).ljust(55, ' ') + ' : ' + url)
 
@@ -74,7 +74,7 @@ class Marina():
     def stop(self):
         """If started, stop the containers defined in config. Else throw an error"""
 
-        self._check_vms_are_running()
+        self.check_vms_are_running()
         subprocess.call(['python', 'bin/compose', 'stop'])
         self.running_vms = 0
 
@@ -137,9 +137,9 @@ class Marina():
     def console(self, vm: str, user: str):
         """Enter a container (marina allows only apache / php and mysql)"""
 
-        self._check_vms_are_running()
+        self.check_vms_are_running()
 
-        vm_name = self._get_vm_item(vm, 'name')
+        vm_name = self.get_vm_item(vm, 'name')
         if vm_name == '':
             raise Exception('{} does not seem to be in your services or has crashed'.format(vm))
 
@@ -150,10 +150,10 @@ class Marina():
     def run_php(self, user: str, args: str):
         """Run a script or PHP command from outside"""
 
-        self._check_vms_are_running()
+        self.check_vms_are_running()
 
         tty = 't' if sys.stdin.isatty() else ''
-        cmd = ['docker', 'exec', '-u', user, '-i' + tty, self._get_vm_item('php', 'name'), 'bash', '-c', '--']
+        cmd = ['docker', 'exec', '-u', user, '-i' + tty, self.get_vm_item('php', 'name'), 'bash', '-c', '--']
         cmd += ['cd /var/' + self.current_dir_relative + '; exec /usr/bin/php ' + args]
         subprocess.call(cmd, stdin=sys.stdin)
 
@@ -161,9 +161,9 @@ class Marina():
     def run_mysql(self, args: str):
         """Run a MySQL command from outside. Useful to import an SQL File."""
 
-        self._check_vms_are_running()
+        self.check_vms_are_running()
 
-        vm_name = self._get_vm_item('mysql', 'name')
+        vm_name = self.get_vm_item('mysql', 'name')
         if vm_name == '':
             raise Exception('mysql does not seem to be in your services or has crashed')
 
@@ -207,7 +207,7 @@ class Marina():
 
     def _call_service_post_script(self, service: str):
         service_script = 'services/' + service + '.sh'
-        vm_name = self._get_vm_item(service, 'name')
+        vm_name = self.get_vm_item(service, 'name')
         if os.path.isfile(service_script) is False:
             return
 
@@ -217,7 +217,7 @@ class Marina():
     def _docker_run_dns(self):
         """Starts the DNS"""
 
-        self._check_vms_are_running()
+        self.check_vms_are_running()
 
         try:
             docker.create_network('dns')
@@ -231,7 +231,7 @@ class Marina():
             sys.exit(1)
 
 
-    def _get_vm_item(self, compose_name: str, item_name: str):
+    def get_vm_item(self, compose_name: str, item_name: str):
         """Get a value frrom a VM, such as name or IP"""
 
         for vm_id, vm_data in self.vms.items():
@@ -241,7 +241,7 @@ class Marina():
         return ''
 
 
-    def _check_vms_are_running(self):
+    def check_vms_are_running(self):
         """Throws an error if vms are not running"""
 
         if not self.running_vms:
