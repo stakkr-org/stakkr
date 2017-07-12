@@ -2,18 +2,22 @@ Configuration
 =============
 
 Copy the file ``conf/compose.ini.tpl`` to ``conf/compose.ini`` and set
-the right Configuration parameters.
+the right Configuration parameters. The config validation is defined in configspec.ini
 
-Everything should be defined in the ``[main]`` section. **Don't use
-double quotes to protect your values.**. All values are defined in the
-compose.ini.tpl.
+Everything should be defined in the ``[main]`` section.
+
+.. WARNING::
+   Don't use double quotes to protect your values.
+   Use *#* to comment your lines
 
 
 Network
 -----------------
-You can define your own network in compose.ini (``subnet`` and
-``gateway``). If you change that, run ``docker-clean`` (**Be Careful: it
-removes orphans images, stopped container, etc ...**).
+You can define your own network in compose.ini (``subnet`` and `gateway``).
+
+.. WARNING::
+   If you change that, run ``docker-clean`` which
+   removes orphans images, stopped container, etc ...
 
 
 Services
@@ -28,7 +32,7 @@ The service names also works (*elasticsearch* and *mysql*)
 
 .. code:: cfg
 
-    ; Comma separated list of services to start, valid values: apache / bonita / elasticsearch / mailcatcher / maildev / mongo / mysql / php / phpmyadmin / xhgui
+    # Comma separated list of services to start, valid values: apache / bonita / elasticsearch / mailcatcher / maildev / mongo / mysql / php / phpmyadmin / xhgui
     services=apache,php,mysql
 
 A service can launch a post-start script that has the same name with an
@@ -49,21 +53,21 @@ different for each project.
 
 .. code:: ini
 
-    ; Change Machines names only if you need it
+    # Change Machines names only if you need it
     project_name=marina
 
 PHP Version :
 
 .. code:: ini
 
-    ; Set your PHP version from 5.3 to 7.0 (5.6 by default)
+    # Set your PHP version from 5.3 to 7.0 (5.6 by default)
     php.version=7.0
 
 MySQL Password if mysql is defined in the services list:
 
 .. code:: ini
 
-    ; Password set on first start. Once the data exist won't be changed
+    # Password set on first start. Once the data exist won't be changed
     mysql.root_password=changeme
 
 Memory assigned to the VMS:
