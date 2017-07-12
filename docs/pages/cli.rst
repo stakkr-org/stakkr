@@ -4,9 +4,11 @@ Usage
 Before running any command
 ---------------------------------
 .. IMPORTANT::
-    You have to be in a virtual environement. If you have autoenv, and if
-    you kept the name of the virtualenv as described above, just enter the
-    directory, and it’ll be automatically activated. Else:
+    You have to be in a virtual environement.
+
+If you have autoenv, and if you kept the name of the virtualenv as
+described above, just enter the directory, and it’ll be automatically activated.
+Else:
 
 .. code:: bash
 
