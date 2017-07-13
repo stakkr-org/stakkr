@@ -23,6 +23,7 @@ setup(
     data_files=[
         (os.getcwd() + '/conf', ['conf/compose.ini.tpl']),
     ],
+    include_package_data=True,
     package_data={
         '': ['*.ini'],
     },
