@@ -79,6 +79,8 @@ def fullstart(ctx):
 @click.pass_context
 def refresh_plugins(ctx):
     from marina.plugins import add_plugins
+
+    print(click.style('Adding plugins from plugins/', fg='green'))
     plugins = add_plugins()
     if len(plugins) is 0:
         print(click.style('No plugin to add', fg='yellow'))

@@ -7,3 +7,5 @@ include marina/tpls/conf/php-fpm-override/example.conf
 include marina/tpls/conf/php-fpm-override/README
 include marina/tpls/conf/xhgui-override/config.php
 include marina/tpls/home/www-data/.bashrc
+include marina/tpls/.env
+include marina/tpls/bash_completion

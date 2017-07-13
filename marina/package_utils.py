@@ -23,7 +23,7 @@ def get_file(dirname: str, filename: str):
 
 
 def get_dir(dirname: str):
-    staticdir = os.path.dirname(os.path.realpath(__file__)) + dirname
+    staticdir = os.path.dirname(os.path.realpath(__file__)) + '/' + dirname
     if os.path.isdir(staticdir) is True:
         return staticdir
 

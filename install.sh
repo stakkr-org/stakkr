@@ -19,9 +19,9 @@ echo ""
 
 echo "Creating the virtualenv"
 virtualenv -p /usr/bin/python3  ${PWD##*/}_marina > /dev/null
-source  ${PWD##*/}_marina/bin/activate > /dev/null
-pip3 install click clint > /dev/null
+source ${PWD##*/}_marina/bin/activate > /dev/null
 pip3 install -e . > /dev/null
+python -c 'from marina.setup import _post_install; _post_install()'
 echo ""
 
 echo "Deactivate and reactivate the virtualenv again by launching:"

@@ -4,33 +4,21 @@ __pycache__
 *_marina
 
 # Local configuration
-/conf/compose.ini
-!/conf/mysql-override/mysqld.cnf
-/conf/php-fpm-override/*
-!/conf/php-fpm-override/marina.conf
-!/conf/php-fpm-override/README
-/conf/mysql-override/*
+/conf
 
 # Data in Home
-/home/www-data/*
-!/home/www-data/.bashrc
-!/home/www-data/bin/.keep
+/home
 
 # Logs
-/logs/*
-!/logs/apache/.keep
-!/logs/php/.keep
-!/logs/php/xdebug_profiler/.keep
+/logs
 
 # Services data
 /mongo
 /mysql
-/www/*
-!/www/.keep
+/www
 
 # Plugins
-!/plugins/README.md
-/plugins/*
+/plugins
 
 # ReadTheDocs
 /docs/_build
