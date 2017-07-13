@@ -87,6 +87,14 @@ def refresh_plugins():
         print('  -> {}'.format(plugin.split('=')[0]))
     print()
 
+    import pkg_resources
+    ws = pkg_resources.WorkingSet()
+    list(ws.iter_entry_points('[marina.plugins]'))
+    write_ep(["[foo.test]", "foo_1 = foo:foo1", "foo_2 = foo:foo2"])
+    exit(0)
+
+    get_plugins_configuration()
+
     subprocess.check_call(['pip', 'install', '-e', '.'], stdout=DEVNULL)
     print(click.style('Plugins refreshed.\n', fg='green'))
 

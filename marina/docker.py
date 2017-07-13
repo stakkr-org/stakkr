@@ -19,7 +19,7 @@ def container_running(name: str):
 def get_running_containers(project_name: str):
     """Get a list of IDs of running containers for the current marina instance"""
 
-    cmd = ['python', 'bin/compose', 'ps', '-q']
+    cmd = ['marina-compose', 'ps', '-q']
     vms_id = subprocess.check_output(cmd).splitlines()
     vms_info = dict()
     for vm_id in vms_id:

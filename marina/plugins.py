@@ -3,6 +3,7 @@
 import pip
 
 from importlib import import_module
+from marina import utils
 from os import listdir, path
 
 
@@ -24,10 +25,12 @@ def get_plugins():
 
     install_prerequisites()
 
-    if path.isdir('plugins') is False:
+    plugins_dir = utils.get_venv_basedir() + '/plugins'
+
+    if path.isdir(plugins_dir) is False:
         return ''
 
-    folders = _get_subfolders('plugins')
+    folders = _get_subfolders(plugins_dir)
 
     plugins = []
     for folder in folders:

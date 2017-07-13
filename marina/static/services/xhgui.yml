@@ -14,4 +14,4 @@ services:
         volumes_from: [xhgui]
         # Local configuration to override the one which connects in local
         volumes:
-            - ./conf/xhgui-override/config.php:/usr/local/src/xhgui/config/config.php
+            - ${COMPOSE_BASE_DIR}/conf/xhgui-override/config.php:/usr/local/src/xhgui/config/config.php

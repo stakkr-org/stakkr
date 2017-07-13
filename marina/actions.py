@@ -20,7 +20,7 @@ class MarinaActions():
         self.dns_container_name = 'docker_dns'
 
         # self.default_config_main = Config('conf/compose.ini.tpl').read()['main']
-        self.user_config_main = Config('conf/compose.ini').read()['main']
+        self.user_config_main = Config().read()['main']
         self.project_name = self.user_config_main.get('project_name')
         self.vms = docker.get_running_containers(self.project_name)
         self.running_vms = sum(True for vm_id, vm_data in self.vms.items() if vm_data['running'] is True)
@@ -63,10 +63,10 @@ class MarinaActions():
             sys.exit(0)
 
         if pull is True:
-            subprocess.call(['python', 'bin/compose', 'pull'])
+            subprocess.call(['marina-compose', 'pull'])
 
         recreate_param = '--force-recreate' if recreate is True else '--no-recreate'
-        subprocess.call(['python', 'bin/compose', 'up', '-d', recreate_param, '--remove-orphans'])
+        subprocess.call(['marina-compose', 'up', '-d', recreate_param, '--remove-orphans'])
         self.vms = docker.get_running_containers(self.project_name)
         self._run_services_post_scripts()
 
@@ -75,7 +75,7 @@ class MarinaActions():
         """If started, stop the containers defined in config. Else throw an error"""
 
         self.check_vms_are_running()
-        subprocess.call(['python', 'bin/compose', 'stop'])
+        subprocess.call(['marina-compose', 'stop'])
         self.running_vms = 0
 
 
@@ -130,7 +130,7 @@ class MarinaActions():
     def fullstart(self):
         """Build the image dynamically if git repos are given for a service"""
 
-        subprocess.call(['python', 'bin/compose', 'build'])
+        subprocess.call(['marina-compose', 'build'])
         self.start()
 
 
