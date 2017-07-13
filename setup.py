@@ -18,7 +18,13 @@ setup(
         docker-clean=marina.docker_clean:main
         {}
       '''.format(get_plugins_configuration()),
-    include_package_data=True,
+    data_files=[
+        ('conf', ['conf/compose.ini.tpl']),
+    ],
+    package_data={
+        # If any package contains *.txt or *.rst files, include them:
+        'marina': ['*.ini'],
+    },
     install_requires=[
         'clint',
         'click', 'click-plugins',
