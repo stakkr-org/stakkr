@@ -4,6 +4,7 @@ import subprocess
 import sys
 
 from click_plugins import with_plugins
+from marina import utils
 from pkg_resources import iter_entry_points
 
 
@@ -20,12 +21,12 @@ linking and managing everything for you.""")
 def marina(ctx, debug):
     from marina.actions import MarinaActions
 
-    venv_dir = os.getenv('VIRTUAL_ENV')
-    if venv_dir is None:
-        raise EnvironmentError("You must be in a virtual environment")
+    # Add the virtual env in the path
+    venv_base = utils.get_venv_basedir()
+    sys.path.append(venv_base)
 
     ctx.obj['DEBUG'] = debug
-    ctx.obj['MARINA'] = MarinaActions(os.path.abspath(venv_dir + '/../'))
+    ctx.obj['MARINA'] = MarinaActions(venv_base)
 
 
 @marina.command(help="""Enter a container to perform direct actions such as install packages, run commands ...
@@ -79,24 +80,36 @@ def fullstart(ctx):
 @marina.command(help='Required to be launched if you install a new plugin', name="refresh-plugins")
 def refresh_plugins():
     from subprocess import DEVNULL
-    from marina.plugins import get_plugins
+    from marina.plugins import get_plugins, get_plugins_configuration
+
+    plugins = get_plugins()
+    if len(plugins) is 0:
+        print(click.style('No plugin to add', fg='yellow'))
+        exit(0)
 
     print('Will add to setup.py :')
-    plugins = get_plugins()
     for plugin in plugins:
         print('  -> {}'.format(plugin.split('=')[0]))
-    print()
 
-    import pkg_resources
-    ws = pkg_resources.WorkingSet()
-    list(ws.iter_entry_points('[marina.plugins]'))
-    write_ep(["[foo.test]", "foo_1 = foo:foo1", "foo_2 = foo:foo2"])
-    exit(0)
+    # If it's a package, rewrite the entrypoints
+    if utils.installed_as_packages() is True:
+        print(utils.get_distinfo_dir())
+    # Else do a pip install
+    else:
+        subprocess.check_call(['pip', 'install', '-e', '.'], stdout=DEVNULL)
 
-    get_plugins_configuration()
-
-    subprocess.check_call(['pip', 'install', '-e', '.'], stdout=DEVNULL)
     print(click.style('Plugins refreshed.\n', fg='green'))
+    #
+    # import pkg_resources
+    # working_set = pkg_resources.WorkingSet()
+    # list(working_set.iter_entry_points('[marina.plugins]'))
+    # print(get_plugins_configuration())
+    # exit(0)
+    # write_ep(["[marina.plugins]", "foo_1 = foo:foo1", "foo_2 = foo:foo2"])
+    # exit(0)
+    #
+    # get_plugins_configuration()
+
 
 
 @marina.command(help="Restart all containers")
