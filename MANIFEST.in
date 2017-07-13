@@ -1,1 +1,3 @@
-include marina/marina/static/configspec.ini
+include marina/static/configspec.ini
+include marina/static/docker-compose.yml
+include marina/static/services/*.yml

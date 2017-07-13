@@ -18,15 +18,9 @@ setup(
         [console_scripts]
         marina=marina.cli:main
         docker-clean=marina.docker_clean:main
-        {}
-      '''.format(get_plugins_configuration()),
-    data_files=[
-        (os.getcwd() + '/conf', ['conf/compose.ini.tpl']),
-    ],
+        ''',
+    scripts=['bin/marina-compose'],
     include_package_data=True,
-    package_data={
-        '': ['*.ini'],
-    },
     install_requires=[
         'clint',
         'click', 'click-plugins',
