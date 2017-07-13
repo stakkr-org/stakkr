@@ -1,11 +1,28 @@
 """Module used by setup.py to find plugins to load with click"""
 
+import pip
+
 from importlib import import_module
 from os import listdir, path
 
 
+def install_prerequisites(package):
+    try:
+        import click
+    except ImportError:
+        pip.main(['install', 'click'])
+        pip.main(['install', 'click-plugins'])
+
+    try:
+        import clint
+    except ImportError:
+        pip.main(['install', 'clint'])
+
+
 def get_plugins():
     """Read the plugins directory, get the subfolders from it and look for .py files"""
+
+    install_prerequisites()
 
     if path.isdir('plugins') is False:
         return ''

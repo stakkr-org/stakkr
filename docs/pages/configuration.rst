@@ -8,16 +8,20 @@ Everything should be defined in the ``[main]`` section.
 
 .. WARNING::
    Don't use double quotes to protect your values.
-   Use *#* to comment your lines
+   Use *#* to comment your lines and not *;*
 
 
-Network
------------------
+Network and changes in general
+------------------------------------
 You can define your own network in compose.ini (``subnet`` and `gateway``).
 
 .. WARNING::
    If you change that, run ``docker-clean`` which
    removes orphans images, stopped container, etc ...
+
+   Also, if you change any parameter such as an environment variable
+   run a `marina restart --recreate` to make sure that you start from
+   a clean environment.
 
 
 Services
@@ -100,6 +104,10 @@ Files location
 
 Add binaries
 ------------
-
 You can add binaries (such as phpunit) that will automatically be
 available from the PATH by putting it to ``home/www-data/bin/``
+
+
+.. IMPORTANT::
+   You can use ``home/www-data`` to put everyhting you need to keep:
+   your shell parameters in `.bashrc`, your ssh keys/config into `.ssh`, etc.
