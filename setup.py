@@ -18,6 +18,9 @@ setup(
         docker-clean=marina.docker_clean:main
         {}
       '''.format(get_plugins_configuration()),
+    data_files=[
+        ('conf', ['conf'])
+    ],
     install_requires=[
         'clint',
         'click', 'click-plugins',

@@ -37,7 +37,7 @@ class Config():
 
 
     def _parse(self):
-        configspec = os.path.dirname(os.path.realpath(__file__)) + '/../conf/configspec.ini'
+        configspec = 'static/configspec.ini'
         config = ConfigObj(infile=self.config_file, configspec=configspec)
 
         validator = Validator()
