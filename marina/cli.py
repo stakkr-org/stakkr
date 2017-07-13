@@ -20,8 +20,12 @@ linking and managing everything for you.""")
 def marina(ctx, debug):
     from marina.actions import MarinaActions
 
+    venv_dir = os.getenv('VIRTUAL_ENV')
+    if venv_dir is None:
+        raise EnvironmentError("You must be in a virtual environment")
+
     ctx.obj['DEBUG'] = debug
-    ctx.obj['MARINA'] = MarinaActions(os.path.dirname(os.path.realpath(__file__)))
+    ctx.obj['MARINA'] = MarinaActions(os.path.abspath(venv_dir + '/../'))
 
 
 @marina.command(help="""Enter a container to perform direct actions such as install packages, run commands ...

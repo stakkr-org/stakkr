@@ -19,7 +19,7 @@ class Config():
         if os.path.isfile(self.config_file) is False:
             msg = 'Error: Missing "' + self.config_file + '". '
             if self.config_file.endswith('.ini'):
-                msg += 'Create it and override values from ' + self.config_file + '.tpl'
+                msg += 'Read the doc and create it'
             else:
                 msg += 'Please restore it.'
             raise IOError(msg)
