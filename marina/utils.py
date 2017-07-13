@@ -21,4 +21,5 @@ def get_static_dir():
         return staticdir
 
     from distutils.sysconfig import get_python_lib
+
     return get_python_lib() + '/marina'
