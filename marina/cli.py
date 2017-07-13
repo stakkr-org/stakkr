@@ -2,7 +2,7 @@ import click
 import sys
 
 from click_plugins import with_plugins
-from marina import utils
+from marina import package_utils
 from pkg_resources import iter_entry_points
 
 
@@ -20,7 +20,7 @@ def marina(ctx, debug):
     from marina.actions import MarinaActions
 
     # Add the virtual env in the path
-    venv_base = utils.get_venv_basedir()
+    venv_base = package_utils.get_venv_basedir()
     sys.path.append(venv_base)
 
     ctx.obj['DEBUG'] = debug

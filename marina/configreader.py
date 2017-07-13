@@ -2,7 +2,7 @@ import os
 
 from click import style
 from configobj import ConfigObj, flatten_errors
-from marina import utils
+from marina import package_utils
 from validate import Validator
 
 
@@ -11,7 +11,7 @@ class Config():
     with conf/configspec.ini"""
 
     def __init__(self):
-        self.config_file = utils.get_venv_basedir() + '/conf/compose.ini'
+        self.config_file = package_utils.get_venv_basedir() + '/conf/compose.ini'
 
 
     def read(self):
@@ -40,7 +40,7 @@ class Config():
     def _parse(self):
         """Parse the config from configspecs that is a file either local or from a package"""
 
-        config = ConfigObj(infile=self.config_file, configspec=utils.get_static_file('configspec.ini'))
+        config = ConfigObj(infile=self.config_file, configspec=package_utils.get_file('static', 'configspec.ini'))
 
         validator = Validator()
         validated = config.validate(validator, preserve_errors=True)

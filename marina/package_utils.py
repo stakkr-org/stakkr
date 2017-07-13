@@ -16,17 +16,17 @@ def get_venv_basedir():
     return os.path.abspath(venv_dir + '/..')
 
 
-def get_static_file(filename: str):
-    staticdir = get_static_dir()
-    if staticdir is not True:
-        return staticdir + '/' + filename.lstrip('/')
+def get_file(dirname: str, filename: str):
+    dir_path = get_dir(dirname)
+
+    return dir_path + '/' + filename.lstrip('/')
 
 
-def get_static_dir():
-    staticdir = os.path.dirname(os.path.realpath(__file__)) + '/static'
+def get_dir(dirname: str):
+    staticdir = os.path.dirname(os.path.realpath(__file__)) + dirname
     if os.path.isdir(staticdir) is True:
         return staticdir
 
     from distutils.sysconfig import get_python_lib
 
-    return get_python_lib() + '/marina'
+    return get_python_lib() + '/marina/' + dirname

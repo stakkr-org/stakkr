@@ -1,3 +1,9 @@
 include marina/static/configspec.ini
 include marina/static/docker-compose.yml
 include marina/static/services/*.yml
+include marina/tpls/conf/compose.ini.tpl
+include marina/tpls/conf/mysql-override/mysqld.cnf
+include marina/tpls/conf/php-fpm-override/example.conf
+include marina/tpls/conf/php-fpm-override/README
+include marina/tpls/conf/xhgui-override/config.php
+include marina/tpls/home/www-data/.bashrc

@@ -4,7 +4,7 @@ import os
 import sys
 
 from argparse import ArgumentParser
-from marina import utils
+from marina import package_utils
 from marina.configreader import Config
 from subprocess import call
 
@@ -26,7 +26,7 @@ def cli(command):
     available_services = add_available_services_from_plugins(available_services)
     services = get_enabled_services(configured_services, available_services)
 
-    cmd = ['docker-compose', '-f', utils.get_static_file('docker-compose.yml')] + services
+    cmd = ['docker-compose', '-f', package_utils.get_file('static', 'docker-compose.yml')] + services
     cmd += ['-p', project_name] + list(command)
 
     call(cmd)
@@ -38,7 +38,7 @@ def add_available_services_from_plugins(available_services: list):
     # Override services with plugins
     for entry in iter_entry_points('marina.plugins'):
         plugin_dir = str(entry).split('=')[0].strip()
-        services_dir = utils.get_venv_basedir() + '/plugins/' + plugin_dir + '/services'
+        services_dir = package_utils.get_venv_basedir() + '/plugins/' + plugin_dir + '/services'
         if os.path.isdir(services_dir) is False:
             continue
 
@@ -50,7 +50,7 @@ def add_available_services_from_plugins(available_services: list):
 
 
 def get_available_services():
-    servicesdir = utils.get_static_dir() + '/services/'
+    servicesdir = package_utils.get_dir('static') + '/services/'
     conf_files = [service for service in os.listdir(servicesdir) if service.endswith('.yml')]
     services = dict()
     for conf_file in conf_files:
@@ -74,7 +74,7 @@ def get_enabled_services(configured_services: list, available_services: list):
 def set_env_values_from_conf(config: list):
     os.environ['DOCKER_UID'] = _get_uid(config.pop('uid'))
     os.environ['DOCKER_GID'] = _get_gid(config.pop('gid'))
-    os.environ['COMPOSE_BASE_DIR'] = utils.get_venv_basedir()
+    os.environ['COMPOSE_BASE_DIR'] = package_utils.get_venv_basedir()
 
     for parameter, value in config.items():
         parameter = 'DOCKER_{}'.format(parameter.replace('.', '_').upper())
