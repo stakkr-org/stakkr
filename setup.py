@@ -1,4 +1,8 @@
+import os
+import sys
+
 from distutils.core import setup
+sys.path.append(os.getcwd())
 from marina.setup import MarinaPostInstall
 
 setup(

@@ -13,4 +13,3 @@ Marina works with a few modules / classes:
    code/docker.rst
    code/package_utils.rst
    code/plugins.rst
-   code/setup.rst

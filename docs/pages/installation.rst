@@ -46,7 +46,7 @@ of PHP / MySQL / Elasticsearch, etc ...
 
 .. code:: shell
 
-    $ git clone https://github.com/edyan/marina
+    $ git clone https://github.com/edyan/marina myenv
 
 
 Once cloned, you can run the ``install.sh`` script made for Ubuntu
@@ -54,7 +54,7 @@ Once cloned, you can run the ``install.sh`` script made for Ubuntu
 
 .. code:: shell
 
-    $ cd marina
+    $ cd myenv
     $ ./install.sh
 
 
