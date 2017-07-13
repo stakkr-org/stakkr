@@ -6,7 +6,7 @@ from importlib import import_module
 from os import listdir, path
 
 
-def install_prerequisites(package):
+def install_prerequisites():
     try:
         import click
     except ImportError:

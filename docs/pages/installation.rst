@@ -59,7 +59,6 @@ Then:
 
        $ virtualenv -p /usr/bin/python3 ${PWD##*/}_marina
        $ source ${PWD##*/}_marina/bin/activate
-       $ pip3 install click clint # because it could be needed at that stage
        $ pip3 install -e .
 
 

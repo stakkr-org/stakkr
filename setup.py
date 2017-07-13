@@ -14,7 +14,7 @@ setup(
     py_modules=['marina'],
     entry_points='''
         [console_scripts]
-        marina=marina:main
+        marina=cli:main
         docker-clean=docker_clean:main
         {}
       '''.format(get_plugins_configuration()),

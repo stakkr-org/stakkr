@@ -7,7 +7,7 @@ from marina import docker
 from marina.configreader import Config
 
 
-class Marina():
+class MarinaActions():
     """Main class that does actions asked in the cli"""
 
     def __init__(self, base_dir: str):

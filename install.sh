@@ -18,11 +18,11 @@ echo "    # source ~/.bashrc"
 echo ""
 
 echo "Creating the virtualenv"
-virtualenv -p /usr/bin/python3 ${PWD##*/}_marina > /dev/null
-source ${PWD##*/}_marina/bin/activate > /dev/null
+virtualenv -p /usr/bin/python3  ${PWD##*/}_marina > /dev/null
+source  ${PWD##*/}_marina/bin/activate > /dev/null
 pip3 install click clint > /dev/null
 pip3 install -e . > /dev/null
 echo ""
 
 echo "Deactivate and reactivate the virtualenv again by launching:"
-echo "   # deactivate ; source \${PWD##*/}_marina/bin/activate"
+echo "   # deactivate ; source  \${PWD##*/}_marina/bin/activate"
