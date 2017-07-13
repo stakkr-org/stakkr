@@ -11,7 +11,33 @@ Example for Ubuntu: https://docs.docker.com/engine/installation/ubuntulinux/
 
 Marina
 ----------
-Marina gets installed by cloning the github repo.
+There are 2 ways to intall Marina. 
+
+1. The easy way
+~~~~~~~~~~~~~~~~~~
+Marina is usable as a library, it's clean, you have a very beautiful tree
+once installed, and it's **recommanded**. You can install as many marinas that you need. 
+Just be careful to set different names and networks in `conf/compose.ini`
+
+.. WARNING::
+	You need to first install OS packages for Python3: ``pip``, ``setuptools`` 
+	``virtualenv`` and ``autoenv`` on your OS.
+
+
+.. code:: shell
+
+    $ mkdir myenv
+	$ cd myenv
+	$ virtualenv -p /usr/bin/python3 ${PWD##*/}_marina
+	$ source ${PWD##*/}_marina/bin/activate
+	$ pip install git+https://github.com/edyan/marina.git
+
+It'll run a `post_install` script that copy some templates / create base directories to work. 
+
+
+2. The old way
+~~~~~~~~~~~~~~~~
+Marina gets installed by cloning the github repo .... *not recommanded if you don't develop on it*. 
 
 You can clone the repository as many times as you want as you can have
 multiple instances at the same time. A good practice is too have one
@@ -23,12 +49,6 @@ of PHP / MySQL / Elasticsearch, etc ...
     $ git clone https://github.com/edyan/marina
 
 
-Prerequisites
--------------
-
-Automatic Installation
-~~~~~~~~~~~~~~~~~~~~~~
-
 Once cloned, you can run the ``install.sh`` script made for Ubuntu
 (tested on 16.04) that will install the dependencies:
 
@@ -37,11 +57,11 @@ Once cloned, you can run the ``install.sh`` script made for Ubuntu
     $ cd marina
     $ ./install.sh
 
-Manual Installation
-~~~~~~~~~~~~~~~~~~~
 
-If you want to manually install the dependencies, first install OS packages for Python3: ``pip``, ``setuptools``
-and ``virtualenv``.
+3. The old way, manually 
+~~~~~~~~~~~~~~~~~~~
+If you want to manually install the dependencies, 
+first install OS packages for Python3: ``pip``, ``setuptools`` and ``virtualenv``.
 
 
 Then:
