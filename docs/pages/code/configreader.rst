@@ -1,6 +1,6 @@
 Module lib.config
 ==================================
 
-.. automodule:: lib.configreader
+.. automodule:: marina.configreader
 .. autoclass:: Config
     :members:

@@ -4,7 +4,8 @@ Usage
 Before running any command
 ---------------------------------
 .. IMPORTANT::
-    You have to be in a virtual environement.
+    You have to be in a virtual environement. To verify that, check that your 
+	prompt starts with something like ``(xyz_marina)``
 
 If you have autoenv, and if you kept the name of the virtualenv as
 described above, just enter the directory, and it’ll be automatically activated.
@@ -20,10 +21,6 @@ To leave that environment:
 
     $ deactivate
 
-
-.. WARNING::
-    Make sure that you are in a virtual environment. To verify
-    that, check that your prompt starts with something like ``(xyz_marina)``
 
 
 Get Help

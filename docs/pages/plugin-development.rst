@@ -4,26 +4,64 @@ Plugins development
 
 Write a plugin
 -------------------
-To write a plugin you need to create a folder in the plugins/ directory that contains your commands. Each file with a
-`.py` extension will be taken as a plugin. The main function should be named exactly like the file. Of course you can use any module included in marina during your developments (click, clint, lib.command, lib.docker, etc...). 
+To write a plugin you need to create a folder in the plugins/ directory that contains
+your commands.
 
-Example for a file that is in `plugins/my_command/hi.py`:
+.. WARNING::
+	Each directory must contain a `setup.py` to be installed as a plugin.
+	Check the following link to have more info about how to build a plugin:
+	https://github.com/click-contrib/click-plugins/tree/master/example
 
+Of course you can use any module included in marina during your developments
+(click, clint, marina.command, marina.docker, marina.package_utils, etc...).
+
+
+Example
+~~~~~~~~~
+You want to build a simple command that says "Hello". It'll be called _sayhello_
+You need to create two files in a `sayhello` directory.
+
+* `plugins/sayhello/setup.py`
+
+.. code-block:: python
+
+	from setuptools import setup
+
+	
+	setup(
+		name='MarinaSayHello',
+		version='1.0',
+		packages=['sayhello'],
+		entry_points='''
+			[marina.plugins]
+			sayhello=sayhello.core:hi
+		'''
+	)
+
+
+* And `plugins/sayhello/sayhello/core.py`
 .. code-block:: python
 
     import click
 
-    
+	
     @click.command(help="Example")
     def hi():
         print('Hi!')
 
 
-Once your plugin has been written you need to re-run:
+Once your plugin has been written you need to re-run
 
 .. code-block:: bash
 
     $ marina refresh-plugins
+	$ marina hi
+
+
+.. WARNING::
+	Even when you change some code in your plugins, you have to re-run
+	`marina refresh-plugins`
+
 
 
 Install a plugin
@@ -37,22 +75,15 @@ To install a plugin
     $ marina refresh-plugins
 
 
-You can, for example install the sugarcli plugin:
-
-.. code-block:: bash
-
-    $ cd plugins/
-    $ git clone https://github.com/inetprocess/marina-sugarcli sugarcli
-    $ marina refresh-plugins
-
-
-As well as the composer one:
+You can, for example install composer plugin:
 
 .. code-block:: bash
 
     $ cd plugins/
     $ git clone https://github.com/edyan/marina-composer composer
     $ marina refresh-plugins
+	$ cd ../www
+	$ marina composer
 
 
 Define services in your plugins

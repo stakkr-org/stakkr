@@ -1,5 +1,5 @@
 Module lib.command
 ==================================
 
-.. automodule:: lib.command
+.. automodule:: marina.command
     :members:

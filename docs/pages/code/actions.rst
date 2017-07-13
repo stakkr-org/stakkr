@@ -1,6 +1,6 @@
 Module lib.marina
 ==================================
 
-.. automodule:: lib.marina
+.. automodule:: marina.actions
 .. autoclass:: MarinaActions
     :members:

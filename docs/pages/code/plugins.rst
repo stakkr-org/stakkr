@@ -1,5 +1,5 @@
 Module lib.plugins
 ==================================
 
-.. automodule:: lib.plugins
+.. automodule:: marina.plugins
     :members:

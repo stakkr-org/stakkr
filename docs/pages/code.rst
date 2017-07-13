@@ -7,8 +7,10 @@ Marina works with a few modules / classes:
    :maxdepth: 2
    :caption: List of modules:
 
+   code/actions.rst
    code/command.rst
-   code/config.rst
+   code/configreader.rst
    code/docker.rst
-   code/marina.rst
+   code/package_utils.rst
    code/plugins.rst
+   code/setup.rst
