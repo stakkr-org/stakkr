@@ -1,5 +1,6 @@
 from marina.plugins import get_plugins_configuration
-from setuptools import setup, find_packages
+from os import path
+from setuptools import setup
 
 
 setup(
@@ -19,11 +20,10 @@ setup(
         {}
       '''.format(get_plugins_configuration()),
     data_files=[
-        ('conf', ['conf/compose.ini.tpl']),
+        (path.getcwd() + '/conf', ['conf/compose.ini.tpl']),
     ],
     package_data={
-        # If any package contains *.txt or *.rst files, include them:
-        'marina': ['*.ini'],
+        '': ['*.ini'],
     },
     install_requires=[
         'clint',
