@@ -1,6 +1,4 @@
 import click
-import os
-import subprocess
 import sys
 
 from click_plugins import with_plugins
@@ -78,38 +76,16 @@ def fullstart(ctx):
 
 
 @marina.command(help='Required to be launched if you install a new plugin', name="refresh-plugins")
-def refresh_plugins():
-    from subprocess import DEVNULL
-    from marina.plugins import get_plugins, get_plugins_configuration
-
-    plugins = get_plugins()
+@click.pass_context
+def refresh_plugins(ctx):
+    from marina.plugins import add_plugins
+    plugins = add_plugins()
     if len(plugins) is 0:
         print(click.style('No plugin to add', fg='yellow'))
         exit(0)
 
-    print('Will add to setup.py :')
-    for plugin in plugins:
-        print('  -> {}'.format(plugin.split('=')[0]))
-
-    # If it's a package, rewrite the entrypoints
-    if utils.installed_as_packages() is True:
-        print(utils.get_distinfo_dir())
-    # Else do a pip install
-    else:
-        subprocess.check_call(['pip', 'install', '-e', '.'], stdout=DEVNULL)
-
+    print()
     print(click.style('Plugins refreshed.\n', fg='green'))
-    #
-    # import pkg_resources
-    # working_set = pkg_resources.WorkingSet()
-    # list(working_set.iter_entry_points('[marina.plugins]'))
-    # print(get_plugins_configuration())
-    # exit(0)
-    # write_ep(["[marina.plugins]", "foo_1 = foo:foo1", "foo_2 = foo:foo2"])
-    # exit(0)
-    #
-    # get_plugins_configuration()
-
 
 
 @marina.command(help="Restart all containers")

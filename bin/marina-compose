@@ -37,7 +37,8 @@ def add_available_services_from_plugins(available_services: list):
 
     # Override services with plugins
     for entry in iter_entry_points('marina.plugins'):
-        services_dir = 'plugins/' + str(entry).split('.')[1] + '/services'
+        plugin_dir = str(entry).split('=')[0].strip()
+        services_dir = utils.get_venv_basedir() + '/plugins/' + plugin_dir + '/services'
         if os.path.isdir(services_dir) is False:
             continue
 

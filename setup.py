@@ -1,6 +1,4 @@
-import os
-
-from marina.plugins import get_plugins_configuration
+from marina import plugins
 from setuptools import setup
 
 
@@ -14,11 +12,9 @@ setup(
     license='Apache 2.0',
     packages=['marina'],
     py_modules=['marina'],
-    entry_points='''
-        [console_scripts]
-        marina=marina.cli:main
-        docker-clean=marina.docker_clean:main
-        ''',
+    entry_points='''[console_scripts]
+marina=marina.cli:main
+docker-clean=marina.docker_clean:main''',
     scripts=['bin/marina-compose'],
     include_package_data=True,
     install_requires=[

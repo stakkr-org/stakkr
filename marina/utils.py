@@ -1,5 +1,4 @@
 import os
-import sys
 
 
 def installed_as_packages():
@@ -10,11 +9,11 @@ def installed_as_packages():
 
 
 def get_venv_basedir():
-
-    if not hasattr(sys, 'real_prefix'):
+    venv_dir = os.getenv('VIRTUAL_ENV')
+    if venv_dir is None:
         raise EnvironmentError("You must be in a virtual environment")
 
-    return os.path.abspath(sys.base_prefix + '/..')
+    return os.path.abspath(venv_dir + '/..')
 
 
 def get_static_file(filename: str):
@@ -31,11 +30,3 @@ def get_static_dir():
     from distutils.sysconfig import get_python_lib
 
     return get_python_lib() + '/marina'
-
-
-def get_distinfo_dir():
-    if installed_as_packages() is False:
-        raise Exception('You can get the distinfo dir only if you installed marina as a package')
-
-    from distutils.sysconfig import get_python_lib
-    return get_python_lib()
