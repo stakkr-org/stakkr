@@ -1,5 +1,6 @@
+import os
+
 from marina.plugins import get_plugins_configuration
-from os import path
 from setuptools import setup
 
 
@@ -20,7 +21,7 @@ setup(
         {}
       '''.format(get_plugins_configuration()),
     data_files=[
-        (path.getcwd() + '/conf', ['conf/compose.ini.tpl']),
+        (os.getcwd() + '/conf', ['conf/compose.ini.tpl']),
     ],
     package_data={
         '': ['*.ini'],
