@@ -3,7 +3,8 @@ import sys
 import subprocess
 
 from clint.textui import colored, puts, columns
-from lib import docker
+from marina import docker
+from marina.configreader import Config
 
 
 class Marina():
@@ -18,7 +19,6 @@ class Marina():
 
         self.dns_container_name = 'docker_dns'
 
-        from lib.configreader import Config
         # self.default_config_main = Config('conf/compose.ini.tpl').read()['main']
         self.user_config_main = Config('conf/compose.ini').read()['main']
         self.project_name = self.user_config_main.get('project_name')

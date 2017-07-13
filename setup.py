@@ -1,4 +1,4 @@
-from lib.plugins import get_plugins_configuration
+from marina.plugins import get_plugins_configuration
 from setuptools import setup, find_packages
 
 

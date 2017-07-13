@@ -18,7 +18,7 @@ linking and managing everything for you.""")
 @click.option('--debug/--no-debug', default=False)
 @click.pass_context
 def marina(ctx, debug):
-    from lib import marina
+    from marina import marina
 
     ctx.obj['DEBUG'] = debug
     ctx.obj['MARINA'] = marina.Marina(os.path.dirname(os.path.realpath(__file__)))
@@ -75,7 +75,7 @@ def fullstart(ctx):
 @marina.command(help='Required to be launched if you install a new plugin', name="refresh-plugins")
 def refresh_plugins():
     from subprocess import DEVNULL
-    from lib.plugins import get_plugins
+    from marina.plugins import get_plugins
 
     print('Will add to setup.py :')
     plugins = get_plugins()
