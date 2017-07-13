@@ -3,14 +3,14 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name='Marina',
+    name='marina',
     version='2.0',
     description='A stack based on docker to run PHP Applications',
-    url='http://github.com/inetprocess/marina',
+    url='http://github.com/edyan/marina',
     author='Emmanuel Dyan',
-    author_email='emmanuel.dyan@inetprocess.com',
+    author_email='emmanueldyan@gmail.com',
     license='Apache 2.0',
-    packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
+    packages=['marina'],
     py_modules=['marina'],
     entry_points='''
         [console_scripts]
