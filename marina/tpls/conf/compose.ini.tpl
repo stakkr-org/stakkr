@@ -1,6 +1,6 @@
 [main]
 # Comma separated, valid values: apache / bonita / elasticsearch / mailcatcher / maildev /
-#                                mongo / mysql / php / phpmyadmin / xhgui
+#                                mongo / mysql / php / phpmyadmin / phyton / redis / xhgui
 # by default: nothing
 # services=apache,php,mysql
 
@@ -22,6 +22,14 @@
 # Set your PHP version from 5.3 to 7.0 (5.6 by default)
 # php.version=7.0
 # php.ram=512M
+
+# Set your Python version from https://hub.docker.com/_/python/
+# python.ram=512M
+# python.version=latest
+
+# Set your Redis Version from https://hub.docker.com/_/redis/
+# redis.ram=512M
+# redis.version=latest
 
 # Set the max upload size for PMA
 # pma.upload_max_filesize=128M

@@ -7,4 +7,4 @@ services:
         hostname: ${COMPOSE_PROJECT_NAME}_mongo
         networks: [marina]
         volumes:
-            - ${COMPOSE_BASE_DIR}/mongo:/data/db
+            - ${COMPOSE_BASE_DIR}/data/mongo:/data/db
