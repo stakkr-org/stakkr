@@ -18,7 +18,7 @@ setup(
     entry_points='''[console_scripts]
 marina=marina.cli:main
 docker-clean=marina.docker_clean:main
-marina_compose=marina.marina_compose:main''',
+marina-compose=marina.marina_compose:cli''',
     include_package_data=True,
     install_requires=[
         'clint',
