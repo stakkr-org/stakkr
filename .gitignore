@@ -6,6 +6,10 @@ __pycache__
 # Local configuration
 /conf
 
+# Data added during install
+.env
+bash_completion
+
 # Data in Home
 /home
 
