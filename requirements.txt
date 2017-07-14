@@ -1,3 +1,4 @@
+clint
 guzzle_sphinx_theme
 Pygments
 sphinx
