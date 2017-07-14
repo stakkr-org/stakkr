@@ -37,7 +37,9 @@ The service names also works (*elasticsearch* and *mysql*)
 
 .. code:: cfg
 
-    # Comma separated list of services to start, valid values: apache / bonita / elasticsearch / mailcatcher / maildev / mongo / mysql / php / phpmyadmin / xhgui
+    # Comma separated list of services to start
+    # Valid values: apache / bonita / elasticsearch / mailcatcher / maildev / mongo /
+    # mysql / php / phpmyadmin / python / redis / xhgui
     services=apache,php,mysql
 
 A service can launch a post-start script that has the same name with an
@@ -98,7 +100,7 @@ Public Files
 
 Services Data
 ~~~~~~~~~~~~~~~~~
--  MySQL data is into ``data/mysql``.
+-  MySQL data is into ``data/mysql``
 -  Mongo data is into ``data/mongo``
 -  ElasticSearch data is into ``data/elasticsearch``
 -  Redis data is into ``data/redis``
