@@ -38,7 +38,7 @@ The service names also works (*elasticsearch* and *mysql*)
 .. code:: cfg
 
     # Comma separated list of services to start
-    # Valid values: apache / bonita / elasticsearch / mailcatcher / maildev / mongo /
+    # Valid values: apache / bonita / elasticsearch / elasticsearch-old / mailcatcher / maildev / mongo /
     # mysql / php / phpmyadmin / python / redis / xhgui
     services=apache,php,mysql
 
