@@ -4,7 +4,7 @@ Usage
 Before running any command
 ---------------------------------
 .. IMPORTANT::
-    You have to be in a virtual environement. To verify that, check that your 
+    You have to be in a virtual environement. To verify that, check that your
 	prompt starts with something like ``(xyz_marina)``
 
 If you have autoenv, and if you kept the name of the virtualenv as
@@ -32,10 +32,10 @@ specific command : ``marina start --help``
 
 CLI Reference
 ----------------
-.. click:: marina:marina
-   :prog: marina
-   :show-nested:
 
-.. click:: docker_clean:clean
-   :prog: docker-clean
-   :show-nested:
+.. toctree::
+   :maxdepth: 2
+   :caption: List of CLI tools:
+
+   cli/docker.rst
+   cli/marina.rst

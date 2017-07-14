@@ -8,7 +8,8 @@ Everything should be defined in the ``[main]`` section.
 
 .. WARNING::
    Don't use double quotes to protect your values.
-   Use *#* to comment your lines and not *;*
+
+   Use ``#`` to comment your lines and not ``;``
 
 
 Network and changes in general

@@ -1,4 +1,4 @@
-Module lib.docker
+Module marina.docker
 ==================================
 
 .. automodule:: marina.docker

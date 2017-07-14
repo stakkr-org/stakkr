@@ -1,4 +1,4 @@
-Module lib.marina
+Module marina.actions
 ==================================
 
 .. automodule:: marina.actions

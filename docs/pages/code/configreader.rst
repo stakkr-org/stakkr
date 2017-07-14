@@ -1,4 +1,4 @@
-Module lib.config
+Module marina.configreader
 ==================================
 
 .. automodule:: marina.configreader

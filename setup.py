@@ -17,8 +17,8 @@ setup(
     py_modules=['marina'],
     entry_points='''[console_scripts]
 marina=marina.cli:main
-docker-clean=marina.docker_clean:main''',
-    scripts=['bin/marina-compose'],
+docker-clean=marina.docker_clean:main
+marina_compose=marina.marina_compose:main''',
     include_package_data=True,
     install_requires=[
         'clint',

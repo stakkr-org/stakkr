@@ -1,4 +1,4 @@
-Module lib.plugins
+Module marina.plugins
 ==================================
 
 .. automodule:: marina.plugins

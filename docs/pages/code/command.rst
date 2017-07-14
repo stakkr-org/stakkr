@@ -1,4 +1,4 @@
-Module lib.command
+Module marina.command
 ==================================
 
 .. automodule:: marina.command

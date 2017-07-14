@@ -8,9 +8,9 @@ To write a plugin you need to create a folder in the plugins/ directory that con
 your commands.
 
 .. WARNING::
-	Each directory must contain a `setup.py` to be installed as a plugin.
-	Check the following link to have more info about how to build a plugin:
-	https://github.com/click-contrib/click-plugins/tree/master/example
+    Each directory must contain a `setup.py` to be installed as a plugin.
+    Check the following link to have more info about how to build a plugin:
+    https://github.com/click-contrib/click-plugins/tree/master/example
 
 Of course you can use any module included in marina during your developments
 (click, clint, marina.command, marina.docker, marina.package_utils, etc...).
@@ -25,18 +25,18 @@ You need to create two files in a `sayhello` directory.
 
 .. code-block:: python
 
-	from setuptools import setup
+    from setuptools import setup
 
-	
-	setup(
-		name='MarinaSayHello',
-		version='1.0',
-		packages=['sayhello'],
-		entry_points='''
-			[marina.plugins]
-			sayhello=sayhello.core:hi
-		'''
-	)
+
+    setup(
+    name='MarinaSayHello',
+    version='1.0',
+    packages=['sayhello'],
+    entry_points='''
+    [marina.plugins]
+    sayhello=sayhello.core:hi
+    '''
+    )
 
 
 * And `plugins/sayhello/sayhello/core.py`
@@ -44,7 +44,7 @@ You need to create two files in a `sayhello` directory.
 
     import click
 
-	
+
     @click.command(help="Example")
     def hi():
         print('Hi!')
@@ -55,12 +55,12 @@ Once your plugin has been written you need to re-run
 .. code-block:: bash
 
     $ marina refresh-plugins
-	$ marina hi
+    $ marina hi
 
 
 .. WARNING::
-	Even when you change some code in your plugins, you have to re-run
-	`marina refresh-plugins`
+    Even when you change some code in your plugins, you have to re-run
+    `marina refresh-plugins`
 
 
 
@@ -82,8 +82,8 @@ You can, for example install composer plugin:
     $ cd plugins/
     $ git clone https://github.com/edyan/marina-composer composer
     $ marina refresh-plugins
-	$ cd ../www
-	$ marina composer
+    $ cd ../www
+    $ marina composer
 
 
 Define services in your plugins

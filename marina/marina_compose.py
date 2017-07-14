@@ -1,15 +1,13 @@
-#!/home/manu/Docker-Envs/test-lib/venv/bin/python3
 import click
 import os
 import sys
 
-from argparse import ArgumentParser
 from marina import package_utils
 from marina.configreader import Config
 from subprocess import call
 
 
-@click.command(help="Run a command with docker-compose", context_settings=dict(ignore_unknown_options=True))
+@click.command(help="Wrapper for docker-compose", context_settings=dict(ignore_unknown_options=True))
 @click.argument('command', nargs=-1, type=click.UNPROCESSED)
 def cli(command):
     user_config_main = Config().read()['main']
