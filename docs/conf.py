@@ -21,7 +21,8 @@ import os
 import sphinx_rtd_theme
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/../')
+doc_path = os.path.abspath(os.path.dirname(__file__) + '/../')
+sys.path.insert(0, doc_path)
 
 # -- General configuration ------------------------------------------------
 

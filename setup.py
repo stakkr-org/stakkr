@@ -2,7 +2,7 @@ import os
 import sys
 
 from distutils.core import setup
-sys.path.append(os.getcwd())
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from marina.setup import MarinaPostInstall
 
 setup(

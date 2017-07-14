@@ -1,7 +1,11 @@
+click
+click-plugins
 clint
+configobj
 guzzle_sphinx_theme
 Pygments
+requests>=2.11.0,<2.12
 sphinx
-sphinx-click
 sphinx-autobuild
+sphinx-click
 sphinx-rtd-theme
