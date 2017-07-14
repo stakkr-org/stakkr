@@ -71,7 +71,7 @@ Once cloned, you can run the ``install.sh`` script made for Ubuntu
     $ ./install.sh
 
 
-3. The old way, manually
+3. The old way, manually (to develop mainly)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Create the virtualenv and activate it:
 
