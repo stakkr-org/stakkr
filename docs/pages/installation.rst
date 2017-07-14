@@ -79,7 +79,7 @@ Create the virtualenv and activate it:
 
        $ virtualenv -p /usr/bin/python3 ${PWD##*/}_marina
        $ source ${PWD##*/}_marina/bin/activate
-       $ pip3 install -e .
+       $ pip install -e .
 
 
 Development

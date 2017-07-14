@@ -40,6 +40,7 @@ You need to create two files in a `sayhello` directory.
 
 
 * And `plugins/sayhello/sayhello/core.py`
+
 .. code-block:: python
 
     import click
