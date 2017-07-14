@@ -11,8 +11,9 @@ services:
             FPM_UID: ${DOCKER_UID}
             FPM_GID: ${DOCKER_GID}
             ENVIRONMENT: ${DOCKER_ENVIRONMENT}
-        volumes_from: [data]
         volumes:
+            - ${COMPOSE_BASE_DIR}/home/www-data:/home/www-data
+            - ${COMPOSE_BASE_DIR}/www:/var/www
             - ${COMPOSE_BASE_DIR}/logs/php:/var/log/php
             - ${COMPOSE_BASE_DIR}/conf/php-fpm-override:/etc/php5/fpm/user-conf.d
             - ${COMPOSE_BASE_DIR}/conf/php-fpm-override:/etc/php/7.0/fpm/user-conf.d

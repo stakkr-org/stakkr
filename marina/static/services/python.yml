@@ -7,4 +7,3 @@ services:
         hostname: ${COMPOSE_PROJECT_NAME}_python
         networks: [marina]
         mem_limit: ${DOCKER_PYTHON_RAM}
-        volumes_from: [data]

@@ -31,7 +31,7 @@ def marina(ctx, debug):
 
 Valid values for CONTAINER : 'apache', 'mysql' or 'php'""")
 @click.option('--user', help="User's name. Valid choices : www-data or root", type=click.Choice(['www-data', 'root']))
-@click.argument('container', required=True, type=click.Choice(['apache', 'mysql', 'php']))
+@click.argument('container', required=True, type=click.Choice(['apache', 'mysql', 'python', 'php']))
 @click.pass_context
 def console(ctx, container: str, user: str):
     if container in ['php', 'apache'] and user is None:

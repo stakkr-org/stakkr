@@ -7,14 +7,3 @@ networks:
             config:
                 - subnet: ${DOCKER_SUBNET}
                   gateway: ${DOCKER_GATEWAY}
-
-services:
-    data:
-        image: edyan/data
-        #build: https://github.com/edyan/docker-data
-        volumes:
-            - ${COMPOSE_BASE_DIR}/home/www-data:/home/www-data
-            - ${COMPOSE_BASE_DIR}/www:/var/www
-        networks: [marina]
-        container_name: ${COMPOSE_PROJECT_NAME}_data
-        hostname: ${COMPOSE_PROJECT_NAME}_data
