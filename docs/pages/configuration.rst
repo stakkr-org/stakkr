@@ -90,17 +90,32 @@ Memory assigned to the VMS:
 
 Files location
 ------------------
+
+Public Files
+~~~~~~~~~~~~~~
 -  All files served by the web server are located into ``www/``
--  MySQL data is into ``mysql/`` (created on the first run). If you need
-   to override the mysql configuration you can put a file in
-   ``conf/mysql-override`` with a ``.cnf`` extension. Logs for MySQL are
-   also located into ``mysql/`` (slow and error).
--  Mongo data is into ``mongo/`` (created on the first run)
+
+
+Services Data
+~~~~~~~~~~~~~~~~~
+-  MySQL data is into ``data/mysql``.
+-  Mongo data is into ``data/mongo``
+-  ElasticSearch data is into ``data/elasticsearch``
+-  Redis data is into ``data/redis``
+
+Logs
+~~~~~~
 -  Logs for Apache and PHP are located into ``logs/``
+-  Logs for MySQL are located into ``data/mysql/`` (slow and error).
+
+Configuration
+~~~~~~~~~~~~~~~
 -  If you need to override the PHP configuration you can put a file in
    ``conf/php-fpm-override`` with a ``.conf`` extension. The format is
    the fpm configuration files one. Example:
    ``php_value[memory_limit] = 127M``.
+-  If you need to override the mysql configuration you can put a file in ``conf/mysql-override``
+   with a ``.cnf`` extension.
 
 
 Add binaries
