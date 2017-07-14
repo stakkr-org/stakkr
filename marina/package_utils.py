@@ -9,11 +9,11 @@ def installed_as_packages():
 
 
 def get_venv_basedir():
-    venv_dir = os.getenv('VIRTUAL_ENV')
-    if venv_dir is None:
+    try:
+        import virtualenv
         raise EnvironmentError("You must be in a virtual environment")
-
-    return os.path.abspath(venv_dir + '/..')
+    except Exception:
+        return os.path.abspath(os.environ['VIRTUAL_ENV'] + '/..')
 
 
 def get_file(dirname: str, filename: str):
