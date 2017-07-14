@@ -1,5 +1,7 @@
 import os
 
+from distutils.sysconfig import get_python_lib
+
 
 def installed_as_packages():
     if os.path.isdir(os.path.dirname(os.path.realpath(__file__)) + '/static') is True:
@@ -13,7 +15,7 @@ def get_venv_basedir():
         import virtualenv
         raise EnvironmentError("You must be in a virtual environment")
     except Exception:
-        return os.path.abspath(os.environ['VIRTUAL_ENV'] + '/..')
+        return os.path.abspath(get_python_lib() + '/../../../../')
 
 
 def get_file(dirname: str, filename: str):
@@ -27,6 +29,5 @@ def get_dir(dirname: str):
     if os.path.isdir(staticdir) is True:
         return staticdir
 
-    from distutils.sysconfig import get_python_lib
 
     return get_python_lib() + '/marina/' + dirname
