@@ -13,8 +13,10 @@ __pycache__
 /logs
 
 # Services data
-/mongo
-/mysql
+/data/elasticsearch
+/data/mongo
+/data/mysql
+/data/redis
 /www
 
 # Plugins
