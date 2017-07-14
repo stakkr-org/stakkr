@@ -8,10 +8,8 @@ from setuptools.command.install import install
 venv_dir = package_utils.get_venv_basedir()
 logs = open('/tmp/marina-install.log', 'w')
 
-def _post_install():
-    ff = open('/tmp/install.log', 'w')
-    ff.write("dir: {}\n".format(venv_dir))
 
+def _post_install():
     required_dirs = [
         'conf',
         'conf/mysql-override',
