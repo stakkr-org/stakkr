@@ -1,3 +1,5 @@
+include README.md
+include LICENSE
 include marina/static/configspec.ini
 include marina/static/docker-compose.yml
 include marina/static/services/*.yml
