@@ -1,3 +1,7 @@
+.. image:: https://raw.githubusercontent.com/edyan/marina/master/docs/marina-logo.png
+    :width: 200px
+    :align: center
+
 Overview
 ==================================
 .. image:: https://scrutinizer-ci.com/g/edyan/marina/badges/quality-score.png?b=master
@@ -15,10 +19,6 @@ It works only in CLI.
 
 What does that do exactly ?
 ==============================
-
-.. image:: https://raw.githubusercontent.com/edyan/marina/master/docs/marina-logo.png
-    :width: 200px
-
 If you have heard of Docker, you know that when you need to build a full environment
 with multiple services that are linked, you either have to do everything manually or
 use `docker-compose`. The second solution is the best _but_ it implies that you need, for each
