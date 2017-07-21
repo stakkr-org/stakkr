@@ -15,6 +15,7 @@ def _post_install():
         'conf/mysql-override',
         'conf/php-fpm-override',
         'conf/xhgui-override',
+        'data',
         'home',
         'home/www-data',
         'home/www-data/bin',
