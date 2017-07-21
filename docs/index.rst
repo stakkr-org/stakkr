@@ -1,8 +1,8 @@
+Overview
+==================================
 .. image:: https://scrutinizer-ci.com/g/edyan/marina/badges/quality-score.png?b=master
 .. image:: https://scrutinizer-ci.com/g/edyan/marina/badges/build.png?b=master
 
-Overview
-==================================
 .. image:: https://raw.githubusercontent.com/edyan/marina/master/docs/marina-logo.png
     :width: 200 px
 
