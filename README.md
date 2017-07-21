@@ -2,7 +2,9 @@
 [![Build Status](https://scrutinizer-ci.com/g/edyan/marina/badges/build.png?b=master)](https://scrutinizer-ci.com/g/edyan/marina/build-status/master)
 
 # Marina
-![alt text](https://github.com/edyan/marina/raw/master/docs/marina-logo.png "Marina")
+<p align="center"> 
+<img src="https://github.com/edyan/marina/raw/master/docs/marina-logo.png" width="200" title="Marina Logo">
+</p>
 
 Marina is a a docker recompose tool that uses docker compose to easily 
 create / maintain a stack of services, for example for web development.
