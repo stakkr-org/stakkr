@@ -43,9 +43,15 @@ Installation :
     $ cd myenv
     $ virtualenv -p /usr/bin/python3 ${PWD##*/}_marina
     $ source ${PWD##*/}_marina/bin/activate
-    $ pip install git+https://github.com/edyan/marina.git
+    $ pip install marina
 
 It'll run a `post_install` script that copy some templates / create base directories to work.
+
+
+If you want to install the dev version, you can do the following : 
+.. code:: shell
+    $ pip install git+https://github.com/edyan/marina.git
+
 
 
 2. The old way

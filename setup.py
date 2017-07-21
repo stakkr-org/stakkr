@@ -8,7 +8,7 @@ from marina.setup import MarinaPostInstall
 setup(
     name='marina',
     version='2.0',
-    description='A stack based on docker to run PHP Applications',
+    description='A configurable stack based on docker to run any combination of services (PHP, MySQL, Apache, Nginx, Mongo, etc..)',
     url='http://github.com/edyan/marina',
     author='Emmanuel Dyan',
     author_email='emmanueldyan@gmail.com',
