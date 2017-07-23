@@ -1,5 +1,5 @@
-Module marina.plugins
+Module stakkr.plugins
 ==================================
 
-.. automodule:: marina.plugins
+.. automodule:: stakkr.plugins
     :members:

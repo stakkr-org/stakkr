@@ -1,11 +1,11 @@
 Docker Commands
 =================
 
-.. click:: marina.docker_clean:clean
+.. click:: stakkr.docker_clean:clean
    :prog: docker-clean
    :show-nested:
 
 
-.. click:: marina.marina_compose:cli
-  :prog: marina-compose
+.. click:: stakkr.stakkr_compose:cli
+  :prog: stakkr-compose
   :show-nested:

@@ -1,5 +1,5 @@
-Module marina.command
+Module stakkr.command
 ==================================
 
-.. automodule:: marina.command
+.. automodule:: stakkr.command
     :members:

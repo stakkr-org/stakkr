@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Marina documentation build configuration file, created by
+# Stakkr documentation build configuration file, created by
 # sphinx-quickstart on Mon Jul 10 13:30:18 2017.
 #
 # This file is execfile()d with the current directory set to its
@@ -56,7 +56,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'marina'
+project = 'stakkr'
 copyright = '2017, Emmanuel Dyan'
 author = 'Emmanuel Dyan'
 
@@ -79,7 +79,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '*_marina']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '*_stakkr']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'default'
@@ -128,7 +128,7 @@ html_sidebars = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Marinadoc'
+htmlhelp_basename = 'Stakkrdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -155,7 +155,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'Marina.tex', 'Marina Documentation',
+    (master_doc, 'Stakkr.tex', 'Stakkr Documentation',
      'Emmanuel Dyan', 'manual'),
 ]
 
@@ -165,7 +165,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'marina', 'Marina Documentation',
+    (master_doc, 'stakkr', 'Stakkr Documentation',
      [author], 1)
 ]
 
@@ -176,7 +176,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'Marina', 'Marina Documentation',
-     author, 'Marina', 'One line description of project.',
+    (master_doc, 'Stakkr', 'Stakkr Documentation',
+     author, 'Stakkr', 'One line description of project.',
      'Miscellaneous'),
 ]

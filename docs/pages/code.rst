@@ -1,7 +1,7 @@
-Marina's code structure
+Stakkr's code structure
 ==================================
 
-Marina works with a few modules / classes:
+Stakkr works with a few modules / classes:
 
 .. toctree::
    :maxdepth: 2

@@ -21,7 +21,7 @@ You can define your own network in compose.ini (``subnet`` and `gateway``).
    removes orphans images, stopped container, etc ...
 
    Also, if you change any parameter such as an environment variable
-   run a `marina restart --recreate` to make sure that you start from
+   run a `stakkr restart --recreate` to make sure that you start from
    a clean environment.
 
 
@@ -31,8 +31,8 @@ You can define the list of services you want to have. Each service
 consists of a yml file in the ``services/`` directory. Each container
 ("Virtual Machine") will have a hostname composed of the project name
 and the service name. To reach, for example, the elasticsearch server
-from a web application, and if your ``project_name = marina`` use
-``marina_elasticsearch`` or to connect to mysql use ``marina_mysql``.
+from a web application, and if your ``project_name = stakkr`` use
+``stakkr_elasticsearch`` or to connect to mysql use ``stakkr_mysql``.
 The service names also works (*elasticsearch* and *mysql*)
 
 .. code:: cfg
@@ -61,7 +61,7 @@ different for each project.
 .. code:: ini
 
     # Change Machines names only if you need it
-    project_name=marina
+    project_name=stakkr
 
 PHP Version :
 

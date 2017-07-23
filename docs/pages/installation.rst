@@ -24,15 +24,15 @@ Example of installation of the dependencies on Ubuntu:
     $ sudo pip3 install autoenv
 
 
-Marina
+Stakkr
 ----------
 
-There are 2 ways to intall Marina.
+There are 2 ways to intall Stakkr.
 
 1. The easy way
 ~~~~~~~~~~~~~~~~~~
-Marina is usable as a library, it's clean, you have a very beautiful tree
-once installed, and it's **recommended**. You can install as many marinas that you need.
+Stakkr is usable as a library, it's clean, you have a very beautiful tree
+once installed, and it's **recommended**. You can install as many stakkrs that you need.
 Just be careful to set different names and networks in `conf/compose.ini`
 
 Installation :
@@ -41,22 +41,22 @@ Installation :
 
     $ mkdir myenv
     $ cd myenv
-    $ virtualenv -p /usr/bin/python3 ${PWD##*/}_marina
-    $ source ${PWD##*/}_marina/bin/activate
-    $ pip install marina
+    $ virtualenv -p /usr/bin/python3 ${PWD##*/}_stakkr
+    $ source ${PWD##*/}_stakkr/bin/activate
+    $ pip install stakkr
 
 It'll run a `post_install` script that copy some templates / create base directories to work.
 
 
 If you want to install the dev version, you can do the following : 
 .. code:: shell
-    $ pip install git+https://github.com/edyan/marina.git
+    $ pip install git+https://github.com/edyan/stakkr.git
 
 
 
 2. The old way
 ~~~~~~~~~~~~~~~~
-Marina gets installed by cloning the github repo .... *not recommended if you don't develop on it*.
+Stakkr gets installed by cloning the github repo .... *not recommended if you don't develop on it*.
 
 You can clone the repository as many times as you want as you can have
 multiple instances at the same time. A good practice is too have one
@@ -65,7 +65,7 @@ of PHP / MySQL / Elasticsearch, etc ...
 
 .. code:: shell
 
-    $ git clone https://github.com/edyan/marina myenv
+    $ git clone https://github.com/edyan/stakkr myenv
 
 
 Once cloned, you can run the ``install.sh`` script made for Ubuntu
@@ -83,15 +83,15 @@ Create the virtualenv and activate it:
 
    .. code:: shell
 
-       $ virtualenv -p /usr/bin/python3 ${PWD##*/}_marina
-       $ source ${PWD##*/}_marina/bin/activate
+       $ virtualenv -p /usr/bin/python3 ${PWD##*/}_stakkr
+       $ source ${PWD##*/}_stakkr/bin/activate
        $ pip install -e .
 
 
 Development
 --------------
 
-To develop, use the 3rd way to install Marina then :
+To develop, use the 3rd way to install Stakkr then :
 
 .. code:: shell
 

@@ -12,8 +12,8 @@ your commands.
     Check the following link to have more info about how to build a plugin:
     https://github.com/click-contrib/click-plugins/tree/master/example
 
-Of course you can use any module included in marina during your developments
-(click, clint, marina.command, marina.docker, marina.package_utils, etc...).
+Of course you can use any module included in stakkr during your developments
+(click, clint, stakkr.command, stakkr.docker, stakkr.package_utils, etc...).
 
 
 Example
@@ -29,11 +29,11 @@ You need to create two files in a `sayhello` directory.
 
 
     setup(
-    name='MarinaSayHello',
+    name='StakkrSayHello',
     version='1.0',
     packages=['sayhello'],
     entry_points='''
-    [marina.plugins]
+    [stakkr.plugins]
     sayhello=sayhello.core:hi
     '''
     )
@@ -55,13 +55,13 @@ Once your plugin has been written you need to re-run
 
 .. code-block:: bash
 
-    $ marina refresh-plugins
-    $ marina hi
+    $ stakkr refresh-plugins
+    $ stakkr hi
 
 
 .. WARNING::
     Even when you change some code in your plugins, you have to re-run
-    `marina refresh-plugins`
+    `stakkr refresh-plugins`
 
 
 
@@ -72,8 +72,8 @@ To install a plugin
 .. code-block:: bash
 
     $ cd plugins/
-    $ git clone https://github.com/xyz/marina-myplugin myplugin
-    $ marina refresh-plugins
+    $ git clone https://github.com/xyz/stakkr-myplugin myplugin
+    $ stakkr refresh-plugins
 
 
 You can, for example install composer plugin:
@@ -81,10 +81,10 @@ You can, for example install composer plugin:
 .. code-block:: bash
 
     $ cd plugins/
-    $ git clone https://github.com/edyan/marina-composer composer
-    $ marina refresh-plugins
+    $ git clone https://github.com/edyan/stakkr-composer composer
+    $ stakkr refresh-plugins
     $ cd ../www
-    $ marina composer
+    $ stakkr composer
 
 
 Define services in your plugins
@@ -97,6 +97,6 @@ Each service added by a plugin must be added in `compose.ini` to be started.
 
 List of existing plugins
 -----------------------------------
-* `marina-composer <https://github.com/edyan/marina-composer>`_ : Download and run composer
-* `marina-sugarcli <https://github.com/inetprocess/marina-sugarcli>`_ : Download and run sugarcli
-* `marina-phing <https://github.com/edyan/marina-phing>`_ : Download and run Phing
+* `stakkr-composer <https://github.com/edyan/stakkr-composer>`_ : Download and run composer
+* `stakkr-sugarcli <https://github.com/inetprocess/stakkr-sugarcli>`_ : Download and run sugarcli
+* `stakkr-phing <https://github.com/edyan/stakkr-phing>`_ : Download and run Phing

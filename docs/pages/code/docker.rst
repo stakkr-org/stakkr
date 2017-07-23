@@ -1,5 +1,5 @@
-Module marina.docker
+Module stakkr.docker
 ==================================
 
-.. automodule:: marina.docker
+.. automodule:: stakkr.docker
     :members:

@@ -1,6 +1,6 @@
-Marina Commands
+Stakkr Commands
 =======================
 
-.. click:: marina.cli:marina
-   :prog: marina
+.. click:: stakkr.cli:stakkr
+   :prog: stakkr
    :show-nested:

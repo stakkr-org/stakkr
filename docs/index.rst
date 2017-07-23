@@ -1,18 +1,18 @@
-.. image:: https://raw.githubusercontent.com/edyan/marina/master/docs/marina-logo.png
+.. image:: https://raw.githubusercontent.com/edyan/stakkr/master/docs/stakkr-logo.png
     :width: 200px
     :align: center
 
 Overview
 ==================================
-.. image:: https://scrutinizer-ci.com/g/edyan/marina/badges/quality-score.png?b=master
-.. image:: https://scrutinizer-ci.com/g/edyan/marina/badges/build.png?b=master
+.. image:: https://scrutinizer-ci.com/g/edyan/stakkr/badges/quality-score.png?b=master
+.. image:: https://scrutinizer-ci.com/g/edyan/stakkr/badges/build.png?b=master
 
 
-Marina is a a docker recompose tool that uses docker compose to easily
+Stakkr is a a docker recompose tool that uses docker compose to easily
 create / maintain a stack of services, for example for web development.
 
 Via a configuration file you can setup the required services and
-let marina link and start everything for you.
+let stakkr link and start everything for you.
 
 It works only in CLI.
 
@@ -25,7 +25,7 @@ use `docker-compose`. The second solution is the best _but_ it implies that you 
 environment, to change your parameters, choose your images, learn the `docker-compose` command
 line tool, etc ... In brief, it's not very flexible and hard to learn.
 
-Marina will help you, via a very simple configuration file and a predefined list of services
+Stakkr will help you, via a very simple configuration file and a predefined list of services
 (that can be extended by plugins) to build a complete environment. Plus, to control it in command line.
 It makes use of docker easy.
 

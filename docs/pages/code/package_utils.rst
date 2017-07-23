@@ -1,5 +1,5 @@
-Module marina.package_utils
+Module stakkr.package_utils
 ==================================
 
-.. automodule:: marina.package_utils
+.. automodule:: stakkr.package_utils
     :members:

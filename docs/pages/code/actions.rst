@@ -1,6 +1,6 @@
-Module marina.actions
+Module stakkr.actions
 ==================================
 
-.. automodule:: marina.actions
-.. autoclass:: MarinaActions
+.. automodule:: stakkr.actions
+.. autoclass:: StakkrActions
     :members:

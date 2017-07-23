@@ -1,6 +1,6 @@
-Module marina.configreader
+Module stakkr.configreader
 ==================================
 
-.. automodule:: marina.configreader
+.. automodule:: stakkr.configreader
 .. autoclass:: Config
     :members:
