@@ -8,9 +8,16 @@ from subprocess import call
 
 
 @click.command(help="Wrapper for docker-compose", context_settings=dict(ignore_unknown_options=True))
+@click.option('--config', '-c', help="Override the conf/compose.ini")
 @click.argument('command', nargs=-1, type=click.UNPROCESSED)
-def cli(command):
-    user_config_main = Config().read()['main']
+def cli(command, config):
+    config = Config(config)
+    user_config_main = config.read()
+    if user_config_main is False:
+        config.display_errors()
+        sys.exit(1)
+
+    user_config_main = user_config_main['main']
     set_env_values_from_conf(user_config_main)
 
     project_name = user_config_main.get('project_name')

@@ -7,15 +7,6 @@ import os
 from distutils.sysconfig import get_python_lib
 
 
-def installed_as_packages():
-    """True if stakkr is installed as a package, else False"""
-
-    if os.path.isdir(os.path.dirname(os.path.realpath(__file__)) + '/static') is True:
-        return True
-
-    return False
-
-
 def get_venv_basedir():
     """Returns the base directory of the virtualenv, useful to read configuration and plugins"""
 
@@ -26,14 +17,6 @@ def get_venv_basedir():
         return os.path.abspath(get_python_lib() + '/../../../../')
 
 
-def get_file(dirname: str, filename: str):
-    """Detects if stakkr is a package or a clone and gives the right path for a file"""
-
-    dir_path = get_dir(dirname)
-
-    return dir_path + '/' + filename.lstrip('/')
-
-
 def get_dir(dirname: str):
     """Detects if stakkr is a package or a clone and gives the right path for a directory"""
 
@@ -41,5 +24,12 @@ def get_dir(dirname: str):
     if os.path.isdir(staticdir) is True:
         return staticdir
 
-
     return get_python_lib() + '/stakkr/' + dirname
+
+
+def get_file(dirname: str, filename: str):
+    """Detects if stakkr is a package or a clone and gives the right path for a file"""
+
+    dir_path = get_dir(dirname)
+
+    return dir_path + '/' + filename.lstrip('/')

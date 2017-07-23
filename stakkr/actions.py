@@ -23,7 +23,13 @@ class StakkrActions():
         self.dns_container_name = 'docker_dns'
 
         # self.default_config_main = Config('conf/compose.ini.tpl').read()['main']
-        self.user_config_main = Config().read()['main']
+        config = Config()
+        user_config_main = config.read()
+        if user_config_main is False:
+            config.display_errors()
+            sys.exit(1)
+
+        self.user_config_main = user_config_main['main']
         self.project_name = self.user_config_main.get('project_name')
         self.vms = docker.get_running_containers(self.project_name)
         self.running_vms = sum(True for vm_id, vm_data in self.vms.items() if vm_data['running'] is True)

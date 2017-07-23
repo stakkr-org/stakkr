@@ -108,6 +108,21 @@ class CommandTest(unittest.TestCase):
         self.assertEqual('', res)
 
 
+    def test_command_with_stderr_no_stdout_err_loop(self):
+        f = io.StringIO()
+        with redirect_stdout(f):
+            launch_cmd_displays_output(['wget', '--debug', '--tries', '3', 'http://doesnotexist'], False, True)
+        res = f.getvalue()
+        expected = re.compile('.*\.\.\. and more.*', re.MULTILINE)
+        self.assertRegex(res, expected)
+
+        f = io.StringIO()
+        with redirect_stderr(f):
+            launch_cmd_displays_output(self.cmd_nook, False, True)
+        res = f.getvalue()
+        self.assertEqual('', res)
+
+
 
 if __name__ == "__main__":
     unittest.main()
