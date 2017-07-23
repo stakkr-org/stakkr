@@ -11,4 +11,4 @@ services:
             #PMA_ARBITRARY: 1
         container_name: ${COMPOSE_PROJECT_NAME}_phpmyadmin
         hostname: ${COMPOSE_PROJECT_NAME}_phpmyadmin
-        networks: [marina]
+        networks: [stakkr]

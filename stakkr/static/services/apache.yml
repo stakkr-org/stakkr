@@ -6,7 +6,7 @@ services:
         mem_limit: ${DOCKER_APACHE_RAM}
         container_name: ${COMPOSE_PROJECT_NAME}_apache
         hostname: ${COMPOSE_PROJECT_NAME}_apache
-        networks: [marina]
+        networks: [stakkr]
         links: [php]
         environment:
             APACHE_UID: ${DOCKER_UID}

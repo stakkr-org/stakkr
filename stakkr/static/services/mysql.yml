@@ -6,7 +6,7 @@ services:
         mem_limit: ${DOCKER_MYSQL_RAM}
         container_name: ${COMPOSE_PROJECT_NAME}_mysql
         hostname: ${COMPOSE_PROJECT_NAME}_mysql
-        networks: [marina]
+        networks: [stakkr]
         environment:
             MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_ROOT_PASSWORD}
         volumes:

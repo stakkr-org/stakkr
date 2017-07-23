@@ -5,5 +5,5 @@ services:
         image: python:${DOCKER_PYTHON_VERSION}
         container_name: ${COMPOSE_PROJECT_NAME}_python
         hostname: ${COMPOSE_PROJECT_NAME}_python
-        networks: [marina]
+        networks: [stakkr]
         mem_limit: ${DOCKER_PYTHON_RAM}

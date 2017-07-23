@@ -6,6 +6,6 @@ services:
         mem_limit: ${DOCKER_REDIS_RAM}
         container_name: ${COMPOSE_PROJECT_NAME}_redis
         hostname: ${COMPOSE_PROJECT_NAME}_redis
-        networks: [marina]
+        networks: [stakkr]
         volumes:
             - ${COMPOSE_BASE_DIR}/data/redis:/var/lib/redis
