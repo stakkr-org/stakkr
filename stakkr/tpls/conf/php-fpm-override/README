@@ -1,4 +1,4 @@
 Put here files that are compatibles with FPM, with a .conf extension
 That will override the default fpm pool configuration
 
-You need to stop then start Marina after creating / changing a file
+You need to stop then start Stakkr after creating / changing a file
