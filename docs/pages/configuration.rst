@@ -14,14 +14,14 @@ Everything should be defined in the ``[main]`` section.
 
 Network and changes in general
 ------------------------------------
-You can define your own network in compose.ini (``subnet`` and `gateway``).
+You can define your own network in compose.ini (``subnet`` and ``gateway``).
 
 .. WARNING::
    If you change that, run ``docker-clean`` which
    removes orphans images, stopped container, etc ...
 
    Also, if you change any parameter such as an environment variable
-   run a `stakkr restart --recreate` to make sure that you start from
+   run a ``stakkr restart --recreate`` to make sure that you start from
    a clean environment.
 
 
