@@ -7,7 +7,7 @@ bar or info.
 import sys
 import subprocess
 
-from clint.textui import colored, puts
+from click import style
 from io import BufferedReader
 
 
@@ -17,8 +17,7 @@ def launch_cmd_displays_output(cmd: list, displays_messages=True, displays_error
     try:
         result = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except Exception as e:
-        puts(colored.red("Can't run the command : {}".format(e.output.decode() if e.output else "... unknown")))
-        sys.exit(1)
+        raise SystemError('Cannot run the command: {}'.format(e))
 
     if displays_messages is True:
         _print_messages(result)
@@ -41,13 +40,12 @@ def _print_errors(result: BufferedReader):
     i = 0
     for line in result.stderr:
         if i == 0:
-            puts(colored.red("Can't run the command, it returned:"))
+            print(style("Command returned an error :", fg='red'))
 
         print(line.decode(), end='')
 
-
         if i > 5:
-            puts(colored.red('... and more'))
+            print(style('... and more', fg='red'))
             break
 
         i += 1

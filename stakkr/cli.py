@@ -2,7 +2,7 @@ import click
 import sys
 
 from click_plugins import with_plugins
-from stakkr import package_utils
+from . import package_utils
 from pkg_resources import iter_entry_points
 
 
@@ -13,10 +13,11 @@ a stack of services, for example for web development.
 
 Read the configuration file and setup the required services by
 linking and managing everything for you.""")
-@click.version_option('2.0')
-@click.option('--debug/--no-debug', default=False)
+@click.version_option('3.0')
+@click.option('--verbose', '-v', is_flag=True)
+@click.option('--debug/--no-debug', '-d', default=False)
 @click.pass_context
-def stakkr(ctx, debug):
+def stakkr(ctx, verbose, debug):
     from stakkr.actions import StakkrActions
 
     # Add the virtual env in the path
@@ -24,7 +25,8 @@ def stakkr(ctx, debug):
     sys.path.append(venv_base)
 
     ctx.obj['DEBUG'] = debug
-    ctx.obj['STAKKR'] = StakkrActions(venv_base)
+    ctx.obj['VERBOSE'] = verbose
+    ctx.obj['STAKKR'] = StakkrActions(venv_base, ctx.obj)
 
 
 @stakkr.command(help="""Enter a container to perform direct actions such as install packages, run commands ...

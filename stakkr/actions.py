@@ -3,15 +3,18 @@ import sys
 import subprocess
 
 from clint.textui import colored, puts, columns
-from stakkr import docker
-from stakkr.configreader import Config
+from click.core import Context
+from . import command
+from . import docker
+from .configreader import Config
 
 
 class StakkrActions():
     """Main class that does actions asked in the cli"""
 
-    def __init__(self, base_dir: str):
+    def __init__(self, base_dir: str, ctx: dict):
         self.stakkr_base_dir = base_dir
+        self.context = ctx
         self.current_dir = os.getcwd()
         # Make sure we are in the right directory
         self.current_dir_relative = self.current_dir[len(self.stakkr_base_dir):].lstrip('/')
@@ -66,7 +69,8 @@ class StakkrActions():
             subprocess.call(['stakkr-compose', 'pull'])
 
         recreate_param = '--force-recreate' if recreate is True else '--no-recreate'
-        subprocess.call(['stakkr-compose', 'up', '-d', recreate_param, '--remove-orphans'])
+        cmd = ['stakkr-compose', 'up', '-d', recreate_param, '--remove-orphans']
+        command.launch_cmd_displays_output(cmd, self.context['VERBOSE'], self.context['DEBUG'])
         self.vms = docker.get_running_containers(self.project_name)
         self._run_services_post_scripts()
 
@@ -75,7 +79,7 @@ class StakkrActions():
         """If started, stop the containers defined in config. Else throw an error"""
 
         self.check_vms_are_running()
-        subprocess.call(['stakkr-compose', 'stop'])
+        command.launch_cmd_displays_output(['stakkr-compose', 'stop'], self.context['VERBOSE'], self.context['DEBUG'])
         self.running_vms = 0
 
 
