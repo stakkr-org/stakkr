@@ -34,8 +34,8 @@ What does that do exactly ?
 ==============================
 If you have heard of Docker, you know that when you need to build a full environment
 with multiple services that are linked, you either have to do everything manually or
-use `docker-compose`. The second solution is the best _but_ it implies that you need, for each
-environment, to change your parameters, choose your images, learn the `docker-compose` command
+use ``docker-compose``. The second solution is the best `but` it implies that you need, for each
+environment, to change your parameters, choose your images, learn the ``docker-compose`` command
 line tool, etc ... In brief, it's not very flexible and hard to learn.
 
 Stakkr will help you, via a very simple configuration file and a predefined list of services
@@ -44,7 +44,7 @@ It makes use of docker easy.
 
 Last, but not the least, it's highly configurable and each service mounts a volume to have a persistence
 of data. You can even, if you want, add more directives on some services (change the `php.ini` for
-example and chose your versions (PHP 5.3 or 5.6 or 7.1 or anything else).
+example and choose your versions (PHP 5.3 or 5.6 or 7.1 or anything else).
 
 
 Examples
