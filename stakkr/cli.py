@@ -17,14 +17,14 @@ linking and managing everything for you.""")
 @click.option('--debug/--no-debug', default=False)
 @click.pass_context
 def stakkr(ctx, debug):
-    from stakkr.actions import MarinaActions
+    from stakkr.actions import StakkrActions
 
     # Add the virtual env in the path
     venv_base = package_utils.get_venv_basedir()
     sys.path.append(venv_base)
 
     ctx.obj['DEBUG'] = debug
-    ctx.obj['MARINA'] = MarinaActions(venv_base)
+    ctx.obj['STAKKR'] = StakkrActions(venv_base)
 
 
 @stakkr.command(help="""Enter a container to perform direct actions such as install packages, run commands ...
@@ -41,7 +41,7 @@ def console(ctx, container: str, user: str):
     elif user is None:
         user = 'root'
 
-    stakkr = ctx.obj['MARINA']
+    stakkr = ctx.obj['STAKKR']
     stakkr.console(container, user)
 
 
@@ -55,7 +55,7 @@ Valid values for ACTION : 'start' or 'stop'""",
 @click.argument('action', required=True, type=click.Choice(['start', 'stop']))
 @click.pass_context
 def dns(ctx, action: str):
-    stakkr = ctx.obj['MARINA']
+    stakkr = ctx.obj['STAKKR']
 
     if action == 'start':
         str_action = 'Starting'
@@ -70,7 +70,7 @@ def dns(ctx, action: str):
 @click.pass_context
 def fullstart(ctx):
     print(click.style('Building required images ...', fg='green'))
-    stakkr = ctx.obj['MARINA']
+    stakkr = ctx.obj['STAKKR']
     stakkr.fullstart()
     print(click.style('Build done\n', fg='green'))
 
@@ -96,7 +96,7 @@ def refresh_plugins(ctx):
 @click.pass_context
 def restart(ctx, pull: bool, recreate: bool):
     print(click.style('Restarting stakkr services ...', fg='green'))
-    stakkr = ctx.obj['MARINA']
+    stakkr = ctx.obj['STAKKR']
     stakkr.restart(pull, recreate)
     print(click.style('stakkr services have been restarted.\n', fg='green'))
 
@@ -125,7 +125,7 @@ def run(ctx, container: str, user: str, run_args: tuple):
         user = 'root'
 
     run_args = ' '.join(run_args)
-    stakkr = ctx.obj['MARINA']
+    stakkr = ctx.obj['STAKKR']
     if container == 'php':
         stakkr.run_php(user, run_args)
     elif container == 'mysql':
@@ -141,7 +141,7 @@ def run(ctx, container: str, user: str, run_args: tuple):
 @click.pass_context
 def start(ctx, pull: bool, recreate: bool):
     print(click.style('Starting your stakkr services ...', fg='green'))
-    stakkr = ctx.obj['MARINA']
+    stakkr = ctx.obj['STAKKR']
     stakkr.start(pull, recreate)
     print(click.style('stakkr services have been started\n', fg='green'))
 
@@ -151,7 +151,7 @@ def start(ctx, pull: bool, recreate: bool):
 @stakkr.command(help="Display a list of running containers")
 @click.pass_context
 def status(ctx):
-    stakkr = ctx.obj['MARINA']
+    stakkr = ctx.obj['STAKKR']
     stakkr.status()
 
 
@@ -159,7 +159,7 @@ def status(ctx):
 @click.pass_context
 def stop(ctx):
     print(click.style('Stopping stakkr services...', fg='green'))
-    stakkr = ctx.obj['MARINA']
+    stakkr = ctx.obj['STAKKR']
     stakkr.stop()
     print(click.style('stakkr services have been stopped.\n', fg='green'))
 

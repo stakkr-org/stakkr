@@ -58,7 +58,7 @@ def _copy_file(source_file: str):
 
 
 
-class MarinaPostInstall(install):
+class StakkrPostInstall(install):
     def run(self):
         install.run(self)
         _post_install()

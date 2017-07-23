@@ -7,7 +7,7 @@ from stakkr import docker
 from stakkr.configreader import Config
 
 
-class MarinaActions():
+class StakkrActions():
     """Main class that does actions asked in the cli"""
 
     def __init__(self, base_dir: str):

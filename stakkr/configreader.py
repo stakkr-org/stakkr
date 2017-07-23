@@ -7,7 +7,7 @@ from validate import Validator
 
 
 class Config():
-    """Config Parser of Marina. Set default values and validate conf/compose.ini
+    """Config Parser of Stakkr. Set default values and validate conf/compose.ini
     with conf/configspec.ini"""
 
     def __init__(self):
