@@ -17,6 +17,18 @@ let stakkr link and start everything for you.
 It works only in CLI.
 
 
+Versions
+=============
+.. IMPORTANT::
+   Stakkr has known 3 versions and 3 names :
+   - 1.x : it was called ``docker-lamp`` and was made to setup an Apache + PHP + MySQL Environment
+   - 2.x : it was called ``marina`` (nice name!) and was made to have a stack build around various 
+   services.
+   - 3.x : current version (and probably future ones) , now ``stakkr``. Why changing its name again ? 
+   Because marina is used by various people and therefore our tool could add more confusion. 
+   
+   
+
 What does that do exactly ?
 ==============================
 If you have heard of Docker, you know that when you need to build a full environment

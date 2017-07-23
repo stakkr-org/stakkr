@@ -3,7 +3,7 @@
 
 # Stakkr
 <p align="center"> 
-<img src="https://github.com/edyan/stakkr/raw/master/docs/stakkr-logo.png" width="200" title="Stakkr Logo">
+<img src="https://raw.githubusercontent.com/edyan/stakkr/master/docs/stakkr-logo.png" width="200" title="Stakkr Logo">
 </p>
 
 Stakkr is a a docker recompose tool that uses docker compose to easily 
