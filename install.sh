@@ -2,7 +2,7 @@
 set -e
 
 echo "Cleaning the old virtualenv"
-rm -rf *.egg-info ${PWD##*/}_marina __pycache__
+rm -rf *.egg-info ${PWD##*/}_stakkr __pycache__
 echo ""
 
 echo "Installing various python packages"
@@ -18,11 +18,11 @@ echo "    # source ~/.bashrc"
 echo ""
 
 echo "Creating the virtualenv"
-virtualenv -p /usr/bin/python3  ${PWD##*/}_marina > /dev/null
-source ${PWD##*/}_marina/bin/activate > /dev/null
+virtualenv -p /usr/bin/python3  ${PWD##*/}_stakkr > /dev/null
+source ${PWD##*/}_stakkr/bin/activate > /dev/null
 pip3 install -e . > /dev/null
-python -c 'from marina.setup import _post_install; _post_install()'
+python -c 'from stakkr.setup import _post_install; _post_install()'
 echo ""
 
 echo "Deactivate and reactivate the virtualenv again by launching:"
-echo "   # deactivate ; source  \${PWD##*/}_marina/bin/activate"
+echo "   # deactivate ; source  \${PWD##*/}_stakkr/bin/activate"

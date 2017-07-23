@@ -1,16 +1,16 @@
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/edyan/marina/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/edyan/marina/?branch=master)
-[![Build Status](https://scrutinizer-ci.com/g/edyan/marina/badges/build.png?b=master)](https://scrutinizer-ci.com/g/edyan/marina/build-status/master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/edyan/stakkr/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/edyan/stakkr/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/edyan/stakkr/badges/build.png?b=master)](https://scrutinizer-ci.com/g/edyan/stakkr/build-status/master)
 
-# Marina
+# Stakkr
 <p align="center"> 
-<img src="https://github.com/edyan/marina/raw/master/docs/marina-logo.png" width="200" title="Marina Logo">
+<img src="https://github.com/edyan/stakkr/raw/master/docs/stakkr-logo.png" width="200" title="Stakkr Logo">
 </p>
 
-Marina is a a docker recompose tool that uses docker compose to easily 
+Stakkr is a a docker recompose tool that uses docker compose to easily 
 create / maintain a stack of services, for example for web development.
 
 Via a configuration file you can setup the required services and 
-let marina link and start everything for you.
+let stakkr link and start everything for you.
 
 It works only in CLI.
 
@@ -22,7 +22,7 @@ use `docker-compose`. The second solution is the best _but_ it implies that you 
 environment, to change your parameters, choose your images, learn the `docker-compose` command 
 line tool, etc ... In brief, it's not very flexible and hard to learn. 
 
-Marina will help you, via a very simple configuration file and a predefined list of services
+Stakkr will help you, via a very simple configuration file and a predefined list of services
 (that can be extended by plugins) to build a complete environment. Plus, to control it in command line.
 It makes use of docker easy. 
 
@@ -42,4 +42,4 @@ You can combine services as you want to have :
 
 
 # Documentation
-Read the official documentation on [ReadTheDocs.org](http://marina-recompose.readthedocs.org)
+Read the official documentation on [ReadTheDocs.org](http://stakkr.readthedocs.org)

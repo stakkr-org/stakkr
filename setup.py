@@ -3,22 +3,22 @@ import sys
 
 from distutils.core import setup
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-from marina.setup import MarinaPostInstall
+from stakkr.setup import StakkrPostInstall
 
 setup(
-    name='marina',
+    name='stakkr-recompose',
     version='2.0',
     description='A configurable stack based on docker to run any combination of services (PHP, MySQL, Apache, Nginx, Mongo, etc..)',
-    url='http://github.com/edyan/marina',
+    url='http://github.com/edyan/stakkr',
     author='Emmanuel Dyan',
     author_email='emmanueldyan@gmail.com',
     license='Apache 2.0',
-    packages=['marina'],
-    py_modules=['marina'],
+    packages=['stakkr'],
+    py_modules=['stakkr'],
     entry_points='''[console_scripts]
-marina=marina.cli:main
-docker-clean=marina.docker_clean:main
-marina-compose=marina.marina_compose:cli''',
+stakkr=stakkr.cli:main
+docker-clean=stakkr.docker_clean:main
+stakkr-compose=stakkr.stakkr_compose:cli''',
     include_package_data=True,
     install_requires=[
         'clint',
@@ -27,5 +27,5 @@ marina-compose=marina.marina_compose:cli''',
         'configobj',
         'requests>=2.11.0,<2.12'
         ],
-    cmdclass={'install': MarinaPostInstall},
+    cmdclass={'install': StakkrPostInstall},
 )
