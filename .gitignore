@@ -1,7 +1,7 @@
 # Everything about Python
 *.egg-info
 __pycache__
-*_marina
+*_stakkr
 
 # Local configuration
 /conf
