@@ -49,6 +49,7 @@ It'll run a `post_install` script that copy some templates / create base directo
 
 
 If you want to install the dev version, you can do the following : 
+
 .. code:: shell
     $ pip install git+https://github.com/edyan/stakkr.git
 
@@ -77,21 +78,10 @@ Once cloned, you can run the ``install.sh`` script made for Ubuntu
     $ ./install.sh
 
 
-3. The old way, manually (to develop mainly)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Create the virtualenv and activate it:
-
-   .. code:: shell
-
-       $ virtualenv -p /usr/bin/python3 ${PWD##*/}_stakkr
-       $ source ${PWD##*/}_stakkr/bin/activate
-       $ pip install -e .
-
-
 Development
 --------------
 
-To develop, use the 3rd way to install Stakkr then :
+To develop, use the 2nd way to install Stakkr then :
 
 .. code:: shell
 
