@@ -1,12 +1,12 @@
 import os
 import shutil
 
-from marina import package_utils
+from stakkr import package_utils
 from setuptools.command.install import install
 
 
 venv_dir = package_utils.get_venv_basedir()
-logs = open('/tmp/marina-install.log', 'w')
+logs = open('/tmp/stakkr-install.log', 'w')
 
 
 def _post_install():

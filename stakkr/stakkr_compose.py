@@ -2,8 +2,8 @@ import click
 import os
 import sys
 
-from marina import package_utils
-from marina.configreader import Config
+from stakkr import package_utils
+from stakkr.configreader import Config
 from subprocess import call
 
 
@@ -34,7 +34,7 @@ def add_available_services_from_plugins(available_services: list):
     from pkg_resources import iter_entry_points
 
     # Override services with plugins
-    for entry in iter_entry_points('marina.plugins'):
+    for entry in iter_entry_points('stakkr.plugins'):
         plugin_dir = str(entry).split('=')[0].strip()
         services_dir = package_utils.get_venv_basedir() + '/plugins/' + plugin_dir + '/services'
         if os.path.isdir(services_dir) is False:

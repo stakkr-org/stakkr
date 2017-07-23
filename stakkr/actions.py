@@ -3,19 +3,19 @@ import sys
 import subprocess
 
 from clint.textui import colored, puts, columns
-from marina import docker
-from marina.configreader import Config
+from stakkr import docker
+from stakkr.configreader import Config
 
 
 class MarinaActions():
     """Main class that does actions asked in the cli"""
 
     def __init__(self, base_dir: str):
-        self.marina_base_dir = base_dir
+        self.stakkr_base_dir = base_dir
         self.current_dir = os.getcwd()
         # Make sure we are in the right directory
-        self.current_dir_relative = self.current_dir[len(self.marina_base_dir):].lstrip('/')
-        os.chdir(self.marina_base_dir)
+        self.current_dir_relative = self.current_dir[len(self.stakkr_base_dir):].lstrip('/')
+        os.chdir(self.stakkr_base_dir)
 
         self.dns_container_name = 'docker_dns'
 
@@ -27,7 +27,7 @@ class MarinaActions():
 
 
     def display_services_ports(self):
-        """Once started, marina displays a message with the list of launched containers."""
+        """Once started, stakkr displays a message with the list of launched containers."""
 
         dns_started = docker.container_running('docker_dns')
         services_to_display = {
@@ -59,14 +59,14 @@ class MarinaActions():
         """If not started, start the containers defined in config"""
 
         if self.running_vms:
-            puts(colored.yellow("marina is already started ..."))
+            puts(colored.yellow("stakkr is already started ..."))
             sys.exit(0)
 
         if pull is True:
-            subprocess.call(['marina-compose', 'pull'])
+            subprocess.call(['stakkr-compose', 'pull'])
 
         recreate_param = '--force-recreate' if recreate is True else '--no-recreate'
-        subprocess.call(['marina-compose', 'up', '-d', recreate_param, '--remove-orphans'])
+        subprocess.call(['stakkr-compose', 'up', '-d', recreate_param, '--remove-orphans'])
         self.vms = docker.get_running_containers(self.project_name)
         self._run_services_post_scripts()
 
@@ -75,7 +75,7 @@ class MarinaActions():
         """If started, stop the containers defined in config. Else throw an error"""
 
         self.check_vms_are_running()
-        subprocess.call(['marina-compose', 'stop'])
+        subprocess.call(['stakkr-compose', 'stop'])
         self.running_vms = 0
 
 
@@ -92,7 +92,7 @@ class MarinaActions():
         """Returns a nice table with the list of started containers"""
 
         if not self.running_vms:
-            puts(colored.yellow("marina is currently stopped"))
+            puts(colored.yellow("stakkr is currently stopped"))
             sys.exit(0)
 
         dns_started = docker.container_running('docker_dns')
@@ -130,12 +130,12 @@ class MarinaActions():
     def fullstart(self):
         """Build the image dynamically if git repos are given for a service"""
 
-        subprocess.call(['marina-compose', 'build'])
+        subprocess.call(['stakkr-compose', 'build'])
         self.start()
 
 
     def console(self, vm: str, user: str):
-        """Enter a container (marina allows only apache / php and mysql)"""
+        """Enter a container (stakkr allows only apache / php and mysql)"""
 
         self.check_vms_are_running()
 
@@ -222,7 +222,7 @@ class MarinaActions():
         try:
             docker.create_network('dns')
             cmd = ['docker', 'run', '--rm', '-d', '--hostname', 'docker-dns', '--name', self.dns_container_name]
-            cmd += ['--network', self.project_name + '_marina']
+            cmd += ['--network', self.project_name + '_stakkr']
             cmd += ['-v', '/var/run/docker.sock:/tmp/docker.sock', '-v', '/etc/resolv.conf:/tmp/resolv.conf']
             cmd += ['mgood/resolvable']
             subprocess.check_output(cmd)

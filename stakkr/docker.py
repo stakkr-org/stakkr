@@ -17,9 +17,9 @@ def container_running(name: str):
 
 
 def get_running_containers(project_name: str):
-    """Get a list of IDs of running containers for the current marina instance"""
+    """Get a list of IDs of running containers for the current stakkr instance"""
 
-    cmd = ['marina-compose', 'ps', '-q']
+    cmd = ['stakkr-compose', 'ps', '-q']
     vms_id = subprocess.check_output(cmd).splitlines()
     vms_info = dict()
     for vm_id in vms_id:
@@ -54,8 +54,8 @@ def _get_ip_from_networks(project_name: str, networks: list):
     """Get a list of IPs for a network"""
 
     network_settings = {}
-    if '{}_marina'.format(project_name) in networks:
-        network_settings = networks['{}_marina'.format(project_name)]
+    if '{}_stakkr'.format(project_name) in networks:
+        network_settings = networks['{}_stakkr'.format(project_name)]
 
     return network_settings['IPAddress'] if 'IPAddress' in network_settings else ''
 

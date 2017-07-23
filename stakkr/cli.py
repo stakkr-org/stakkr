@@ -2,12 +2,12 @@ import click
 import sys
 
 from click_plugins import with_plugins
-from marina import package_utils
+from stakkr import package_utils
 from pkg_resources import iter_entry_points
 
 
 # TODO Remplacer certaines options de configuration par @click.option('--uid', envvar='UID') ?
-@with_plugins(iter_entry_points('marina.plugins'))
+@with_plugins(iter_entry_points('stakkr.plugins'))
 @click.group(help="""Main CLI Tool that easily create / maintain
 a stack of services, for example for web development.
 
@@ -16,8 +16,8 @@ linking and managing everything for you.""")
 @click.version_option('2.0')
 @click.option('--debug/--no-debug', default=False)
 @click.pass_context
-def marina(ctx, debug):
-    from marina.actions import MarinaActions
+def stakkr(ctx, debug):
+    from stakkr.actions import MarinaActions
 
     # Add the virtual env in the path
     venv_base = package_utils.get_venv_basedir()
@@ -27,7 +27,7 @@ def marina(ctx, debug):
     ctx.obj['MARINA'] = MarinaActions(venv_base)
 
 
-@marina.command(help="""Enter a container to perform direct actions such as install packages, run commands ...
+@stakkr.command(help="""Enter a container to perform direct actions such as install packages, run commands ...
 
 Valid values for CONTAINER : 'apache', 'mysql' or 'php'""")
 @click.option('--user', help="User's name. Valid choices : www-data or root", type=click.Choice(['www-data', 'root']))
@@ -41,11 +41,11 @@ def console(ctx, container: str, user: str):
     elif user is None:
         user = 'root'
 
-    marina = ctx.obj['MARINA']
-    marina.console(container, user)
+    stakkr = ctx.obj['MARINA']
+    stakkr.console(container, user)
 
 
-@marina.command(
+@stakkr.command(
     help="""Start or Stop the DNS forwarder.
 Only one DNS Forwarded by host is possible. Done with mgood/resolvable.
 
@@ -55,7 +55,7 @@ Valid values for ACTION : 'start' or 'stop'""",
 @click.argument('action', required=True, type=click.Choice(['start', 'stop']))
 @click.pass_context
 def dns(ctx, action: str):
-    marina = ctx.obj['MARINA']
+    stakkr = ctx.obj['MARINA']
 
     if action == 'start':
         str_action = 'Starting'
@@ -63,22 +63,22 @@ def dns(ctx, action: str):
         str_action = 'Stopping'
 
     print(click.style('{} the DNS forwarder ...'.format(str_action), fg='green'))
-    marina.manage_dns(action)
+    stakkr.manage_dns(action)
 
 
-@marina.command(help="In case you don't use images but Git repos, run that command to build your images.")
+@stakkr.command(help="In case you don't use images but Git repos, run that command to build your images.")
 @click.pass_context
 def fullstart(ctx):
     print(click.style('Building required images ...', fg='green'))
-    marina = ctx.obj['MARINA']
-    marina.fullstart()
+    stakkr = ctx.obj['MARINA']
+    stakkr.fullstart()
     print(click.style('Build done\n', fg='green'))
 
 
-@marina.command(help='Required to be launched if you install a new plugin', name="refresh-plugins")
+@stakkr.command(help='Required to be launched if you install a new plugin', name="refresh-plugins")
 @click.pass_context
 def refresh_plugins(ctx):
-    from marina.plugins import add_plugins
+    from stakkr.plugins import add_plugins
 
     print(click.style('Adding plugins from plugins/', fg='green'))
     plugins = add_plugins()
@@ -90,28 +90,28 @@ def refresh_plugins(ctx):
     print(click.style('Plugins refreshed.\n', fg='green'))
 
 
-@marina.command(help="Restart all containers")
+@stakkr.command(help="Restart all containers")
 @click.option('--pull', help="Force a pull of the latest images versions", is_flag=True)
 @click.option('--recreate', help="Recreate all containers", is_flag=True)
 @click.pass_context
 def restart(ctx, pull: bool, recreate: bool):
-    print(click.style('Restarting marina services ...', fg='green'))
-    marina = ctx.obj['MARINA']
-    marina.restart(pull, recreate)
-    print(click.style('marina services have been restarted.\n', fg='green'))
+    print(click.style('Restarting stakkr services ...', fg='green'))
+    stakkr = ctx.obj['MARINA']
+    stakkr.restart(pull, recreate)
+    print(click.style('stakkr services have been restarted.\n', fg='green'))
 
-    marina.display_services_ports()
+    stakkr.display_services_ports()
 
 
-@marina.command(
+@stakkr.command(
     help="""Run a command to a container.
 
 Valid values for CONTAINER : 'mysql' or 'php'. You can add more arguments after the container name.
 
 Examples:\n
-- marina run php -v\n
-- zcat dump.sql.gz | marina run mysql my_database\n
-- marina run php www/myfile.php\n
+- stakkr run php -v\n
+- zcat dump.sql.gz | stakkr run mysql my_database\n
+- stakkr run php www/myfile.php\n
 """,
     context_settings=dict(ignore_unknown_options=True))
 @click.pass_context
@@ -125,14 +125,14 @@ def run(ctx, container: str, user: str, run_args: tuple):
         user = 'root'
 
     run_args = ' '.join(run_args)
-    marina = ctx.obj['MARINA']
+    stakkr = ctx.obj['MARINA']
     if container == 'php':
-        marina.run_php(user, run_args)
+        stakkr.run_php(user, run_args)
     elif container == 'mysql':
-        marina.run_mysql(run_args)
+        stakkr.run_mysql(run_args)
 
 
-@marina.command(help="Start containers defined in compose.ini")
+@stakkr.command(help="Start containers defined in compose.ini")
 @click.option('--pull', help="Force a pull of the latest images versions", is_flag=True)
 @click.option(
     '--recreate',
@@ -140,28 +140,28 @@ def run(ctx, container: str, user: str, run_args: tuple):
     is_flag=True)
 @click.pass_context
 def start(ctx, pull: bool, recreate: bool):
-    print(click.style('Starting your marina services ...', fg='green'))
-    marina = ctx.obj['MARINA']
-    marina.start(pull, recreate)
-    print(click.style('marina services have been started\n', fg='green'))
+    print(click.style('Starting your stakkr services ...', fg='green'))
+    stakkr = ctx.obj['MARINA']
+    stakkr.start(pull, recreate)
+    print(click.style('stakkr services have been started\n', fg='green'))
 
-    marina.display_services_ports()
+    stakkr.display_services_ports()
 
 
-@marina.command(help="Display a list of running containers")
+@stakkr.command(help="Display a list of running containers")
 @click.pass_context
 def status(ctx):
-    marina = ctx.obj['MARINA']
-    marina.status()
+    stakkr = ctx.obj['MARINA']
+    stakkr.status()
 
 
-@marina.command(help="Stop the services")
+@stakkr.command(help="Stop the services")
 @click.pass_context
 def stop(ctx):
-    print(click.style('Stopping marina services...', fg='green'))
-    marina = ctx.obj['MARINA']
-    marina.stop()
-    print(click.style('marina services have been stopped.\n', fg='green'))
+    print(click.style('Stopping stakkr services...', fg='green'))
+    stakkr = ctx.obj['MARINA']
+    stakkr.stop()
+    print(click.style('stakkr services have been stopped.\n', fg='green'))
 
 
 def debug_mode():
@@ -173,7 +173,7 @@ def debug_mode():
 
 def main():
     try:
-        marina(obj={})
+        stakkr(obj={})
     except Exception as e:
         msg = click.style(r""" ______ _____  _____   ____  _____
 |  ____|  __ \|  __ \ / __ \|  __ \

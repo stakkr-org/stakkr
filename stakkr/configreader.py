@@ -2,7 +2,7 @@ import os
 
 from click import style
 from configobj import ConfigObj, flatten_errors
-from marina import package_utils
+from stakkr import package_utils
 from validate import Validator
 
 

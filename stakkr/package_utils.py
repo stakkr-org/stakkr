@@ -1,5 +1,5 @@
 """Gives useful information about the current virtualenv, files locations if
-marina is installed as a package or directly cloned"""
+stakkr is installed as a package or directly cloned"""
 
 
 import os
@@ -8,7 +8,7 @@ from distutils.sysconfig import get_python_lib
 
 
 def installed_as_packages():
-    """True if marina is installed as a package, else False"""
+    """True if stakkr is installed as a package, else False"""
 
     if os.path.isdir(os.path.dirname(os.path.realpath(__file__)) + '/static') is True:
         return True
@@ -27,7 +27,7 @@ def get_venv_basedir():
 
 
 def get_file(dirname: str, filename: str):
-    """Detects if marina is a package or a clone and gives the right path for a file"""
+    """Detects if stakkr is a package or a clone and gives the right path for a file"""
 
     dir_path = get_dir(dirname)
 
@@ -35,11 +35,11 @@ def get_file(dirname: str, filename: str):
 
 
 def get_dir(dirname: str):
-    """Detects if marina is a package or a clone and gives the right path for a directory"""
+    """Detects if stakkr is a package or a clone and gives the right path for a directory"""
 
     staticdir = os.path.dirname(os.path.realpath(__file__)) + '/' + dirname
     if os.path.isdir(staticdir) is True:
         return staticdir
 
 
-    return get_python_lib() + '/marina/' + dirname
+    return get_python_lib() + '/stakkr/' + dirname
