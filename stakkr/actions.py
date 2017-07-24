@@ -61,19 +61,60 @@ class StakkrActions():
         print('')
 
 
+    def console(self, ct: str, user: str):
+        """Enter a container (stakkr allows only apache / php and mysql)"""
+
+        self.check_cts_are_running()
+
+        ct_name = self.get_ct_item(ct, 'name')
+        if ct_name == '':
+            raise Exception('{} does not seem to be in your services or has crashed'.format(ct))
+
+        tty = 't' if sys.stdin.isatty() else ''
+        subprocess.call(['docker', 'exec', '-u', user, '-i' + tty, ct_name, 'env', 'TERM=xterm', 'bash'])
+
+
+    def fullstart(self):
+        """Build the image dynamically if git repos are given for a service"""
+
+        subprocess.call(['stakkr-compose', 'build'])
+        self.start()
+
+
+
+    def manage_dns(self, action: str):
+        """Starts or stop the DNS forwarder"""
+
+        dns_started = docker.container_running(self.dns_container_name)
+
+        if dns_started is True and action == 'stop':
+            cmd = ['docker', 'stop', 'docker_dns']
+            command.launch_cmd_displays_output(cmd, self.context['VERBOSE'], self.context['DEBUG'])
+            return
+        elif dns_started is False and action == 'start':
+            self._docker_run_dns()
+            return
+
+        puts(colored.red('[ERROR]') + " Can't {} the dns container (already done?)".format(action))
+        sys.exit(1)
+
+
     def start(self, pull: bool, recreate: bool):
         """If not started, start the containers defined in config"""
 
+        verb = self.context['VERBOSE']
+        debug = self.context['DEBUG']
         if self.running_cts:
             puts(colored.yellow('[INFO]') + ' stakkr is already started ...')
             sys.exit(0)
 
         if pull is True:
-            subprocess.call(['stakkr-compose', 'pull'])
+            command.launch_cmd_displays_output(['stakkr-compose', 'pull'], verb, debug)
 
         recreate_param = '--force-recreate' if recreate is True else '--no-recreate'
         cmd = ['stakkr-compose', 'up', '-d', recreate_param, '--remove-orphans']
-        command.launch_cmd_displays_output(cmd, self.context['VERBOSE'], self.context['DEBUG'])
+        command.launch_cmd_displays_output(cmd, verb, debug)
+
         self.running_cts = self._get_num_running_containers()
         if self.running_cts is 0:
             raise SystemError("Couldn't start the containers, run the start with '-v' and '-d'")
@@ -140,26 +181,6 @@ class StakkrActions():
             ))
 
 
-    def fullstart(self):
-        """Build the image dynamically if git repos are given for a service"""
-
-        subprocess.call(['stakkr-compose', 'build'])
-        self.start()
-
-
-    def console(self, ct: str, user: str):
-        """Enter a container (stakkr allows only apache / php and mysql)"""
-
-        self.check_cts_are_running()
-
-        ct_name = self.get_ct_item(ct, 'name')
-        if ct_name == '':
-            raise Exception('{} does not seem to be in your services or has crashed'.format(ct))
-
-        tty = 't' if sys.stdin.isatty() else ''
-        subprocess.call(['docker', 'exec', '-u', user, '-i' + tty, ct_name, 'env', 'TERM=xterm', 'bash'])
-
-
     def run_php(self, user: str, args: str):
         """Run a script or PHP command from outside"""
 
@@ -185,23 +206,6 @@ class StakkrActions():
         cmd = ['docker', 'exec', '-u', 'root', '-i' + tty, ct_name]
         cmd += ['mysql', '-u', 'root', '-p' + password, args]
         subprocess.call(cmd, stdin=sys.stdin)
-
-
-    def manage_dns(self, action: str):
-        """Starts or stop the DNS forwarder"""
-
-        dns_started = docker.container_running(self.dns_container_name)
-
-        if dns_started is True and action == 'stop':
-            cmd = ['docker', 'stop', 'docker_dns']
-            subprocess.check_output(cmd)
-            return
-        elif dns_started is False and action == 'start':
-            self._docker_run_dns()
-            return
-
-        puts(colored.red("Can't {} the dns container as (already done?)".format(action)))
-        sys.exit(1)
 
 
     def _run_services_post_scripts(self):
@@ -239,14 +243,13 @@ class StakkrActions():
         self.check_cts_are_running()
 
         try:
-            docker.create_network('dns')
             cmd = ['docker', 'run', '--rm', '-d', '--hostname', 'docker-dns', '--name', self.dns_container_name]
             cmd += ['--network', self.project_name + '_stakkr']
             cmd += ['-v', '/var/run/docker.sock:/tmp/docker.sock', '-v', '/etc/resolv.conf:/tmp/resolv.conf']
             cmd += ['mgood/resolvable']
-            subprocess.check_output(cmd)
+            command.launch_cmd_displays_output(cmd, self.context['VERBOSE'], self.context['DEBUG'])
         except Exception as e:
-            puts(colored.red("Can't start the DNS, maybe it exists already ?"))
+            puts(colored.red('[ERROR]') + " Can't start the DNS, maybe it exists already ?")
             sys.exit(1)
 
 

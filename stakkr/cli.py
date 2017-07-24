@@ -1,8 +1,8 @@
 import click
 import sys
 
-from click_plugins import with_plugins
 from . import package_utils
+from click_plugins import with_plugins
 from pkg_resources import iter_entry_points
 
 
@@ -66,7 +66,7 @@ def dns(ctx, action: str):
     elif action == 'stop':
         str_action = 'Stopping'
 
-    print(click.style('{} the DNS forwarder ...'.format(str_action), fg='green'))
+    print(click.style('[{}]'.format(str_action).upper(), fg='green') + ' DNS forwarder ...')
     stakkr.manage_dns(action)
 
 

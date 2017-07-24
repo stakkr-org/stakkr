@@ -35,7 +35,14 @@ class CliTest(unittest.TestCase):
     def test_status_not_started(self):
         args = ['-c', base_dir + '/static/config_valid.ini', 'status']
         runner = CliRunner()
-        with runner.isolated_filesystem():
-            result = runner.invoke(cli=stakkr, args=args, obj={}, catch_exceptions=False)
-            self.assertEqual('[INFO] stakkr is currently stopped', result.output.strip())
-            self.assertIs(0, result.exit_code)
+        result = runner.invoke(cli=stakkr, args=args, obj={}, catch_exceptions=False)
+        self.assertEqual('[INFO] stakkr is currently stopped', result.output.strip())
+        self.assertIs(0, result.exit_code)
+
+    #
+    # def test_console_not_started(self):
+    #     args = ['-c', base_dir + '/static/config_valid.ini', 'console', 'php']
+    #     runner = CliRunner()
+    #     with self.assertRaisesRegex(SystemError, 'Have you started your server with the start or fullstart action.*'):
+    #         result = runner.invoke(cli=stakkr, args=args, obj={}, catch_exceptions=False)
+    #         self.assertIs(1, result.exit_code)
