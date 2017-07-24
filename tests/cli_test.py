@@ -37,5 +37,5 @@ class CliTest(unittest.TestCase):
         runner = CliRunner()
         with runner.isolated_filesystem():
             result = runner.invoke(cli=stakkr, args=args, obj={}, catch_exceptions=False)
-            self.assertEqual('stakkr is currently stopped', result.output.strip())
+            self.assertEqual('[INFO] stakkr is currently stopped', result.output.strip())
             self.assertIs(0, result.exit_code)
