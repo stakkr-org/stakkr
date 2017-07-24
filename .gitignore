@@ -1,10 +1,12 @@
 # Everything about Python
 /.cache
-/.coverage
-/htmlcov
 *.egg-info
 __pycache__
 *_stakkr
+
+# Tests
+/htmlcov
+/tests/htmlcov
 
 # Local configuration
 /conf
