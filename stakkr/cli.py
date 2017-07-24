@@ -14,16 +14,18 @@ a stack of services, for example for web development.
 Read the configuration file and setup the required services by
 linking and managing everything for you.""")
 @click.version_option('3.0')
-@click.option('--verbose', '-v', is_flag=True)
+@click.option('--config', '-c')
 @click.option('--debug/--no-debug', '-d', default=False)
+@click.option('--verbose', '-v', is_flag=True)
 @click.pass_context
-def stakkr(ctx, verbose, debug):
+def stakkr(ctx, config, debug, verbose):
     from stakkr.actions import StakkrActions
 
     # Add the virtual env in the path
     venv_base = package_utils.get_venv_basedir()
     sys.path.append(venv_base)
 
+    ctx.obj['CONFIG'] = config
     ctx.obj['DEBUG'] = debug
     ctx.obj['VERBOSE'] = verbose
     ctx.obj['STAKKR'] = StakkrActions(venv_base, ctx.obj)

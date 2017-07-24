@@ -70,6 +70,7 @@ def create_network(network: str):
 
     cmd = ['docker', 'network', 'create', '--driver', 'bridge', network]
     subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+
     return True
 
 
@@ -81,6 +82,7 @@ def add_container_to_network(container: str, network: str):
 
     cmd = ['docker', 'network', 'connect', network, container]
     subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+
     return True
 
 

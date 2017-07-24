@@ -1,5 +1,4 @@
 import os
-import re
 import subprocess
 import sys
 import unittest
@@ -82,6 +81,45 @@ class DockerTest(unittest.TestCase):
         subprocess.check_output(['docker', 'network', 'rm', 'test_stakkr'])
         self.assertFalse(docker._network_exists('test_stakkr'))
 
+
+    def test_create_network(self):
+        """
+        Create a network then a container, attache one to the other
+        And verify everything is OK
+
+        """
+        try:
+            subprocess.check_output(['docker', 'stop', 'pytest'])
+            subprocess.check_output(['docker', 'rm', 'pytest'])
+        except Exception:
+            pass
+
+        if docker._network_exists('nw_pytest'):
+            subprocess.check_output(['docker', 'network', 'rm', 'nw_pytest'])
+
+        cmd = ['docker', 'run', '-d', '--rm', '--name', 'pytest', 'nginx:stable-alpine']
+        subprocess.call(cmd)
+
+        self.assertTrue(docker.container_running('pytest'))
+        self.assertFalse(docker._container_in_network('pytest', 'pytest'))
+        self.assertFalse(docker._network_exists('nw_pytest'))
+        self.assertTrue(docker.create_network('nw_pytest'))
+        self.assertFalse(docker.create_network('nw_pytest'))
+        self.assertTrue(docker.add_container_to_network('pytest', 'nw_pytest'))
+        self.assertFalse(docker.add_container_to_network('pytest', 'nw_pytest'))
+        self.assertTrue(docker._container_in_network('pytest', 'nw_pytest'))
+        try:
+            subprocess.check_output(['docker', 'stop', 'pytest'])
+            subprocess.check_output(['docker', 'rm', 'pytest'])
+        except Exception:
+            pass
+
+        if docker._network_exists('nw_pytest'):
+            subprocess.check_output(['docker', 'network', 'rm', 'nw_pytest'])
+
+
+    def test_get_container_info_not_exists(self):
+        self.assertIs(None, docker._extract_container_info('not_exists', 'not_exists'))
 
 
 if __name__ == "__main__":

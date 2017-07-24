@@ -5,8 +5,8 @@ __pycache__
 *_stakkr
 
 # Tests
-/htmlcov
-/tests/htmlcov
+.coverage
+htmlcov
 
 # Local configuration
 /conf
