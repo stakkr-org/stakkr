@@ -4,7 +4,6 @@ bar or info.
 """
 
 
-import sys
 import subprocess
 
 from click import style
@@ -19,19 +18,18 @@ def launch_cmd_displays_output(cmd: list, displays_messages=True, displays_error
     except Exception as e:
         raise SystemError('Cannot run the command: {}'.format(e))
 
-    if displays_messages is True:
-        _print_messages(result)
+    _read_messages(result, displays_messages)
     if displays_errors is True:
         _print_errors(result)
 
     return result
 
 
-def _print_messages(result: BufferedReader):
+def _read_messages(result: BufferedReader, display: bool = False):
     """Print messages sent to the STDOUT"""
 
     for line in result.stdout:
-        print(line.decode(), end='')
+        line.decode() if display is False else print(line.decode(), end='')
 
 
 def _print_errors(result: BufferedReader):

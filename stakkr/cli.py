@@ -99,10 +99,10 @@ def refresh_plugins(ctx):
 @click.option('--recreate', help="Recreate all containers", is_flag=True)
 @click.pass_context
 def restart(ctx, pull: bool, recreate: bool):
-    print(click.style('Restarting stakkr services ...', fg='green'))
+    print(click.style('[RESTARTING]', fg='green') + ' your stakkr services ...')
     stakkr = ctx.obj['STAKKR']
     stakkr.restart(pull, recreate)
-    print(click.style('stakkr services have been restarted.\n', fg='green'))
+    print('Services have been restarted')
 
     stakkr.display_services_ports()
 
@@ -144,10 +144,10 @@ def run(ctx, container: str, user: str, run_args: tuple):
     is_flag=True)
 @click.pass_context
 def start(ctx, pull: bool, recreate: bool):
-    print(click.style('Starting your stakkr services ...', fg='green'))
+    print(click.style('[STARTING]', fg='green') + ' your stakkr services ...')
     stakkr = ctx.obj['STAKKR']
     stakkr.start(pull, recreate)
-    print(click.style('stakkr services have been started\n', fg='green'))
+    print('Services have been started')
 
     stakkr.display_services_ports()
 
@@ -162,10 +162,10 @@ def status(ctx):
 @stakkr.command(help="Stop the services")
 @click.pass_context
 def stop(ctx):
-    print(click.style('Stopping stakkr services...', fg='green'))
+    print(click.style('[STOPPING]', fg='yellow') + ' your stakkr services ...')
     stakkr = ctx.obj['STAKKR']
     stakkr.stop()
-    print(click.style('stakkr services have been stopped.\n', fg='green'))
+    print('Services have been stopped')
 
 
 def debug_mode():

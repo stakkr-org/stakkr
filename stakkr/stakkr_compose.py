@@ -4,7 +4,7 @@ import sys
 
 from stakkr import package_utils
 from stakkr.configreader import Config
-from subprocess import call
+from subprocess import Popen
 
 
 @click.command(help="Wrapper for docker-compose", context_settings=dict(ignore_unknown_options=True))
@@ -34,7 +34,7 @@ def cli(command, config):
     cmd = ['docker-compose', '-f', package_utils.get_file('static', 'docker-compose.yml')] + services
     cmd += ['-p', project_name] + list(command)
 
-    call(cmd)
+    Popen(cmd)
 
 
 def add_available_services_from_plugins(available_services: list):

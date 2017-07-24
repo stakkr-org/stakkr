@@ -29,8 +29,7 @@ class StakkrActions():
 
         self.user_config_main = user_config_main['main']
         self.project_name = self.user_config_main.get('project_name')
-        self.cts = docker.get_running_containers(self.project_name)
-        self.running_cts = sum(True for ct_id, ct_data in self.cts.items() if ct_data['running'] is True)
+        self.running_cts = self._get_num_running_containers()
 
 
     def display_services_ports(self):
@@ -66,7 +65,7 @@ class StakkrActions():
         """If not started, start the containers defined in config"""
 
         if self.running_cts:
-            puts(colored.yellow("stakkr is already started ..."))
+            puts(colored.yellow('[INFO]') + ' stakkr is already started ...')
             sys.exit(0)
 
         if pull is True:
@@ -75,7 +74,10 @@ class StakkrActions():
         recreate_param = '--force-recreate' if recreate is True else '--no-recreate'
         cmd = ['stakkr-compose', 'up', '-d', recreate_param, '--remove-orphans']
         command.launch_cmd_displays_output(cmd, self.context['VERBOSE'], self.context['DEBUG'])
-        self.cts = docker.get_running_containers(self.project_name)
+        self.running_cts = self._get_num_running_containers()
+        if self.running_cts is 0:
+            raise SystemError("Couldn't start the containers, run the start with '-v' and '-d'")
+
         self._run_services_post_scripts()
 
 
@@ -84,7 +86,10 @@ class StakkrActions():
 
         self.check_cts_are_running()
         command.launch_cmd_displays_output(['stakkr-compose', 'stop'], self.context['VERBOSE'], self.context['DEBUG'])
-        self.running_cts = 0
+
+        self.running_cts = self._get_num_running_containers()
+        if self.running_cts is not 0:
+            raise SystemError("Couldn't stop services ...")
 
 
     def restart(self, pull: bool, recreate: bool):
@@ -100,7 +105,7 @@ class StakkrActions():
         """Returns a nice table with the list of started containers"""
 
         if not self.running_cts:
-            puts(colored.yellow("stakkr is currently stopped"))
+            puts(colored.yellow('[INFO]') + ' stakkr is currently stopped')
             sys.exit(0)
 
         dns_started = docker.container_running('docker_dns')
@@ -220,6 +225,12 @@ class StakkrActions():
             return
 
         subprocess.call(['bash', service_script, ct_name])
+
+
+    def _get_num_running_containers(self):
+        self.cts = docker.get_running_containers(self.project_name)
+
+        return sum(True for ct_id, ct_data in self.cts.items() if ct_data['running'] is True)
 
 
     def _docker_run_dns(self):
