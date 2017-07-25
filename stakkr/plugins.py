@@ -1,8 +1,8 @@
 """Module used by setup.py to find plugins to load with click"""
 
+import re
 import subprocess
 
-from importlib import import_module
 from os import listdir, path
 
 
@@ -12,7 +12,7 @@ def add_plugins():
     if path.isdir('plugins') is False:
         return []
 
-
+    _remove_plugins()
     folders = _get_subfolders('plugins')
 
     plugins = []
@@ -47,3 +47,18 @@ def _get_subfolders(directory: str):
     subfolders = listdir(directory)
 
     return [folder for folder in subfolders if path.isdir('{}/{}'.format(directory, folder))]
+
+
+def _remove_plugins():
+    cmd = ['pip', 'freeze']
+    res = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    regex = re.compile('^stakkr(.+?)==(.+)$', re.IGNORECASE)
+
+    for line in res.stdout:
+        plugin = re.search(regex, line.decode())
+        if plugin is None:
+            continue
+
+        plugin_name = 'Stakkr{}'.format(plugin.group(1))
+        print('  -> Cleaning "{}"'.format(plugin_name))
+        subprocess.check_call(['pip', 'uninstall', '-y', plugin_name], stdout=subprocess.DEVNULL)
