@@ -204,8 +204,11 @@ class StakkrActions():
     def stop(self):
         """If started, stop the containers defined in config. Else throw an error"""
 
+        verb = self.context['VERBOSE']
+        debug = self.context['DEBUG']
+
         self.check_cts_are_running()
-        command.launch_cmd_displays_output(self.compose_base_cmd + ['stop'], self.context['VERBOSE'], self.context['DEBUG'])
+        command.launch_cmd_displays_output(self.compose_base_cmd + ['stop'], verb, debug, True)
 
         self.running_cts = self._get_num_running_containers()
         if self.running_cts is not 0:
