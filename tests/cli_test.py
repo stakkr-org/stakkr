@@ -102,7 +102,6 @@ class CliTest(unittest.TestCase):
 
 
     def test_restart_stopped(self):
-        self._exec_cmd(self.cmd_base + ['stop'])
         cmd = self.cmd_base + ['restart']
 
         # Restart
@@ -144,7 +143,6 @@ class CliTest(unittest.TestCase):
 
 
     def test_start(self):
-        self._exec_cmd(self.cmd_base + ['stop'])
         cmd = self.cmd_base + ['start']
 
         # Start
@@ -162,7 +160,6 @@ class CliTest(unittest.TestCase):
 
     def test_status(self):
         self._exec_cmd(self.cmd_base + ['start'])
-        self._exec_cmd(self.cmd_base + ['dns', 'stop'])
         cmd = self.cmd_base + ['status']
 
         # Status OK
@@ -211,6 +208,11 @@ class CliTest(unittest.TestCase):
         self.assertRegex(res['stdout'], '\[STOPPING\].*your stakkr services.*')
         self.assertRegex(res['stderr'], '.*Have you started your server with the start or fullstart action.*')
         self.assertIs(res['status'], 1)
+
+
+    def setup(self):
+        self._exec_cmd(self.cmd_base + ['stop'])
+        self._exec_cmd(self.cmd_base + ['dns', 'stop'])
 
 
     def tearDownClass():

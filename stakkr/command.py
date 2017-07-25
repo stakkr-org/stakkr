@@ -10,16 +10,17 @@ from click import style
 from io import BufferedReader
 
 
-def launch_cmd_displays_output(cmd: list, displays_messages=True, displays_errors=True):
+def launch_cmd_displays_output(cmd: list, print_msg=True, print_err=True, err_to_out=False):
     """Launch a command and displays conditionnaly messages and / or errors"""
 
     try:
-        result = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stderr = subprocess.PIPE if err_to_out is False else subprocess.STDOUT
+        result = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=stderr)
     except Exception as e:
         raise SystemError('Cannot run the command: {}'.format(e))
 
-    _read_messages(result, displays_messages)
-    if displays_errors is True:
+    _read_messages(result, print_msg)
+    if print_err is True and err_to_out is False:
         _print_errors(result)
 
     return result

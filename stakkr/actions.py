@@ -149,11 +149,11 @@ class StakkrActions():
             sys.exit(0)
 
         if pull is True:
-            command.launch_cmd_displays_output(self.compose_base_cmd + ['pull'], verb, debug)
+            command.launch_cmd_displays_output(self.compose_base_cmd + ['pull'], verb, debug, True)
 
         recreate_param = '--force-recreate' if recreate is True else '--no-recreate'
         cmd = self.compose_base_cmd + ['up', '-d', recreate_param, '--remove-orphans']
-        command.launch_cmd_displays_output(cmd, verb, debug)
+        command.launch_cmd_displays_output(cmd, verb, debug, True)
 
         self.running_cts = self._get_num_running_containers()
         if self.running_cts is 0:
