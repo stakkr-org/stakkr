@@ -1,12 +1,15 @@
 # Everything about Python
 /.cache
+/build
+/dist
 *.egg-info
 __pycache__
 *_stakkr
 
 # Tests
-.coverage
+.coverage*
 htmlcov
+
 
 # Local configuration
 /conf
@@ -22,10 +25,7 @@ bash_completion
 /logs
 
 # Services data
-/data/elasticsearch
-/data/mongo
-/data/mysql
-/data/redis
+/data
 /www
 
 # Plugins

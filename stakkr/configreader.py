@@ -2,6 +2,7 @@
 """Simple Config Reader"""
 
 import os
+import sys
 
 from configobj import ConfigObj, flatten_errors
 from stakkr import package_utils
@@ -26,9 +27,9 @@ class Config():
         """Display errors in STDOUT"""
         from click import style
 
-        print(style('Failed validating {}: '.format(self.config_file), fg='red'))
+        print(style('Failed validating {}: '.format(self.config_file), fg='red'), file=sys.stderr)
         for key, error in self.errors.items():
-            print('  - "{}" : {}'.format(style(key, fg='yellow'), error))
+            print('  - "{}" : {}'.format(style(key, fg='yellow'), error), file=sys.stderr)
 
 
     def read(self):

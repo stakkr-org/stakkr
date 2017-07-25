@@ -9,7 +9,7 @@ import subprocess
 import sys
 
 
-@click.command(help="Clean Docker containers, images, volumes and networks that are not in use")
+@click.command(help="Clean Docker containers, images, volumes and networks that are not in use", name="docker-clean")
 @click.option('--force', help="Do it", is_flag=True)
 @click.option('--verbose', help="Display more information about what is removed", is_flag=True)
 def clean(force: bool, verbose: bool):

@@ -1,11 +1,10 @@
 import io
 import os
 import re
-import subprocess
 import sys
 import unittest
 
-from contextlib import redirect_stdout, redirect_stderr
+from contextlib import redirect_stderr
 from stakkr import package_utils
 from stakkr.configreader import Config
 
@@ -34,8 +33,6 @@ class ConfigReaderTest(unittest.TestCase):
 
     def test_invalid_config(self):
         """Test an existing configuration file but invalid"""
-        import re
-
         c = Config(base_dir + '/static/config_invalid.ini')
         self.assertFalse(c.read())
         self.assertGreater(len(c.errors), 0)
@@ -44,7 +41,7 @@ class ConfigReaderTest(unittest.TestCase):
         self.assertTrue('php.version' in c.errors)
         self.assertEqual('the value "8.0" is unacceptable.', c.errors['php.version'])
         f = io.StringIO()
-        with redirect_stdout(f):
+        with redirect_stderr(f):
             c.display_errors()
         res = f.getvalue()
 

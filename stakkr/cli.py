@@ -6,7 +6,6 @@ from click_plugins import with_plugins
 from pkg_resources import iter_entry_points
 
 
-# TODO Remplacer certaines options de configuration par @click.option('--uid', envvar='UID') ?
 @with_plugins(iter_entry_points('stakkr.plugins'))
 @click.group(help="""Main CLI Tool that easily create / maintain
 a stack of services, for example for web development.
@@ -14,7 +13,7 @@ a stack of services, for example for web development.
 Read the configuration file and setup the required services by
 linking and managing everything for you.""")
 @click.version_option('3.0')
-@click.option('--config', '-c')
+@click.option('--config', '-c', help='Change the configuration file')
 @click.option('--debug/--no-debug', '-d', default=False)
 @click.option('--verbose', '-v', is_flag=True)
 @click.pass_context
@@ -68,15 +67,6 @@ def dns(ctx, action: str):
 
     print(click.style('[{}]'.format(str_action).upper(), fg='green') + ' DNS forwarder ...')
     stakkr.manage_dns(action)
-
-
-@stakkr.command(help="In case you don't use images but Git repos, run that command to build your images.")
-@click.pass_context
-def fullstart(ctx):
-    print(click.style('Building required images ...', fg='green'))
-    stakkr = ctx.obj['STAKKR']
-    stakkr.fullstart()
-    print(click.style('Build done\n', fg='green'))
 
 
 @stakkr.command(help='Required to be launched if you install a new plugin', name="refresh-plugins")
@@ -188,10 +178,7 @@ def main():
 
 """, fg='yellow')
         msg += click.style('{}'.format(e), fg='red')
-
-        print(msg)
-        print("")
-
+        print(msg + '\n', file=sys.stderr)
 
         if debug_mode() is True:
             raise e
