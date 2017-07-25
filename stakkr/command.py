@@ -29,8 +29,12 @@ def launch_cmd_displays_output(cmd: list, print_msg=True, print_err=True, err_to
 def _read_messages(result: BufferedReader, display: bool = False):
     """Print messages sent to the STDOUT"""
 
+    import sys
     for line in result.stdout:
-        line.decode() if display is False else print(line.decode(), end='')
+        line = line.decode()
+        line = line if display is True else '.'
+        print(line, end='', file=sys.stdout)
+        sys.stdout.flush()
 
 
 def _print_errors(result: BufferedReader):
