@@ -50,7 +50,7 @@ class DockerTest(unittest.TestCase):
 
         cmd = ['stakkr-compose', '-c', base_dir + '/static/config_valid.ini', 'up', '-d']
         self._exec_cmd(cmd)
-        cts = docker.get_running_containers('test', base_dir + '/static/config_valid.ini')
+        numcts, cts = docker.get_running_containers('test', base_dir + '/static/config_valid.ini')
         self.assertIs(len(cts), 2)
         for ct_id, ct_info in cts.items():
             if ct_info['name'] == 'test_maildev':

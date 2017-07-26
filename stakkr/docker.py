@@ -23,12 +23,17 @@ def get_running_containers(project_name: str, config: str = None):
     if config is not None:
         config_params = ['-c', config]
 
+    num_running_cts = 0
     cts_id = subprocess.check_output(['stakkr-compose'] + config_params + ['ps', '-q'])
     cts_info = dict()
     for ct_id in cts_id.splitlines():
-        cts_info[ct_id.decode()] = _extract_container_info(project_name, ct_id)
+        ct_id = ct_id.decode()
+        cts_info[ct_id] = _extract_container_info(project_name, ct_id)
 
-    return cts_info
+        if cts_info[ct_id]['running'] is True:
+            num_running_cts += 1
+
+    return (num_running_cts, cts_info)
 
 
 def _extract_container_info(project_name: str, ct_id: str):

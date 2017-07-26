@@ -173,34 +173,8 @@ class StakkrActions():
 
         dns_started = docker.container_running('docker_dns')
 
-        puts(columns(
-            [(colored.green('Container')), 16],
-            [(colored.green('HostName' if dns_started else 'IP')), 25],
-            [(colored.green('Ports')), 25],
-            [(colored.green('Image')), 32],
-            [(colored.green('Docker ID')), 15],
-            [(colored.green('Docker Name')), 25]
-        ))
-        puts(columns(
-            ['-'*16, 16],
-            ['-'*25, 25],
-            ['-'*25, 25],
-            ['-'*32, 32],
-            ['-'*15, 15],
-            ['-'*25, 25]
-        ))
-        for ct_id, ct_data in self.cts.items():
-            if ct_data['ip'] == '':
-                continue
-
-            puts(columns(
-                [ct_data['compose_name'], 16],
-                [ct_data['name'] if dns_started else ct_data['ip'], 25],
-                [', '.join(ct_data['ports']), 25],
-                [ct_data['image'], 32],
-                [ct_id[:12], 15],
-                [ct_data['name'], 25]
-            ))
+        self._print_status_headers(dns_started)
+        self._print_status_body(dns_started)
 
 
     def stop(self):
@@ -260,9 +234,9 @@ class StakkrActions():
 
 
     def _get_num_running_containers(self):
-        self.cts = docker.get_running_containers(self.project_name, self.config_file)
+        num_running_cts, self.cts = docker.get_running_containers(self.project_name, self.config_file)
 
-        return sum(True for ct_id, ct_data in self.cts.items() if ct_data['running'] is True)
+        return num_running_cts
 
 
     def _get_relative_dir(self):
@@ -279,6 +253,40 @@ class StakkrActions():
             url = service_url.replace('{URL}', '{}'.format(self.get_ct_item(service, 'name')))
 
         return url
+
+
+    def _print_status_headers(self, dns_started: bool):
+        puts(columns(
+            [(colored.green('Container')), 16],
+            [(colored.green('HostName' if dns_started else 'IP')), 25],
+            [(colored.green('Ports')), 25],
+            [(colored.green('Image')), 32],
+            [(colored.green('Docker ID')), 15],
+            [(colored.green('Docker Name')), 25]
+        ))
+        puts(columns(
+            ['-'*16, 16],
+            ['-'*25, 25],
+            ['-'*25, 25],
+            ['-'*32, 32],
+            ['-'*15, 15],
+            ['-'*25, 25]
+        ))
+
+
+    def _print_status_body(self, dns_started: bool):
+        for ct_id, ct_data in self.cts.items():
+            if ct_data['ip'] == '':
+                continue
+
+            puts(columns(
+                [ct_data['compose_name'], 16],
+                [ct_data['name'] if dns_started else ct_data['ip'], 25],
+                [', '.join(ct_data['ports']), 25],
+                [ct_data['image'], 32],
+                [ct_id[:12], 15],
+                [ct_data['name'], 25]
+            ))
 
 
     def _run_services_post_scripts(self):
