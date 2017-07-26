@@ -17,7 +17,10 @@ class StakkrActions():
         self.current_dir = os.getcwd()
 
         # Make sure we are in the right directory
-        self.current_dir_relative = self.current_dir[len(self.stakkr_base_dir):].lstrip('/')
+        self.current_dir_relative = ''
+        if self.current_dir.startswith(self.stakkr_base_dir):
+            self.current_dir_relative = self.current_dir[len(self.stakkr_base_dir):].lstrip('/')
+
         os.chdir(self.stakkr_base_dir)
 
         self.dns_container_name = 'docker_dns'

@@ -75,8 +75,10 @@ class CliTest(unittest.TestCase):
 
 
     def test_run_php(self):
+        self._exec_cmd(self.cmd_base + ['dns', 'stop'])
         self._exec_cmd(self.cmd_base + ['start'])
 
+        # Check for PHP Version
         cmd = self.cmd_base + ['run', 'php', '-v']
         res = self._exec_cmd(cmd)
         self.assertRegex(res['stdout'], '.*The PHP GroupZend Engine.*')

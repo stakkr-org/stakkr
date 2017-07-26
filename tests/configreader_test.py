@@ -4,7 +4,6 @@ import re
 import sys
 import unittest
 
-from contextlib import redirect_stderr
 from stakkr import package_utils
 from stakkr.configreader import Config
 
@@ -40,6 +39,13 @@ class ConfigReaderTest(unittest.TestCase):
         self.assertEqual('Missing', c.errors['project_name'])
         self.assertTrue('php.version' in c.errors)
         self.assertEqual('the value "8.0" is unacceptable.', c.errors['php.version'])
+
+        # Don't go further with python < 3.5
+        try:
+            from contextlib import redirect_stderr
+        except Exception:
+            return
+
         f = io.StringIO()
         with redirect_stderr(f):
             c.display_errors()
