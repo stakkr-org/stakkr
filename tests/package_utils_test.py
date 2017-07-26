@@ -16,16 +16,3 @@ class PackageUtilsTest(unittest.TestCase):
         venv_base = pu.get_venv_basedir()
 
         self.assertEqual(os.path.abspath(get_python_lib() + '/../../../../'), venv_base)
-
-    def test_get_dir_abspath(self):
-        """Make sure the path of a dir is returned"""
-        dir_path = pu.get_dir('tpls')
-
-        self.assertEqual(os.path.abspath(get_python_lib() + '/stakkr/tpls'), dir_path)
-
-
-    def test_get_file_abspath(self):
-        """Make sure the path of a file is returned"""
-        file_path = pu.get_file('tpls', '.env')
-
-        self.assertEqual(os.path.abspath(get_python_lib() + '/stakkr/tpls/.env'), file_path)

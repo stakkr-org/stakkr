@@ -12,23 +12,22 @@ class StakkrActions():
     """Main class that does actions asked in the cli"""
 
     def __init__(self, base_dir: str, ctx: dict):
+        # Work with directories and move to the right place
         self.stakkr_base_dir = base_dir
         self.context = ctx
         self.current_dir = os.getcwd()
-
-        # Make sure we are in the right directory
-        self.current_dir_relative = ''
-        if self.current_dir.startswith(self.stakkr_base_dir):
-            self.current_dir_relative = self.current_dir[len(self.stakkr_base_dir):].lstrip('/')
-
+        self.current_dir_relative = self._get_relative_dir()
         os.chdir(self.stakkr_base_dir)
 
+        # Set some general variables
         self.dns_container_name = 'docker_dns'
         self.config_file = ctx['CONFIG']
-        self.compose_base_cmd = ['stakkr-compose'] if ctx['CONFIG'] is None else ['stakkr-compose', '-c', ctx['CONFIG']]
+        self.compose_base_cmd = self._get_compose_base_cmd()
 
+        # Get info from config
         self.user_config_main = self._get_config()
         self.project_name = self.user_config_main.get('project_name')
+
         self.running_cts = self._get_num_running_containers()
 
 
@@ -79,7 +78,7 @@ class StakkrActions():
 
 
     def get_ct_item(self, compose_name: str, item_name: str):
-        """Get a value frrom a container, such as name or IP"""
+        """Get a value from a container, such as name or IP"""
 
         for ct_id, ct_data in self.cts.items():
             if ct_data['compose_name'] == compose_name:
@@ -243,6 +242,13 @@ class StakkrActions():
             sys.exit(1)
 
 
+    def _get_compose_base_cmd(self):
+        if self.context['CONFIG'] is None:
+            return ['stakkr-compose']
+
+        return ['stakkr-compose', '-c', self.context['CONFIG']]
+
+
     def _get_config(self):
         config = Config(self.config_file)
         user_config_main = config.read()
@@ -257,6 +263,13 @@ class StakkrActions():
         self.cts = docker.get_running_containers(self.project_name, self.config_file)
 
         return sum(True for ct_id, ct_data in self.cts.items() if ct_data['running'] is True)
+
+
+    def _get_relative_dir(self):
+        if self.current_dir.startswith(self.stakkr_base_dir):
+            return self.current_dir[len(self.stakkr_base_dir):].lstrip('/')
+
+        return ''
 
 
     def _get_url(self, service_url: str, service: str, dns_started: bool):
