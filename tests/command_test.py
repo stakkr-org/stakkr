@@ -1,11 +1,10 @@
 import io
 import os
 import re
-import subprocess
 import sys
 import unittest
 
-from contextlib import redirect_stdout, redirect_stderr
+from contextlib import redirect_stdout
 from stakkr.command import launch_cmd_displays_output
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
@@ -25,6 +24,11 @@ class CommandTest(unittest.TestCase):
         res = f.getvalue()
         self.assertEqual('.', res)
 
+        try:
+            from contextlib import redirect_stderr
+        except Exception:
+            return
+
         f = io.StringIO()
         with redirect_stderr(f):
             launch_cmd_displays_output(self.cmd_ok, False, False)
@@ -39,6 +43,11 @@ class CommandTest(unittest.TestCase):
         res = f.getvalue()
         self.assertEqual('coucou\n', res)
 
+        try:
+            from contextlib import redirect_stderr
+        except Exception:
+            return
+
         f = io.StringIO()
         with redirect_stderr(f):
             launch_cmd_displays_output(self.cmd_ok, True, False)
@@ -52,6 +61,11 @@ class CommandTest(unittest.TestCase):
             launch_cmd_displays_output(self.cmd_ok, False, True)
         res = f.getvalue()
         self.assertEqual('.', res)
+
+        try:
+            from contextlib import redirect_stderr
+        except Exception:
+            return
 
         f = io.StringIO()
         with redirect_stderr(f):
@@ -72,6 +86,11 @@ class CommandTest(unittest.TestCase):
         res = f.getvalue()
         self.assertEqual('', res)
 
+        try:
+            from contextlib import redirect_stderr
+        except Exception:
+            return
+
         f = io.StringIO()
         with redirect_stderr(f):
             launch_cmd_displays_output(self.cmd_nook, False, False)
@@ -85,6 +104,11 @@ class CommandTest(unittest.TestCase):
             launch_cmd_displays_output(self.cmd_nook, True, False)
         res = f.getvalue()
         self.assertEqual('', res)
+
+        try:
+            from contextlib import redirect_stderr
+        except Exception:
+            return
 
         f = io.StringIO()
         with redirect_stderr(f):
@@ -101,6 +125,11 @@ class CommandTest(unittest.TestCase):
         expected = re.compile('.*No such file or directory.*', re.MULTILINE)
         self.assertRegex(res, expected)
 
+        try:
+            from contextlib import redirect_stderr
+        except Exception:
+            return
+
         f = io.StringIO()
         with redirect_stderr(f):
             launch_cmd_displays_output(self.cmd_nook, False, True)
@@ -115,6 +144,11 @@ class CommandTest(unittest.TestCase):
         res = f.getvalue()
         expected = re.compile('.*\.\.\. and more.*', re.MULTILINE)
         self.assertRegex(res, expected)
+
+        try:
+            from contextlib import redirect_stderr
+        except Exception:
+            return
 
         f = io.StringIO()
         with redirect_stderr(f):
