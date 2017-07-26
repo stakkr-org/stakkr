@@ -11,7 +11,7 @@ sys.path.insert(0, here)
 
 setup(
     name='stakkr',
-    version='3.0',
+    version='3.1',
     description='A configurable stack based on docker to run any combination of services (PHP, MySQL, Apache, Nginx, Mongo, etc..)',
     long_description=""".. image:: https://raw.githubusercontent.com/edyan/stakkr/master/docs/stakkr-logo.png
     :width: 200px
@@ -39,12 +39,12 @@ Versions
 .. IMPORTANT::
    Stakkr has known 3 versions and 3 names :
    - 1.x : it was called ``docker-lamp`` and was made to setup an Apache + PHP + MySQL Environment
-   - 2.x : it was called ``marina`` (nice name!) and was made to have a stack build around various 
+   - 2.x : it was called ``marina`` (nice name!) and was made to have a stack build around various
    services.
-   - 3.x : current version (and probably future ones) , now ``stakkr``. Why changing its name again ? 
-   Because marina is used by various people and therefore our tool could add more confusion. 
-   
-   
+   - 3.x : current version (and probably future ones) , now ``stakkr``. Why changing its name again ?
+   Because marina is used by various people and therefore our tool could add more confusion.
+
+
 
 What does that do exactly ?
 ==============================
@@ -97,9 +97,9 @@ stakkr-compose=stakkr.stakkr_compose:cli''',
       'Development Status :: 4 - Beta',
       'Environment :: Console',
       'Intended Audience :: Developers',
-      'License :: OSI Approved :: Apple Public Source License', 
+      'License :: OSI Approved :: Apple Public Source License',
       'Programming Language :: Python :: 3',
       'Programming Language :: Python :: 3.5',
     ],
-    keywords='docker,docker-compose,python,stack,development,lamp',    
+    keywords='docker,docker-compose,python,stack,development,lamp',
 )
