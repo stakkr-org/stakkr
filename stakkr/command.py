@@ -32,8 +32,10 @@ def _read_messages(result: BufferedReader, display: bool = False):
     for line in result.stdout:
         line = line.decode()
         line = line if display is True else '.'
-        print(line, end='', file=sys.stdout)
+        print(line, end='')
         sys.stdout.flush()
+
+    print()
 
 
 def _print_errors(result: BufferedReader):

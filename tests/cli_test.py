@@ -53,7 +53,7 @@ class CliTest(unittest.TestCase):
 
         cmd = self.cmd_base + ['console', 'mysql']
         res = self._exec_cmd(cmd)
-        self.assertRegex(res['stderr'], '.*mysql does not seem to be in your services or has crashed.*')
+        self.assertRegex(res['stderr'], '.*mysql does not seem to be running.*')
         self.assertEqual(res['stdout'], '')
         self.assertIs(res['status'], 1)
 
@@ -99,7 +99,7 @@ class CliTest(unittest.TestCase):
         cmd = self.cmd_base + ['run', 'mysql', '--version']
         res = self._exec_cmd(cmd)
         self.assertEqual(res['stdout'], '')
-        self.assertRegex(res['stderr'], '.*mysql does not seem to be in your services or has crashed.*')
+        self.assertRegex(res['stderr'], '.*mysql does not seem to be running.*')
         self.assertIs(res['status'], 1)
 
 
@@ -111,7 +111,7 @@ class CliTest(unittest.TestCase):
         # Restart
         res = self._exec_cmd(cmd)
         self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], '\[RESTARTING\].*your stakkr services.*Services have been restarted.*For Maildev.*')
+        self.assertRegex(res['stdout'], 'RESTARTING.*your stakkr services.*STOPPING.*STARTING.*started.*For Maildev.*')
         self.assertIs(res['status'], 0)
 
         # Check it's fine
@@ -134,7 +134,7 @@ class CliTest(unittest.TestCase):
         # Restart
         res = self._exec_cmd(cmd)
         self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], '\[RESTARTING\].*your stakkr services.*Services have been restarted.*For Maildev.*')
+        self.assertRegex(res['stdout'], 'RESTARTING.*your stakkr services.*STOPPING.*stopped.*STARTING.*started.*For Maildev.*')
         self.assertIs(res['status'], 0)
 
         # Check it's fine

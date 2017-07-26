@@ -22,7 +22,7 @@ class CommandTest(unittest.TestCase):
         with redirect_stdout(f):
             launch_cmd_displays_output(self.cmd_ok, False, False)
         res = f.getvalue()
-        self.assertEqual('.', res)
+        self.assertEqual('.', res[:1])
 
         try:
             from contextlib import redirect_stderr
@@ -41,7 +41,7 @@ class CommandTest(unittest.TestCase):
         with redirect_stdout(f):
             launch_cmd_displays_output(self.cmd_ok, True, False)
         res = f.getvalue()
-        self.assertEqual('coucou\n', res)
+        self.assertEqual('coucou\n\n', res)
 
         try:
             from contextlib import redirect_stderr
@@ -60,7 +60,7 @@ class CommandTest(unittest.TestCase):
         with redirect_stdout(f):
             launch_cmd_displays_output(self.cmd_ok, False, True)
         res = f.getvalue()
-        self.assertEqual('.', res)
+        self.assertEqual('.', res[:1])
 
         try:
             from contextlib import redirect_stderr
@@ -84,7 +84,7 @@ class CommandTest(unittest.TestCase):
         with redirect_stdout(f):
             launch_cmd_displays_output(self.cmd_nook, False, False)
         res = f.getvalue()
-        self.assertEqual('', res)
+        self.assertEqual('\n', res)
 
         try:
             from contextlib import redirect_stderr
@@ -103,7 +103,7 @@ class CommandTest(unittest.TestCase):
         with redirect_stdout(f):
             launch_cmd_displays_output(self.cmd_nook, True, False)
         res = f.getvalue()
-        self.assertEqual('', res)
+        self.assertEqual('\n', res)
 
         try:
             from contextlib import redirect_stderr

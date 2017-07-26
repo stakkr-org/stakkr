@@ -28,7 +28,7 @@ class StakkrActions():
         self.user_config_main = self._get_config()
         self.project_name = self.user_config_main.get('project_name')
 
-        self.running_cts = self._get_num_running_containers()
+        self.running_cts, self.cts = docker.get_running_containers(self.project_name, self.config_file)
 
 
     def check_cts_are_running(self):
@@ -43,10 +43,7 @@ class StakkrActions():
 
         self.check_cts_are_running()
 
-        ct_name = self.get_ct_item(ct, 'name')
-        if ct_name == '':
-            raise Exception('{} does not seem to be in your services or has crashed'.format(ct))
-
+        ct_name = self._get_ct_name(ct)
         tty = 't' if sys.stdin.isatty() else ''
         subprocess.call(['docker', 'exec', '-u', user, '-i' + tty, ct_name, 'env', 'TERM=xterm', 'bash'])
 
@@ -55,11 +52,11 @@ class StakkrActions():
         """Once started, stakkr displays a message with the list of launched containers."""
 
         services_to_display = {
-            'apache': {'name': 'Web Server', 'url': 'http://{URL}'},
-            'mailcatcher': {'name': 'Mailcatcher (fake SMTP)', 'url': 'http://{URL}', 'extra_port': 25},
-            'maildev': {'name': 'Maildev (Fake SMTP)', 'url': 'http://{URL}', 'extra_port': 25},
-            'phpmyadmin': {'name': 'PhpMyAdmin', 'url': 'http://{URL}'},
-            'xhgui': {'name': 'XHGui (PHP Profiling)', 'url': 'http://{URL}'}
+            'apache': {'name': 'Web Server', 'url': 'http://{}'},
+            'mailcatcher': {'name': 'Mailcatcher (fake SMTP)', 'url': 'http://{}', 'extra_port': 25},
+            'maildev': {'name': 'Maildev (Fake SMTP)', 'url': 'http://{}', 'extra_port': 25},
+            'phpmyadmin': {'name': 'PhpMyAdmin', 'url': 'http://{}'},
+            'xhgui': {'name': 'XHGui (PHP Profiling)', 'url': 'http://{}'}
         }
 
         dns_started = docker.container_running('docker_dns')
@@ -74,7 +71,7 @@ class StakkrActions():
 
             if 'extra_port' in options:
                 puts(' '*3 + ' ... in your containers use the port {}'.format(options['extra_port']))
-        print()
+                print()
 
 
     def get_ct_item(self, compose_name: str, item_name: str):
@@ -104,23 +101,12 @@ class StakkrActions():
         sys.exit(1)
 
 
-    def restart(self, pull: bool, recreate: bool):
-        """Restart (smartly) the containers defined in config : stop=start and start=stop+start"""
-
-        if self.running_cts:
-            self.stop()
-
-        self.start(pull, recreate)
-
-
     def run_mysql(self, args: str):
         """Run a MySQL command from outside. Useful to import an SQL File."""
 
         self.check_cts_are_running()
 
-        ct_name = self.get_ct_item('mysql', 'name')
-        if ct_name == '':
-            raise Exception('mysql does not seem to be in your services or has crashed')
+        ct_name = self._get_ct_name('mysql')
 
         tty = 't' if sys.stdin.isatty() else ''
         password = self.user_config_main.get('mysql.root_password')
@@ -135,7 +121,7 @@ class StakkrActions():
         self.check_cts_are_running()
 
         tty = 't' if sys.stdin.isatty() else ''
-        cmd = ['docker', 'exec', '-u', user, '-i' + tty, self.get_ct_item('php', 'name'), 'bash', '-c', '--']
+        cmd = ['docker', 'exec', '-u', user, '-i' + tty, self._get_ct_name('php'), 'bash', '-c', '--']
         cmd += ['cd /var/' + self.current_dir_relative + '; exec /usr/bin/php ' + args]
         subprocess.call(cmd, stdin=sys.stdin)
 
@@ -157,7 +143,7 @@ class StakkrActions():
         cmd = self.compose_base_cmd + ['up', '-d', recreate_param, '--remove-orphans']
         command.launch_cmd_displays_output(cmd, verb, debug, True)
 
-        self.running_cts = self._get_num_running_containers()
+        self.running_cts, self.cts = docker.get_running_containers(self.project_name, self.config_file)
         if self.running_cts is 0:
             raise SystemError("Couldn't start the containers, run the start with '-v' and '-d'")
 
@@ -186,23 +172,18 @@ class StakkrActions():
         self.check_cts_are_running()
         command.launch_cmd_displays_output(self.compose_base_cmd + ['stop'], verb, debug, True)
 
-        self.running_cts = self._get_num_running_containers()
+        self.running_cts, self.cts = docker.get_running_containers(self.project_name, self.config_file)
         if self.running_cts is not 0:
             raise SystemError("Couldn't stop services ...")
 
 
     def _call_service_post_script(self, service: str):
         service_script = 'services/' + service + '.sh'
-        ct_name = self.get_ct_item(service, 'name')
-        if os.path.isfile(service_script) is False:
-            return
-
-        subprocess.call(['bash', service_script, ct_name])
+        if os.path.isfile(service_script) is True:
+            subprocess.call(['bash', service_script, self.get_ct_item(service, 'name')])
 
 
     def _docker_run_dns(self):
-        """Starts the DNS"""
-
         self.check_cts_are_running()
 
         try:
@@ -233,10 +214,12 @@ class StakkrActions():
         return user_config_main['main']
 
 
-    def _get_num_running_containers(self):
-        num_running_cts, self.cts = docker.get_running_containers(self.project_name, self.config_file)
+    def _get_ct_name(self, ct: str):
+        ct_name = self.get_ct_item(ct, 'name')
+        if ct_name == '':
+            raise Exception('{} does not seem to be running'.format(ct))
 
-        return num_running_cts
+        return ct_name
 
 
     def _get_relative_dir(self):
@@ -247,31 +230,25 @@ class StakkrActions():
 
 
     def _get_url(self, service_url: str, service: str, dns_started: bool):
-        url = service_url.replace('{URL}', self.get_ct_item(service, 'ip'))
+        name = self._get_ct_name(service) if dns_started else self.get_ct_item(service, 'ip')
 
-        if dns_started is True:
-            url = service_url.replace('{URL}', '{}'.format(self.get_ct_item(service, 'name')))
-
-        return url
+        return service_url.format(name)
 
 
     def _print_status_headers(self, dns_started: bool):
+        host_ip = (colored.green('HostName' if dns_started else 'IP'))
+
         puts(columns(
-            [(colored.green('Container')), 16],
-            [(colored.green('HostName' if dns_started else 'IP')), 25],
-            [(colored.green('Ports')), 25],
+            [(colored.green('Container')), 16], [host_ip, 25], [(colored.green('Ports')), 25],
             [(colored.green('Image')), 32],
-            [(colored.green('Docker ID')), 15],
-            [(colored.green('Docker Name')), 25]
-        ))
+            [(colored.green('Docker ID')), 15], [(colored.green('Docker Name')), 25]
+            ))
+
         puts(columns(
-            ['-'*16, 16],
-            ['-'*25, 25],
-            ['-'*25, 25],
+            ['-'*16, 16], ['-'*25, 25], ['-'*25, 25],
             ['-'*32, 32],
-            ['-'*15, 15],
-            ['-'*25, 25]
-        ))
+            ['-'*15, 15], ['-'*25, 25]
+            ))
 
 
     def _print_status_body(self, dns_started: bool):
@@ -279,20 +256,19 @@ class StakkrActions():
             if ct_data['ip'] == '':
                 continue
 
+            host_ip = ct_data['name'] if dns_started else ct_data['ip']
+
             puts(columns(
-                [ct_data['compose_name'], 16],
-                [ct_data['name'] if dns_started else ct_data['ip'], 25],
-                [', '.join(ct_data['ports']), 25],
+                [ct_data['compose_name'], 16], [host_ip, 25], [', '.join(ct_data['ports']), 25],
                 [ct_data['image'], 32],
-                [ct_id[:12], 15],
-                [ct_data['name'], 25]
-            ))
+                [ct_id[:12], 15], [ct_data['name'], 25]
+                ))
 
 
     def _run_services_post_scripts(self):
-        """
-        A service can have a .sh file that will be executed once it's started.
+        """A service can have a .sh file that will be executed once it's started.
         Useful to override some actions of the classical /run.sh
+
         """
 
         if os.name == 'nt':
