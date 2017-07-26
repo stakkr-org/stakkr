@@ -3,8 +3,8 @@ A command wrapper to get a live output displayed. Useful when you need to write 
 bar or info.
 """
 
-
 import subprocess
+import sys
 
 from click import style
 from io import BufferedReader
@@ -29,7 +29,6 @@ def launch_cmd_displays_output(cmd: list, print_msg=True, print_err=True, err_to
 def _read_messages(result: BufferedReader, display: bool = False):
     """Print messages sent to the STDOUT"""
 
-    import sys
     for line in result.stdout:
         line = line.decode()
         line = line if display is True else '.'
@@ -47,8 +46,10 @@ def _print_errors(result: BufferedReader):
 
         print(line.decode(), end='')
 
-        if i > 5:
+        if i is 5:
             print(style('... and more', fg='red'))
-            break
+
+        if i > 5:
+            line.decode()
 
         i += 1

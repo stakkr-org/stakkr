@@ -23,7 +23,7 @@ class CommandTest(unittest.TestCase):
         with redirect_stdout(f):
             launch_cmd_displays_output(self.cmd_ok, False, False)
         res = f.getvalue()
-        self.assertEqual('', res)
+        self.assertEqual('.', res)
 
         f = io.StringIO()
         with redirect_stderr(f):
@@ -51,7 +51,7 @@ class CommandTest(unittest.TestCase):
         with redirect_stdout(f):
             launch_cmd_displays_output(self.cmd_ok, False, True)
         res = f.getvalue()
-        self.assertEqual('', res)
+        self.assertEqual('.', res)
 
         f = io.StringIO()
         with redirect_stderr(f):
