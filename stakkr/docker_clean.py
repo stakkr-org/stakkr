@@ -33,8 +33,7 @@ def clean(force: bool, verbose: bool):
 
 
 def remove_containers(force: bool, verbose: bool):
-    cmd = ['docker', 'ps', '--no-trunc', '-a', '-q', '-f', 'status=exited']
-    containers = Popen(cmd, stdout=PIPE, stderr=STDOUT).communicate()[0].splitlines()
+    containers = _exec_cmd(['docker', 'ps', '--no-trunc', '-a', '-q', '-f', 'status=exited'])
 
     if len(containers) == 0:
         print('No exited container to remove')
@@ -49,8 +48,7 @@ def remove_containers(force: bool, verbose: bool):
 
 
 def remove_images(force: bool, verbose: bool):
-    cmd = ['docker', 'image', 'ls']
-    images = Popen(cmd, stdout=PIPE, stderr=STDOUT).communicate()[0].splitlines()
+    images = _exec_cmd(['docker', 'image', 'ls'])
 
     if len(images) == 0:
         print('No image to remove')
@@ -62,8 +60,7 @@ def remove_images(force: bool, verbose: bool):
 
 
 def remove_networks(force: bool, verbose: bool):
-    cmd = ['docker', 'network', 'ls', '--no-trunc', '-q', '--filter', 'type=custom']
-    networks = Popen(cmd, stdout=PIPE, stderr=STDOUT).communicate()[0].splitlines()
+    networks = _exec_cmd(['docker', 'network', 'ls', '--no-trunc', '-q', '--filter', 'type=custom'])
 
     if len(networks) == 0:
         print('No network to remove')
@@ -77,8 +74,7 @@ def remove_networks(force: bool, verbose: bool):
 
 
 def remove_volumes(force: bool, verbose: bool):
-    cmd = ['docker', 'volume', 'ls', '-q', '-f', 'dangling=true']
-    volumes = Popen(cmd, stdout=PIPE, stderr=STDOUT).communicate()[0].splitlines()
+    volumes = _exec_cmd(['docker', 'volume', 'ls', '-q', '-f', 'dangling=true'])
 
     if len(volumes) == 0:
         print('No volume to remove')
@@ -100,17 +96,18 @@ def _display_entry_info(entry_type: str, entry: str, verbose: bool):
     base_cmd = ['docker']
     if entry_type != 'container':
         base_cmd += [entry_type]
-    cmd = base_cmd + ['inspect', '--format={{.Name}}', entry]
 
-    info = Popen(cmd, stdout=PIPE, stderr=STDOUT).communicate()[0].splitlines()[0]
-
+    info = _exec_cmd(base_cmd + ['inspect', '--format={{.Name}}', entry])[0]
     print('  Removing {} {}'.format(entry_type, info.decode()))
+
+
+def _exec_cmd(cmd: list):
+    return Popen(cmd, stdout=PIPE, stderr=STDOUT).communicate()[0].splitlines()
 
 
 def _prune_images():
     try:
-        cmd = ['docker', 'image', 'prune', '--all', '--force']
-        Popen(cmd, stdout=PIPE, stderr=STDOUT).communicate()
+        _exec_cmd(['docker', 'image', 'prune', '--all', '--force'])
     except Exception as e:
         print(click.style('Error removing images'), fg='red')
 
@@ -123,7 +120,7 @@ def _remove_entry(entry_type: str, entry: str, force: bool):
         base_cmd = ['docker']
         if entry_type != 'container':
             base_cmd += [entry_type]
-        Popen(base_cmd + ['rm', entry], stdout=PIPE, stderr=STDOUT).communicate()
+        _exec_cmd(base_cmd + ['rm', entry])
     except Exception as e:
         output = e.output.decode()
         print(click.style('Error removing a {}: {}'.format(entry_type, output), fg='red'))
