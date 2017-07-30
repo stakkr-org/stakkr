@@ -53,7 +53,7 @@ class CliTest(unittest.TestCase):
 
         cmd = self.cmd_base + ['console', 'mysql']
         res = self._exec_cmd(cmd)
-        self.assertRegex(res['stderr'], '.*mysql does not seem to be running.*')
+        self.assertRegex(res['stderr'], '.*mysql does not seem to be started.*')
         self.assertEqual(res['stdout'], '')
         self.assertIs(res['status'], 1)
 
@@ -62,7 +62,7 @@ class CliTest(unittest.TestCase):
         cmd = self.cmd_base + ['console', 'php']
         res = self._exec_cmd(cmd)
         self.assertEqual(res['stdout'], '')
-        self.assertRegex(res['stderr'], '.*Have you started your server with the start or fullstart action.*')
+        self.assertRegex(res['stderr'], '.*Have you started your server with the start action.*')
         self.assertIs(res['status'], 1)
 
 
@@ -74,32 +74,32 @@ class CliTest(unittest.TestCase):
         self.assertIs(res['status'], 0)
 
 
-    def test_run_php(self):
+    def test_exec_php(self):
         self._exec_cmd(self.cmd_base + ['dns', 'stop'])
         self._exec_cmd(self.cmd_base + ['start'])
 
         # Check for PHP Version
-        cmd = self.cmd_base + ['run', 'php', '-v']
+        cmd = self.cmd_base + ['exec', 'php', 'php', '-v']
         res = self._exec_cmd(cmd)
         self.assertRegex(res['stdout'], '.*The PHP GroupZend Engine.*')
         self.assertEqual(res['stderr'], '')
         self.assertIs(res['status'], 0)
 
         self._exec_cmd(self.cmd_base + ['stop'])
-        cmd = self.cmd_base + ['run', 'php', '-v']
+        cmd = self.cmd_base + ['exec', 'php', 'php', '-v']
         res = self._exec_cmd(cmd)
         self.assertEqual(res['stdout'], '')
-        self.assertRegex(res['stderr'], '.*Have you started your server with the start or fullstart action.*')
+        self.assertRegex(res['stderr'], '.*Have you started your server with the start action.*')
         self.assertIs(res['status'], 1)
 
 
-    def test_run_mysql(self):
+    def test_mysql(self):
         self._exec_cmd(self.cmd_base + ['start'])
 
-        cmd = self.cmd_base + ['run', 'mysql', '--version']
+        cmd = self.cmd_base + ['mysql', '--version']
         res = self._exec_cmd(cmd)
         self.assertEqual(res['stdout'], '')
-        self.assertRegex(res['stderr'], '.*mysql does not seem to be running.*')
+        self.assertRegex(res['stderr'], '.*mysql does not seem to be started.*')
         self.assertIs(res['status'], 1)
 
 
@@ -216,7 +216,7 @@ class CliTest(unittest.TestCase):
         # Stop Error : it has been stopped already
         res = self._exec_cmd(cmd)
         self.assertRegex(res['stdout'], '\[STOPPING\].*your stakkr services.*')
-        self.assertRegex(res['stderr'], '.*Have you started your server with the start or fullstart action.*')
+        self.assertRegex(res['stderr'], '.*Have you started your server with the start action.*')
         self.assertIs(res['status'], 1)
 
 

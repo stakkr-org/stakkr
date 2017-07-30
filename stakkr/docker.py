@@ -5,6 +5,22 @@ from json import loads as json_loads
 import subprocess
 
 
+running_cts = 0
+cts_info = dict()
+
+
+def check_cts_are_running(project_name: str, config: str = None):
+    """Throws an error if cts are not running"""
+
+    global cts_info
+
+    running_cts, cts_info = get_running_containers(project_name, config)
+    if running_cts is 0:
+        raise SystemError('Have you started your server with the start action ?')
+
+    return (running_cts, cts_info)
+
+
 def container_running(name: str):
     """Returns True if the container is running else False"""
 
@@ -16,14 +32,33 @@ def container_running(name: str):
         return False
 
 
+def get_ct_item(compose_name: str, item_name: str):
+    """Get a value from a container, such as name or IP"""
+    for ct_id, ct_data in cts_info.items():
+        if ct_data['compose_name'] == compose_name:
+            return ct_data[item_name]
+
+    return ''
+
+
+def get_ct_name(ct: str):
+    ct_name = get_ct_item(ct, 'name')
+    if ct_name == '':
+        raise Exception('{} does not seem to be started ...'.format(ct))
+
+    return ct_name
+
+
 def get_running_containers(project_name: str, config: str = None):
     """Get a list of IDs of running containers for the current stakkr instance"""
+
+    global cts_info
 
     config_params = []
     if config is not None:
         config_params = ['-c', config]
 
-    num_running_cts = 0
+    running_cts = 0
     cts_id = subprocess.check_output(['stakkr-compose'] + config_params + ['ps', '-q'])
     cts_info = dict()
     for ct_id in cts_id.splitlines():
@@ -31,9 +66,9 @@ def get_running_containers(project_name: str, config: str = None):
         cts_info[ct_id] = _extract_container_info(project_name, ct_id)
 
         if cts_info[ct_id]['running'] is True:
-            num_running_cts += 1
+            running_cts += 1
 
-    return (num_running_cts, cts_info)
+    return (running_cts, cts_info)
 
 
 def _extract_container_info(project_name: str, ct_id: str):

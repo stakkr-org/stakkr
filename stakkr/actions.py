@@ -28,22 +28,13 @@ class StakkrActions():
         self.user_config_main = self._get_config()
         self.project_name = self.user_config_main.get('project_name')
 
-        self.running_cts, self.cts = docker.get_running_containers(self.project_name, self.config_file)
-
-
-    def check_cts_are_running(self):
-        """Throws an error if cts are not running"""
-
-        if not self.running_cts:
-            raise SystemError('Have you started your server with the start or fullstart action ?')
-
 
     def console(self, ct: str, user: str):
         """Enter a container (stakkr allows only apache / php and mysql)"""
 
-        self.check_cts_are_running()
+        docker.check_cts_are_running(self.project_name, self.config_file)
 
-        ct_name = self._get_ct_name(ct)
+        ct_name = docker.get_ct_name(ct)
         tty = 't' if sys.stdin.isatty() else ''
         subprocess.call(['docker', 'exec', '-u', user, '-i' + tty, ct_name, 'env', 'TERM=xterm', 'bash'])
 
@@ -62,7 +53,7 @@ class StakkrActions():
         dns_started = docker.container_running('docker_dns')
         print()
         for service, options in sorted(services_to_display.items()):
-            ip = self.get_ct_item(service, 'ip')
+            ip = docker.get_ct_item(service, 'ip')
             if ip == '':
                 continue
 
@@ -77,21 +68,12 @@ class StakkrActions():
     def exec(self, container: str, user: str, args: str):
         """Run a script or PHP command from outside"""
 
-        tty = 't' if sys.stdin.isatty() else ''
-        cmd = ['docker', 'exec', '-u', user, '-i', self._get_ct_name(container), 'bash', '-c', '--']
+        docker.check_cts_are_running(self.project_name, self.config_file)
+
+        cmd = ['docker', 'exec', '-u', user, '-i', docker.get_ct_name(container), 'bash', '-c', '--']
         cmd += ['cd /var/' + self.current_dir_relative + '; exec ' + args]
         self._verbose('Command : "' + ' '.join(cmd) + '"')
         subprocess.call(cmd, stdin=sys.stdin)
-
-
-    def get_ct_item(self, compose_name: str, item_name: str):
-        """Get a value from a container, such as name or IP"""
-
-        for ct_id, ct_data in self.cts.items():
-            if ct_data['compose_name'] == compose_name:
-                return ct_data[item_name]
-
-        return ''
 
 
     def manage_dns(self, action: str):
@@ -114,11 +96,13 @@ class StakkrActions():
     def run_mysql(self, args: str):
         """Run a MySQL command from outside. Useful to import an SQL File."""
 
+        docker.check_cts_are_running(self.project_name, self.config_file)
+
         tty = 't' if sys.stdin.isatty() else ''
         password = self.user_config_main.get('mysql.root_password')
-        cmd = ['docker', 'exec', '-u', 'root', '-i' + tty, self._get_ct_name('mysql')]
+        cmd = ['docker', 'exec', '-u', 'root', '-i' + tty, docker.get_ct_name('mysql')]
         cmd += ['mysql', '-u', 'root', '-p{}'.format(password), args]
-        print(' '.join(cmd))
+        self._verbose('Command: ' + ' '.join(cmd))
         subprocess.call(cmd, stdin=sys.stdin)
 
 
@@ -128,15 +112,19 @@ class StakkrActions():
         verb = self.context['VERBOSE']
         debug = self.context['DEBUG']
 
-        if self.running_cts:
-            puts(colored.yellow('[INFO]') + ' stakkr is already started ...')
+        try:
+            docker.check_cts_are_running(self.project_name, self.config_file)
+            puts(colored.yellow('\n[INFO]') + ' stakkr is already started ...')
             sys.exit(0)
+        except Exception:
+            pass
 
         if pull is True:
             command.launch_cmd_displays_output(self.compose_base_cmd + ['pull'], verb, debug, True)
 
         recreate_param = '--force-recreate' if recreate is True else '--no-recreate'
         cmd = self.compose_base_cmd + ['up', '-d', recreate_param, '--remove-orphans']
+        self._verbose('Command: ' + ' '.join(cmd))
         command.launch_cmd_displays_output(cmd, verb, debug, True)
 
         self.running_cts, self.cts = docker.get_running_containers(self.project_name, self.config_file)
@@ -149,7 +137,9 @@ class StakkrActions():
     def status(self):
         """Returns a nice table with the list of started containers"""
 
-        if not self.running_cts:
+        try:
+            self.running_cts, self.cts = docker.check_cts_are_running(self.project_name, self.config_file)
+        except Exception:
             puts(colored.yellow('[INFO]') + ' stakkr is currently stopped')
             sys.exit(0)
 
@@ -165,7 +155,7 @@ class StakkrActions():
         verb = self.context['VERBOSE']
         debug = self.context['DEBUG']
 
-        self.check_cts_are_running()
+        docker.check_cts_are_running(self.project_name, self.config_file)
         command.launch_cmd_displays_output(self.compose_base_cmd + ['stop'], verb, debug, True)
 
         self.running_cts, self.cts = docker.get_running_containers(self.project_name, self.config_file)
@@ -176,11 +166,11 @@ class StakkrActions():
     def _call_service_post_script(self, service: str):
         service_script = 'services/' + service + '.sh'
         if os.path.isfile(service_script) is True:
-            subprocess.call(['bash', service_script, self.get_ct_item(service, 'name')])
+            subprocess.call(['bash', service_script, docker.get_ct_item(service, 'name')])
 
 
     def _docker_run_dns(self):
-        self.check_cts_are_running()
+        docker.check_cts_are_running(self.project_name, self.config_file)
 
         try:
             cmd = ['docker', 'run', '--rm', '-d', '--hostname', 'docker-dns', '--name', self.dns_container_name]
@@ -210,14 +200,6 @@ class StakkrActions():
         return user_config_main['main']
 
 
-    def _get_ct_name(self, ct: str):
-        ct_name = self.get_ct_item(ct, 'name')
-        if ct_name == '':
-            raise Exception('{} does not seem to be running'.format(ct))
-
-        return ct_name
-
-
     def _get_relative_dir(self):
         if self.current_dir.startswith(self.stakkr_base_dir):
             return self.current_dir[len(self.stakkr_base_dir):].lstrip('/')
@@ -226,7 +208,7 @@ class StakkrActions():
 
 
     def _get_url(self, service_url: str, service: str, dns_started: bool):
-        name = self._get_ct_name(service) if dns_started else self.get_ct_item(service, 'ip')
+        name = docker.get_ct_name(service) if dns_started else docker.get_ct_item(service, 'ip')
 
         return service_url.format(name)
 
@@ -278,7 +260,3 @@ class StakkrActions():
     def _verbose(self, message: str):
         if self.context['VERBOSE'] is True:
             print(colored.green('[VERBOSE]') + ' {}'.format(message))
-
-
-
-

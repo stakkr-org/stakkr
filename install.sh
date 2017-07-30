@@ -3,8 +3,6 @@ set -e
 
 echo "Cleaning the old virtualenv"
 rm -rf *.egg-info ${PWD##*/}_stakkr ${PWD##*/}_marina __pycache__
-find "*stakkr" -type f -name "*.py[co]" -delete
-find "*stakkr" -type d -name "__pycache__" -delete
 echo ""
 
 echo "Installing various python packages"
