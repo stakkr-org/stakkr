@@ -28,6 +28,28 @@ class CliTest(unittest.TestCase):
         self.assertEqual('Error: No such command "hello-world".', res_out)
 
 
+    def test_pull(self):
+        self._exec_cmd(self.cmd_base + ['start', '--pull'])
+
+
+    def test_recreate(self):
+        self._exec_cmd(self.cmd_base + ['start', '--recreate'])
+
+
+    def test_pull_recreate(self):
+        self._exec_cmd(self.cmd_base + ['start', '--pull', '--recreate'])
+
+
+    def test_debug_mode(self):
+        self._exec_cmd(self.cmd_base + ['start'])
+
+        cmd = self.cmd_base + ['--debug', 'exec', 'notexist', 'bad']
+        res = self._exec_cmd(cmd)
+        self.assertEqual(res['stdout'], '')
+        self.assertRegex(res['stderr'], '.*Exception: notexist does not seem to be started.*')
+        self.assertIs(res['status'], 1)
+
+
     def test_bad_config(self):
         res = self._exec_cmd([
             'stakkr', '-c', base_dir + '/static/config_invalid.ini', 'start'])
@@ -200,6 +222,15 @@ class CliTest(unittest.TestCase):
         res = self._exec_cmd(cmd)
         self.assertEqual(res['stdout'], '[INFO] stakkr is currently stopped')
         self.assertEqual(res['stderr'], '')
+        self.assertIs(res['status'], 0)
+
+
+    def test_run_deprecated(self):
+        self._exec_cmd(self.cmd_base + ['start'])
+        cmd = self.cmd_base + ['run', 'php', '-v']
+        res = self._exec_cmd(cmd)
+        self.assertEqual(res['stderr'], '')
+        self.assertRegex(res['stdout'], '\[DEPRECATED\].*You must use either.*')
         self.assertIs(res['status'], 0)
 
 
