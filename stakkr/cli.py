@@ -33,7 +33,7 @@ def stakkr(ctx, config, debug, verbose):
 @stakkr.command(help="""Enter a container to perform direct actions such as install packages, run commands ...
 
 Valid values for CONTAINER : 'apache', 'mysql' or 'php'""")
-@click.option('--user', help="User's name. Valid choices : www-data or root", type=click.Choice(['www-data', 'root']))
+@click.option('--user', '-u', help="User's name. Valid choices : www-data or root", type=click.Choice(['www-data', 'root']))
 @click.argument('container', required=True, type=click.Choice(['apache', 'mysql', 'python', 'php']))
 @click.pass_context
 def console(ctx, container: str, user: str):
@@ -69,6 +69,48 @@ def dns(ctx, action: str):
     stakkr.manage_dns(action)
 
 
+
+@stakkr.command(help="""Execute a command into a container.
+
+Examples:
+- `stakkr exec mysql env | grep PASS` : to get the password
+- `stakkr exec mysql mysqldump -p mydb > /tmp/backup.sql`\n
+- `stakkr exec php php -v` Execute the php binary in the php container with option -v
+- `stakkr exec apache service apache2 restart`
+
+""",
+    context_settings=dict(ignore_unknown_options=True))
+@click.pass_context
+@click.option('--user', '-u', help="User's name. Be careful, each container have its own users.")
+@click.argument('container', required=True)
+@click.argument('command', required=True, nargs=-1, type=click.UNPROCESSED)
+def exec(ctx, user: str, container: str, command: tuple):
+    users = {
+        'php': 'www-data'
+    }
+    if user is None:
+        user = users[container] if container in users else 'root'
+
+    ctx.obj['STAKKR'].exec(container, user, ' '.join(command))
+
+
+@stakkr.command(
+    help="""`stakkr mysql` is a wrapper for the mysql binary located in the mysql service.
+
+You can run any mysql command as root, such as :
+- `stakkr mysql -e "CREATE DATABASE mydb"` to create a DB from outside
+- `stakkr mysql` to enter the mysql console
+- `cat myfile.sql | stakkr mysql mydb` to import a file from outside to mysql
+
+For scripts, you must use the relative path.
+""",
+    context_settings=dict(ignore_unknown_options=True))
+@click.pass_context
+@click.argument('command', nargs=-1, type=click.UNPROCESSED)
+def mysql(ctx, command: tuple):
+    ctx.obj['STAKKR'].run_mysql(' '.join(command))
+
+
 @stakkr.command(help='Required to be launched if you install a new plugin', name="refresh-plugins")
 @click.pass_context
 def refresh_plugins(ctx):
@@ -85,8 +127,8 @@ def refresh_plugins(ctx):
 
 
 @stakkr.command(help="Restart all containers")
-@click.option('--pull', help="Force a pull of the latest images versions", is_flag=True)
-@click.option('--recreate', help="Recreate all containers", is_flag=True)
+@click.option('--pull', '-p', help="Force a pull of the latest images versions", is_flag=True)
+@click.option('--recreate', '-r', help="Recreate all containers", is_flag=True)
 @click.pass_context
 def restart(ctx, pull: bool, recreate: bool):
     print(click.style('[RESTARTING]', fg='green') + ' your stakkr services')
@@ -98,33 +140,13 @@ def restart(ctx, pull: bool, recreate: bool):
     ctx.invoke(start, pull=pull, recreate=recreate)
 
 
-@stakkr.command(
-    help="""Run a command to a container.
-
-Valid values for CONTAINER : 'mysql' or 'php'. You can add more arguments after the container name.
-
-Examples:\n
-- stakkr run php -v\n
-- zcat dump.sql.gz | stakkr run mysql my_database\n
-- stakkr run php www/myfile.php\n
-""",
-    context_settings=dict(ignore_unknown_options=True))
+@stakkr.command(help='DEPRECATED, USE `stakkr exec`', context_settings=dict(ignore_unknown_options=True))
 @click.pass_context
 @click.option('--user', '-u', help="User's name. Valid values: www-data or root", type=click.Choice(['www-data', 'root']))
 @click.argument('container', required=True, type=click.Choice(['mysql', 'php']))
 @click.argument('run_args', nargs=-1, type=click.UNPROCESSED)
 def run(ctx, container: str, user: str, run_args: tuple):
-    if container == 'php' and user is None:
-        user = 'www-data'
-    elif user is None:
-        user = 'root'
-
-    run_args = ' '.join(run_args)
-    stakkr = ctx.obj['STAKKR']
-    if container == 'php':
-        stakkr.run_php(user, run_args)
-    elif container == 'mysql':
-        stakkr.run_mysql(run_args)
+    print(click.style('[DEPRECATED]', fg='red') + ' You must use either `stakkr mysql` or `stakkr exec php php`')
 
 
 @stakkr.command(help="Start containers defined in compose.ini")

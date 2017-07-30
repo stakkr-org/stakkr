@@ -74,6 +74,16 @@ class StakkrActions():
                 print()
 
 
+    def exec(self, container: str, user: str, args: str):
+        """Run a script or PHP command from outside"""
+
+        tty = 't' if sys.stdin.isatty() else ''
+        cmd = ['docker', 'exec', '-u', user, '-i', self._get_ct_name(container), 'bash', '-c', '--']
+        cmd += ['cd /var/' + self.current_dir_relative + '; exec ' + args]
+        self._verbose('Command : "' + ' '.join(cmd) + '"')
+        subprocess.call(cmd, stdin=sys.stdin)
+
+
     def get_ct_item(self, compose_name: str, item_name: str):
         """Get a value from a container, such as name or IP"""
 
@@ -104,25 +114,11 @@ class StakkrActions():
     def run_mysql(self, args: str):
         """Run a MySQL command from outside. Useful to import an SQL File."""
 
-        self.check_cts_are_running()
-
-        ct_name = self._get_ct_name('mysql')
-
         tty = 't' if sys.stdin.isatty() else ''
         password = self.user_config_main.get('mysql.root_password')
-        cmd = ['docker', 'exec', '-u', 'root', '-i' + tty, ct_name]
-        cmd += ['mysql', '-u', 'root', '-p' + password, args]
-        subprocess.call(cmd, stdin=sys.stdin)
-
-
-    def run_php(self, user: str, args: str):
-        """Run a script or PHP command from outside"""
-
-        self.check_cts_are_running()
-
-        tty = 't' if sys.stdin.isatty() else ''
-        cmd = ['docker', 'exec', '-u', user, '-i' + tty, self._get_ct_name('php'), 'bash', '-c', '--']
-        cmd += ['cd /var/' + self.current_dir_relative + '; exec /usr/bin/php ' + args]
+        cmd = ['docker', 'exec', '-u', 'root', '-i' + tty, self._get_ct_name('mysql')]
+        cmd += ['mysql', '-u', 'root', '-p{}'.format(password), args]
+        print(' '.join(cmd))
         subprocess.call(cmd, stdin=sys.stdin)
 
 
@@ -277,3 +273,12 @@ class StakkrActions():
 
         for service in self.user_config_main.get('services'):
             self._call_service_post_script(service)
+
+
+    def _verbose(self, message: str):
+        if self.context['VERBOSE'] is True:
+            print(colored.green('[VERBOSE]') + ' {}'.format(message))
+
+
+
+
