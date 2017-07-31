@@ -51,7 +51,7 @@ class StakkrActions():
         }
 
         dns_started = docker.container_running('docker_dns')
-        print()
+        print('To access your services:')
         for service, options in sorted(services_to_display.items()):
             ip = docker.get_ct_item(service, 'ip')
             if ip == '':
@@ -114,7 +114,7 @@ class StakkrActions():
 
         try:
             docker.check_cts_are_running(self.project_name, self.config_file)
-            puts(colored.yellow('\n[INFO]') + ' stakkr is already started ...')
+            puts(colored.yellow('[INFO]') + ' stakkr is already started ...')
             sys.exit(0)
         except Exception:
             pass

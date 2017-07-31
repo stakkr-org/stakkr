@@ -34,19 +34,19 @@ def stakkr(ctx, config, debug, verbose):
 
 Valid values for CONTAINER : 'apache', 'mysql' or 'php'""")
 @click.option('--user', '-u', help="User's name. Valid choices : www-data or root",
+              default='www-data',
               type=click.Choice(['www-data', 'root']))
 @click.argument('container', required=True, type=click.Choice(['apache', 'mysql', 'python', 'php']))
 @click.pass_context
 def console(ctx, container: str, user: str):
-    if container in ['php', 'apache'] and user is None:
-        user = 'www-data'
-    elif container not in ['php', 'apache'] and user == 'www-data':
-        user = 'root'
-    elif user is None:
-        user = 'root'
+    cmd_user = None
 
-    stakkr = ctx.obj['STAKKR']
-    stakkr.console(container, user)
+    if container not in ['php', 'apache'] and user == 'www-data':
+        cmd_user = 'root'
+    elif cmd_user is None:
+        cmd_user = user
+
+    ctx.obj['STAKKR'].console(container, cmd_user)
 
 
 @stakkr.command(
@@ -59,16 +59,8 @@ Valid values for ACTION : 'start' or 'stop'""",
 @click.argument('action', required=True, type=click.Choice(['start', 'stop']))
 @click.pass_context
 def dns(ctx, action: str):
-    stakkr = ctx.obj['STAKKR']
-
-    if action == 'start':
-        str_action = 'Starting'
-    elif action == 'stop':
-        str_action = 'Stopping'
-
-    print(click.style('[{}]'.format(str_action).upper(), fg='green') + ' DNS forwarder ...')
-    stakkr.manage_dns(action)
-
+    print(click.style('[{}]'.format(action.upper()), fg='green') + ' DNS forwarder ...')
+    ctx.obj['STAKKR'].manage_dns(action)
 
 
 @stakkr.command(help="""Execute a command into a container.
@@ -79,8 +71,7 @@ Examples:
 - `stakkr exec php php -v` Execute the php binary in the php container with option -v
 - `stakkr exec apache service apache2 restart`
 
-""",
-    context_settings=dict(ignore_unknown_options=True))
+""", context_settings=dict(ignore_unknown_options=True))
 @click.pass_context
 @click.option('--user', '-u', help="User's name. Be careful, each container have its own users.")
 @click.argument('container', required=True)
@@ -104,8 +95,7 @@ You can run any mysql command as root, such as :
 - `cat myfile.sql | stakkr mysql mydb` to import a file from outside to mysql
 
 For scripts, you must use the relative path.
-""",
-    context_settings=dict(ignore_unknown_options=True))
+""", context_settings=dict(ignore_unknown_options=True))
 @click.pass_context
 @click.argument('command', nargs=-1, type=click.UNPROCESSED)
 def mysql(ctx, command: tuple):
@@ -158,28 +148,22 @@ def run(ctx, container: str, user: str, run_args: tuple):
     is_flag=True)
 @click.pass_context
 def start(ctx, pull: bool, recreate: bool):
-    print(click.style('[STARTING]', fg='green') + ' your stakkr services', end='')
-    stakkr = ctx.obj['STAKKR']
-    stakkr.start(pull, recreate)
-    print('Services have been started')
-
-    stakkr.display_services_ports()
+    print(click.style('[STARTING]', fg='green') + ' your stakkr services')
+    ctx.obj['STAKKR'].start(pull, recreate)
+    ctx.obj['STAKKR'].display_services_ports()
 
 
 @stakkr.command(help="Display a list of running containers")
 @click.pass_context
 def status(ctx):
-    stakkr = ctx.obj['STAKKR']
-    stakkr.status()
+    ctx.obj['STAKKR'].status()
 
 
 @stakkr.command(help="Stop the services")
 @click.pass_context
 def stop(ctx):
-    print(click.style('[STOPPING]', fg='yellow') + ' your stakkr services', end='')
-    stakkr = ctx.obj['STAKKR']
-    stakkr.stop()
-    print('Services have been stopped')
+    print(click.style('[STOPPING]', fg='yellow') + ' your stakkr services')
+    ctx.obj['STAKKR'].stop()
 
 
 def debug_mode():
