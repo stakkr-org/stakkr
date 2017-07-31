@@ -21,6 +21,7 @@ def _post_install():
         'home/www-data/bin',
         'logs',
         'plugins',
+        'services',
         'www'
     ]
     for required_dir in required_dirs:

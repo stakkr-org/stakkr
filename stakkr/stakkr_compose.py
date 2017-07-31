@@ -28,7 +28,8 @@ def cli(command, config):
 
     # Services available from base and plugins
     available_services = get_available_services()
-    available_services = add_available_services_from_plugins(available_services)
+    available_services = add_services_from_plugins(available_services)
+    available_services = add_local_services(available_services)
     services = get_enabled_services(configured_services, available_services)
 
     cmd = ['docker-compose', '-f', package_utils.get_file('static', 'docker-compose.yml')] + services
@@ -37,7 +38,7 @@ def cli(command, config):
     Popen(cmd)
 
 
-def add_available_services_from_plugins(available_services: list):
+def add_services_from_plugins(available_services: list):
     from pkg_resources import iter_entry_points
 
     # Override services with plugins
@@ -50,6 +51,18 @@ def add_available_services_from_plugins(available_services: list):
         conf_files = [service for service in os.listdir(services_dir) if service.endswith('.yml')]
         for conf_file in conf_files:
             available_services[conf_file[:-4]] = services_dir + '/' + conf_file
+
+    return available_services
+
+
+def add_local_services(available_services: list):
+    services_dir = package_utils.get_venv_basedir() + '/services'
+    if os.path.isdir(services_dir) is False:
+        return available_services
+
+    conf_files = [service for service in os.listdir(services_dir) if service.endswith('.yml')]
+    for conf_file in conf_files:
+        available_services[conf_file[:-4]] = services_dir + '/' + conf_file
 
     return available_services
 

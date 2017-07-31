@@ -28,12 +28,13 @@ You can define your own network in compose.ini (``subnet`` and ``gateway``).
 Services
 -----------------
 You can define the list of services you want to have. Each service
-consists of a yml file in the ``services/`` directory. Each container
-("Virtual Machine") will have a hostname composed of the project name
-and the service name. To reach, for example, the elasticsearch server
-from a web application, and if your ``project_name = stakkr`` use
-``stakkr_elasticsearch`` or to connect to mysql use ``stakkr_mysql``.
-The service names also works (*elasticsearch* and *mysql*)
+consists of a yml file in the ``services/`` directory of the
+source code. Each container ("Virtual Machine") will have a hostname
+composed of the project name and the service name. To reach, for example,
+the elasticsearch server from a web application, and if your
+``project_name = stakkr`` uses ``stakkr_elasticsearch`` or to connect to
+mysql use ``stakkr_mysql``. The service names also works
+(*elasticsearch* and *mysql*)
 
 .. code:: cfg
 

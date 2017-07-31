@@ -30,6 +30,7 @@ bash_completion
 
 # Plugins
 /plugins
+/services
 
 # ReadTheDocs
 /docs/_build

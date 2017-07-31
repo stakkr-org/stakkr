@@ -66,11 +66,11 @@ class StakkrActions():
 
 
     def exec(self, container: str, user: str, args: str):
-        """Run a script or PHP command from outside"""
+        """Run a command from outside to any container. Wrapped into /bin/sh"""
 
         docker.check_cts_are_running(self.project_name, self.config_file)
 
-        cmd = ['docker', 'exec', '-u', user, '-i', docker.get_ct_name(container), 'bash', '-c', '--']
+        cmd = ['docker', 'exec', '-u', user, '-i', docker.get_ct_name(container), 'sh', '-c', '--']
         cmd += ['cd /var/' + self.current_dir_relative + '; exec ' + args]
         self._verbose('Command : "' + ' '.join(cmd) + '"')
         subprocess.call(cmd, stdin=sys.stdin)
