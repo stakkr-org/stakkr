@@ -133,7 +133,7 @@ class CliTest(unittest.TestCase):
         # Restart
         res = self._exec_cmd(cmd)
         self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], 'RESTARTING.*your stakkr services.*STOPPING.*STARTING.*started.*For Maildev.*')
+        self.assertRegex(res['stdout'], 'RESTARTING.*your stakkr services.*STOPPING.*STARTING.*your stakkr services.*For Maildev.*')
         self.assertIs(res['status'], 0)
 
         # Check it's fine
@@ -156,7 +156,7 @@ class CliTest(unittest.TestCase):
         # Restart
         res = self._exec_cmd(cmd)
         self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], 'RESTARTING.*your stakkr services.*STOPPING.*stopped.*STARTING.*started.*For Maildev.*')
+        self.assertRegex(res['stdout'], 'RESTARTING.*your stakkr services.*STOPPING.*your stakkr services.*STARTING.*your stakkr services.*For Maildev.*')
         self.assertIs(res['status'], 0)
 
         # Check it's fine
@@ -179,7 +179,7 @@ class CliTest(unittest.TestCase):
         # Start
         res = self._exec_cmd(cmd)
         self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], '\[STARTING\].*your stakkr services.*Services have been started.*For Maildev.*')
+        self.assertRegex(res['stdout'], '\[STARTING\].*your stakkr services.*For Maildev.*')
         self.assertIs(res['status'], 0)
 
         # Again ....
@@ -206,7 +206,7 @@ class CliTest(unittest.TestCase):
         # With DNS
         res = self._exec_cmd(self.cmd_base + ['dns', 'start'])
         self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], '.*\[STARTING\].*DNS forwarder.*')
+        self.assertRegex(res['stdout'], '.*\[START\].*DNS forwarder.*')
 
         res = self._exec_cmd(cmd)
         self.assertEqual(res['stderr'], '')
@@ -241,7 +241,7 @@ class CliTest(unittest.TestCase):
         # Stop OK
         res = self._exec_cmd(cmd)
         self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], '\[STOPPING\].*your stakkr services.*Services have been stopped')
+        self.assertRegex(res['stdout'], '\[STOPPING\].*your stakkr services.*')
         self.assertIs(res['status'], 0)
 
         # Stop Error : it has been stopped already
