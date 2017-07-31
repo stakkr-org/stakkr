@@ -65,12 +65,11 @@ def dns(ctx, action: str):
 
 @stakkr.command(help="""Execute a command into a container.
 
-Examples:
-- `stakkr exec mysql env | grep PASS` : to get the password
-- `stakkr exec mysql mysqldump -p mydb > /tmp/backup.sql`\n
-- `stakkr exec php php -v` Execute the php binary in the php container with option -v
-- `stakkr exec apache service apache2 restart`
-
+Examples:\n
+- ``stakkr exec mysql env | grep PASS`` : get mysql password\n
+- ``stakkr exec mysql mysqldump -p mydb > /tmp/backup.sql``\n
+- ``stakkr exec php php -v`` : Execute the php binary in the php container with option -v\n
+- ``stakkr exec apache service apache2 restart``\n
 """, context_settings=dict(ignore_unknown_options=True))
 @click.pass_context
 @click.option('--user', '-u', help="User's name. Be careful, each container have its own users.")
@@ -89,10 +88,10 @@ def exec(ctx, user: str, container: str, command: tuple):
 @stakkr.command(
     help="""`stakkr mysql` is a wrapper for the mysql binary located in the mysql service.
 
-You can run any mysql command as root, such as :
-- `stakkr mysql -e "CREATE DATABASE mydb"` to create a DB from outside
-- `stakkr mysql` to enter the mysql console
-- `cat myfile.sql | stakkr mysql mydb` to import a file from outside to mysql
+You can run any mysql command as root, such as :\n
+- ``stakkr mysql -e "CREATE DATABASE mydb"`` to create a DB from outside\n
+- ``stakkr mysql`` to enter the mysql console\n
+- ``cat myfile.sql | stakkr mysql mydb`` to import a file from outside to mysql\n
 
 For scripts, you must use the relative path.
 """, context_settings=dict(ignore_unknown_options=True))
