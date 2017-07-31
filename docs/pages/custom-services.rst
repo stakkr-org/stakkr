@@ -10,15 +10,17 @@ a yml file into ``services/`` directory.
 
 Write a Service
 -------------------
-A service respect the ``docker-compose`` standard, plus a few customizations
-by ``stakkr``.
+A ``stakkr`` service respects the ``docker-compose`` standard, plus a few customizations.
+
 
 Some rules:
+
 - The ``yaml`` file must be named with the same name than the service
 - That name will help to define the name of the service in ``conf/compose.ini``
 - You are free to add everything you want to ``conf/compose.ini``
 - A configuration parameter such as ``php.ram`` generates an environment
 variable that looks like ``DOCKER_PHP_RAM``.
+
 
 
 Example
