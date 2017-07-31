@@ -75,13 +75,13 @@ def dns(ctx, action: str):
 
 Examples:
 
-- `stakkr exec mysql env | grep PASS` : get mysql password
+- ``stakkr exec mysql env | grep PASS`` : get mysql password
 
-- `stakkr exec mysql mysqldump -p mydb > /tmp/backup.sql`
+- ``stakkr exec mysql mysqldump -p mydb > /tmp/backup.sql``
 
-- `stakkr exec php php -v` : Execute the php binary in the php container with option -v
+- ``stakkr exec php php -v`` : Execute the php binary in the php container with option -v
 
-- `stakkr exec apache service apache2 restart`
+- ``stakkr exec apache service apache2 restart``
 
 """,
     context_settings=dict(ignore_unknown_options=True))
@@ -104,11 +104,11 @@ def exec(ctx, user: str, container: str, command: tuple):
 
 You can run any mysql command as root, such as :
 
-- `stakkr mysql -e "CREATE DATABASE mydb"` to create a DB from outside
+- ``stakkr mysql -e "CREATE DATABASE mydb"`` to create a DB from outside
 
-- `stakkr mysql` to enter the mysql console
+- ``stakkr mysql`` to enter the mysql console
 
-- `cat myfile.sql | stakkr mysql mydb` to import a file from outside to mysql
+- ``cat myfile.sql | stakkr mysql mydb`` to import a file from outside to mysql
 
 
 For scripts, you must use the relative path.
