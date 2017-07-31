@@ -24,6 +24,8 @@ class DockerCleanTest(unittest.TestCase):
 
 
     def test_full_clean(self):
+        # Stop everything
+        Popen('docker stop $(docker ps -a -q)', shell=True, stdout=PIPE, stderr=DEVNULL).communicate()
         # We should have things stored
         Popen(['docker', 'volume', 'create', 'hello'], stdout=PIPE, stderr=DEVNULL).communicate()
         vols = Popen(['docker', 'volume', 'ls'], stdout=PIPE, stderr=DEVNULL).communicate()[0]
