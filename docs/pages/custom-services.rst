@@ -18,8 +18,7 @@ Some rules:
 - The ``yaml`` file must be named with the same name than the service
 - That name will help to define the name of the service in ``conf/compose.ini``
 - You are free to add everything you want to ``conf/compose.ini``
-- A configuration parameter such as ``php.ram`` generates an environment
-variable that looks like ``DOCKER_PHP_RAM``.
+- A configuration parameter such as ``php.ram`` generates an environment variable that looks like ``DOCKER_PHP_RAM``.
 
 
 
