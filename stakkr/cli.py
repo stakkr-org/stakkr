@@ -74,9 +74,13 @@ def dns(ctx, action: str):
 @stakkr.command(help="""Execute a command into a container.
 
 Examples:
-- `stakkr exec mysql env | grep PASS` : to get the password
-- `stakkr exec mysql mysqldump -p mydb > /tmp/backup.sql`\n
-- `stakkr exec php php -v` Execute the php binary in the php container with option -v
+
+- `stakkr exec mysql env | grep PASS` : get mysql password
+
+- `stakkr exec mysql mysqldump -p mydb > /tmp/backup.sql`
+
+- `stakkr exec php php -v` : Execute the php binary in the php container with option -v
+
 - `stakkr exec apache service apache2 restart`
 
 """,
@@ -99,9 +103,13 @@ def exec(ctx, user: str, container: str, command: tuple):
     help="""`stakkr mysql` is a wrapper for the mysql binary located in the mysql service.
 
 You can run any mysql command as root, such as :
+
 - `stakkr mysql -e "CREATE DATABASE mydb"` to create a DB from outside
+
 - `stakkr mysql` to enter the mysql console
+
 - `cat myfile.sql | stakkr mysql mydb` to import a file from outside to mysql
+
 
 For scripts, you must use the relative path.
 """,
