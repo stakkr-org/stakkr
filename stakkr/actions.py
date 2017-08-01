@@ -65,14 +65,16 @@ class StakkrActions():
                 print()
 
 
-    def exec(self, container: str, user: str, args: str):
+    def exec(self, container: str, user: str, args: tuple):
         """Run a command from outside to any container. Wrapped into /bin/sh"""
 
         docker.check_cts_are_running(self.project_name, self.config_file)
 
+        args = ["'{}'".format(arg) for arg in args]
+
         tty = 't' if sys.stdin.isatty() else ''
-        cmd = ['docker', 'exec', '-u', user, '-i' + tty, docker.get_ct_name(container), 'sh', '-c', '--']
-        cmd += ['test -d \'/var/{0}\' && cd \'/var/{0}\' ; exec '.format(self.current_dir_relative) + args]
+        cmd = ['docker', 'exec', '-u', user, '-i' + tty, docker.get_ct_name(container), 'sh', '-c']
+        cmd += ["""test -d "/var/{0}" && cd "/var/{0}" ; exec {1}""".format(self.current_dir_relative, ' '.join(args))]
         self._verbose('Command : "' + ' '.join(cmd) + '"')
         subprocess.call(cmd, stdin=sys.stdin)
 

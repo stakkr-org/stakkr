@@ -82,7 +82,7 @@ def exec(ctx, user: str, container: str, command: tuple):
     if user is None:
         user = users[container] if container in users else 'root'
 
-    ctx.obj['STAKKR'].exec(container, user, ' '.join(command))
+    ctx.obj['STAKKR'].exec(container, user, command)
 
 
 @stakkr.command(
