@@ -1,9 +1,0 @@
-version: '2'
-
-services:
-    bonita:
-        image: bonita:latest
-        container_name: ${COMPOSE_PROJECT_NAME}_bonita
-        hostname: ${COMPOSE_PROJECT_NAME}_bonita
-        networks: [stakkr]
-        links: [mysql]
