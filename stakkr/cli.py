@@ -66,8 +66,7 @@ def dns(ctx, action: str):
 @stakkr.command(help="""Execute a command into a container.
 
 Examples:\n
-- ``stakkr exec mysql env | grep PASS`` : get mysql password\n
-- ``stakkr exec mysql mysqldump -p mydb > /tmp/backup.sql``\n
+- ``stakkr -v exec mysql mysqldump -p'$MYSQL_ROOT_PASSWORD' mydb > /tmp/backup.sql``\n
 - ``stakkr exec php php -v`` : Execute the php binary in the php container with option -v\n
 - ``stakkr exec apache service apache2 restart``\n
 """, context_settings=dict(ignore_unknown_options=True))
@@ -98,7 +97,8 @@ For scripts, you must use the relative path.
 @click.pass_context
 @click.argument('command', nargs=-1, type=click.UNPROCESSED)
 def mysql(ctx, command: tuple):
-    ctx.obj['STAKKR'].run_mysql(' '.join(command))
+    command = ('mysql', '-p$MYSQL_ROOT_PASSWORD') + command
+    ctx.invoke(exec, user='root', container='mysql', command=command)
 
 
 @stakkr.command(help='Required to be launched if you install a new plugin', name="refresh-plugins")

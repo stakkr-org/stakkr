@@ -70,7 +70,7 @@ class StakkrActions():
 
         docker.check_cts_are_running(self.project_name, self.config_file)
 
-        args = ["'{}'".format(arg) for arg in args]
+        args = ['"{}"'.format(arg) for arg in args]
 
         tty = 't' if sys.stdin.isatty() else ''
         cmd = ['docker', 'exec', '-u', user, '-i' + tty, docker.get_ct_name(container), 'sh', '-c']
@@ -94,19 +94,6 @@ class StakkrActions():
 
         puts(colored.red('[ERROR]') + " Can't {} the dns container (already done?)".format(action))
         sys.exit(1)
-
-
-    def run_mysql(self, args: str):
-        """Run a MySQL command from outside. Useful to import an SQL File."""
-
-        docker.check_cts_are_running(self.project_name, self.config_file)
-
-        tty = 't' if sys.stdin.isatty() else ''
-        password = self.user_config_main.get('mysql.root_password')
-        cmd = ['docker', 'exec', '-u', 'root', '-i' + tty, docker.get_ct_name('mysql')]
-        cmd += ['mysql', '-u', 'root', '-p{}'.format(password), args]
-        self._verbose('Command: ' + ' '.join(cmd))
-        subprocess.call(cmd, stdin=sys.stdin)
 
 
     def start(self, pull: bool, recreate: bool):
