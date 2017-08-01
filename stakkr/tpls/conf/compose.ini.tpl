@@ -1,5 +1,5 @@
 [main]
-# Comma separated, valid values: apache / bonita / elasticsearch / mailcatcher / maildev /
+# Comma separated, valid values: apache / elasticsearch / elasticsearch-old / mailcatcher / maildev /
 #                                mongo / mysql / php / phpmyadmin / phyton / redis / xhgui
 # by default: nothing
 # services=apache,php,mysql

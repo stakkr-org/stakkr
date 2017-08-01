@@ -39,7 +39,7 @@ mysql use ``stakkr_mysql``. The service names also works
 .. code:: cfg
 
     # Comma separated list of services to start
-    # Valid values: apache / bonita / elasticsearch / elasticsearch-old / mailcatcher / maildev / mongo /
+    # Valid values: apache / elasticsearch / elasticsearch-old / mailcatcher / maildev / mongo /
     # mysql / php / phpmyadmin / python / redis / xhgui
     services=apache,php,mysql
 
