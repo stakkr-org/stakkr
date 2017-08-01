@@ -10,7 +10,7 @@ from subprocess import Popen
 @click.command(help="Wrapper for docker-compose", context_settings=dict(ignore_unknown_options=True))
 @click.option('--config', '-c', help="Override the conf/compose.ini")
 @click.argument('command', nargs=-1, type=click.UNPROCESSED)
-def cli(command, config):
+def cli(config: str, command):
     config = Config(config)
     user_config_main = config.read()
     if user_config_main is False:
@@ -45,10 +45,11 @@ def add_services_from_plugins(available_services: list):
     for entry in iter_entry_points('stakkr.plugins'):
         plugin_dir = str(entry).split('=')[0].strip()
         services_dir = package_utils.get_venv_basedir() + '/plugins/' + plugin_dir + '/services'
-        if os.path.isdir(services_dir) is False:
+
+        conf_files = _get_services_from_dir(services_dir)
+        if conf_files is []:
             continue
 
-        conf_files = [service for service in os.listdir(services_dir) if service.endswith('.yml')]
         for conf_file in conf_files:
             available_services[conf_file[:-4]] = services_dir + '/' + conf_file
 
@@ -57,10 +58,8 @@ def add_services_from_plugins(available_services: list):
 
 def add_local_services(available_services: list):
     services_dir = package_utils.get_venv_basedir() + '/services'
-    if os.path.isdir(services_dir) is False:
-        return available_services
 
-    conf_files = [service for service in os.listdir(services_dir) if service.endswith('.yml')]
+    conf_files = _get_services_from_dir(services_dir)
     for conf_file in conf_files:
         available_services[conf_file[:-4]] = services_dir + '/' + conf_file
 
@@ -68,11 +67,12 @@ def add_local_services(available_services: list):
 
 
 def get_available_services():
-    servicesdir = package_utils.get_dir('static') + '/services/'
-    conf_files = [service for service in os.listdir(servicesdir) if service.endswith('.yml')]
+    services_dir = package_utils.get_dir('static') + '/services/'
+    conf_files = _get_services_from_dir(services_dir)
+
     services = dict()
     for conf_file in conf_files:
-        services[conf_file[:-4]] = servicesdir + conf_file
+        services[conf_file[:-4]] = services_dir + conf_file
 
     return services
 
@@ -97,6 +97,13 @@ def set_env_values_from_conf(config: list):
     for parameter, value in config.items():
         parameter = 'DOCKER_{}'.format(parameter.replace('.', '_').upper())
         os.environ[parameter] = str(value)
+
+
+def _get_services_from_dir(services_dir: str):
+    if os.path.isdir(services_dir) is False:
+        return []
+
+    return [service for service in os.listdir(services_dir) if service.endswith('.yml')]
 
 
 def _get_uid(uid):
