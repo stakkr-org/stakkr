@@ -70,7 +70,8 @@ class StakkrActions():
 
         docker.check_cts_are_running(self.project_name, self.config_file)
 
-        cmd = ['docker', 'exec', '-u', user, '-i', docker.get_ct_name(container), 'sh', '-c', '--']
+        tty = 't' if sys.stdin.isatty() else ''
+        cmd = ['docker', 'exec', '-u', user, '-i' + tty, docker.get_ct_name(container), 'sh', '-c', '--']
         cmd += ['test -d \'/var/{0}\' && cd \'/var/{0}\' ; exec '.format(self.current_dir_relative) + args]
         self._verbose('Command : "' + ' '.join(cmd) + '"')
         subprocess.call(cmd, stdin=sys.stdin)
