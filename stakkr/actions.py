@@ -253,4 +253,4 @@ class StakkrActions():
 
     def _verbose(self, message: str):
         if self.context['VERBOSE'] is True:
-            print(colored.green('[VERBOSE]') + ' {}'.format(message))
+            print(colored.green('[VERBOSE]') + ' {}'.format(message), file=sys.stderr)
