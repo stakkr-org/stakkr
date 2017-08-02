@@ -1,5 +1,6 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/edyan/stakkr/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/edyan/stakkr/?branch=master)
 [![Build Status](https://travis-ci.org/edyan/stakkr.svg?branch=master)](https://travis-ci.org/edyan/stakkr)
+[![PyPI](https://img.shields.io/pypi/l/stakkr.svg)](https://pypi.python.org/pypi/stakkr)
 
 
 # Stakkr
