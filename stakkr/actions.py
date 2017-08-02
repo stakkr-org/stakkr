@@ -2,10 +2,11 @@ import os
 import sys
 import subprocess
 
-from clint.textui import colored, puts, columns
 from . import command
 from . import docker
 from .configreader import Config
+from clint.textui import colored, puts, columns
+from docker import client as DockerClient
 
 
 class StakkrActions():
@@ -23,6 +24,7 @@ class StakkrActions():
         self.dns_container_name = 'docker_dns'
         self.config_file = ctx['CONFIG']
         self.compose_base_cmd = self._get_compose_base_cmd()
+        self.docker_client = DockerClient.from_env()
 
         # Get info from config
         self.user_config_main = self._get_config()
@@ -83,11 +85,10 @@ class StakkrActions():
         """Starts or stop the DNS forwarder"""
 
         dns_started = docker.container_running(self.dns_container_name)
-
         if dns_started is True and action == 'stop':
-            cmd = ['docker', 'stop', 'docker_dns']
-            command.launch_cmd_displays_output(cmd, self.context['VERBOSE'], self.context['DEBUG'])
-            return
+            dns = self.docker_client.containers.get('docker_dns')
+            return dns.stop()
+
         elif dns_started is False and action == 'start':
             self._docker_run_dns()
             return
@@ -167,9 +168,11 @@ class StakkrActions():
             cmd += ['--network', self.project_name + '_stakkr']
             cmd += ['-v', '/var/run/docker.sock:/tmp/docker.sock', '-v', '/etc/resolv.conf:/tmp/resolv.conf']
             cmd += ['mgood/resolvable']
+            self._verbose('Command : ' + ' '.join(cmd))
             command.launch_cmd_displays_output(cmd, self.context['VERBOSE'], self.context['DEBUG'])
         except Exception as e:
             puts(colored.red('[ERROR]') + " Can't start the DNS, maybe it exists already ?")
+            print('       -> {}'.format(e))
             sys.exit(1)
 
 
