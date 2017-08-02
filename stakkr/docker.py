@@ -1,12 +1,14 @@
 """Docker functions to get info about containers"""
 
-
-from json import loads as json_loads
+import docker
 import subprocess
 
+from json import loads as json_loads
 
-running_cts = 0
+
 cts_info = dict()
+docker_client = docker.APIClient()
+running_cts = 0
 
 
 def check_cts_are_running(project_name: str, config: str = None):
@@ -75,20 +77,18 @@ def _extract_container_info(project_name: str, ct_id: str):
     """Get a hash of info about a container : name, ports, image, ip ..."""
 
     try:
-        result = subprocess.check_output(['docker', 'inspect', ct_id], stderr=subprocess.STDOUT)
-        ct_data = json_loads(result.decode().rstrip('\n'))
-
+        ct_data = docker_client.inspect_container(ct_id)
         ct_info = {
-            'name': ct_data[0]['Name'].lstrip('/'),
-            'compose_name': ct_data[0]['Config']['Labels']['com.docker.compose.service'],
-            'ports': ct_data[0]['Config']['ExposedPorts'].keys() if 'ExposedPorts' in ct_data[0]['Config'] else [],
-            'image': ct_data[0]['Config']['Image'],
-            'ip': _get_ip_from_networks(project_name, ct_data[0]['NetworkSettings']['Networks']),
-            'running': ct_data[0]['State']['Running'],
+            'name': ct_data['Name'].lstrip('/'),
+            'compose_name': ct_data['Config']['Labels']['com.docker.compose.service'],
+            'ports': ct_data['Config']['ExposedPorts'].keys() if 'ExposedPorts' in ct_data['Config'] else [],
+            'image': ct_data['Config']['Image'],
+            'ip': _get_ip_from_networks(project_name, ct_data['NetworkSettings']['Networks']),
+            'running': ct_data['State']['Running']
         }
 
         return ct_info
-    except subprocess.CalledProcessError as e:
+    except Exception as e:
         return None
 
 
@@ -130,13 +130,11 @@ def _container_in_network(container: str, expected_network: str):
     """Returns True if a container is in a network else false. Used by add_container_to_network"""
 
     try:
-        cmd = ['docker', 'inspect', container]
-        result = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        ct_data = docker_client.inspect_container(container)
     except Exception:
         raise SystemError('Container {} does not seem to exist'.format(container))
 
-    ct_data = json_loads(result.decode().rstrip('\n'))
-    for connected_network in ct_data[0]['NetworkSettings']['Networks'].keys():
+    for connected_network in ct_data['NetworkSettings']['Networks'].keys():
         if connected_network == expected_network:
             return True
 
