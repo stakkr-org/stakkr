@@ -1,11 +1,12 @@
 """Docker functions to get info about containers"""
 
-import docker
-import subprocess
+from docker import APIClient, client
+from docker.errors import NotFound
 
 
 cts_info = dict()
-docker_client = docker.APIClient()
+docker_apiclient = APIClient()
+docker_client = client.from_env()
 running_cts = 0
 
 
@@ -24,9 +25,12 @@ def check_cts_are_running(project_name: str, config: str = None):
 def container_running(container: str):
     """Returns True if the container is running else False"""
 
-    ct_data = docker_client.inspect_container(container)
+    try:
+        ct_data = docker_apiclient.inspect_container(container)
 
-    return ct_data['State']['Running']
+        return ct_data['State']['Running']
+    except Exception:
+        return False
 
 
 def get_ct_item(compose_name: str, item_name: str):
@@ -49,21 +53,14 @@ def get_ct_name(ct: str):
 def get_running_containers(project_name: str, config: str = None):
     """Get a list of IDs of running containers for the current stakkr instance"""
 
-    global cts_info
+    filters = {
+        'name': '{}_'.format(project_name),
+        'network': '{}_stakkr'.format(project_name)}
+    cts = docker_client.containers.list(filters=filters)
+    running_cts = len(cts)
 
-    config_params = []
-    if config is not None:
-        config_params = ['-c', config]
-
-    running_cts = 0
-    cts_id = subprocess.check_output(['stakkr-compose'] + config_params + ['ps', '-q'])
-    cts_info = dict()
-    for ct_id in cts_id.splitlines():
-        ct_id = ct_id.decode()
-        cts_info[ct_id] = _extract_container_info(project_name, ct_id)
-
-        if cts_info[ct_id]['running'] is True:
-            running_cts += 1
+    for ct in cts:
+        cts_info[ct.id] = _extract_container_info(project_name, ct.id)
 
     return (running_cts, cts_info)
 
@@ -72,7 +69,7 @@ def _extract_container_info(project_name: str, ct_id: str):
     """Get a hash of info about a container : name, ports, image, ip ..."""
 
     try:
-        ct_data = docker_client.inspect_container(ct_id)
+        ct_data = docker_apiclient.inspect_container(ct_id)
         ct_info = {
             'name': ct_data['Name'].lstrip('/'),
             'compose_name': ct_data['Config']['Labels']['com.docker.compose.service'],
@@ -100,13 +97,18 @@ def _get_ip_from_networks(project_name: str, networks: list):
 def create_network(network: str):
     """Create a Network"""
 
-    if _network_exists(network) is True:
+    if network_exists(network):
         return False
 
-    cmd = ['docker', 'network', 'create', '--driver', 'bridge', network]
-    subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    return docker_client.networks.create(network, driver='bridge').id
 
-    return True
+
+def network_exists(network: str):
+    try:
+        docker_client.networks.get(network)
+        return True
+    except NotFound:
+        return False
 
 
 def add_container_to_network(container: str, network: str):
@@ -115,8 +117,8 @@ def add_container_to_network(container: str, network: str):
     if _container_in_network(container, network) is True:
         return False
 
-    cmd = ['docker', 'network', 'connect', network, container]
-    subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    docker_network = docker_client.networks.get(network)
+    docker_network.connect(container)
 
     return True
 
@@ -125,24 +127,12 @@ def _container_in_network(container: str, expected_network: str):
     """Returns True if a container is in a network else false. Used by add_container_to_network"""
 
     try:
-        ct_data = docker_client.inspect_container(container)
+        ct_data = docker_apiclient.inspect_container(container)
     except Exception:
         raise SystemError('Container {} does not seem to exist'.format(container))
 
     for connected_network in ct_data['NetworkSettings']['Networks'].keys():
         if connected_network == expected_network:
             return True
-
-    return False
-
-
-def _network_exists(network: str):
-    """Returns True if a network exists. Used by create_network"""
-
-    cmd = ['docker', 'network', 'ls', '--filter', 'name={}'.format(network)]
-    result = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-    networks_list = result.decode().splitlines()
-    if len(networks_list) > 1:
-        return True
 
     return False

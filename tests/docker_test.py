@@ -70,7 +70,7 @@ class DockerTest(unittest.TestCase):
             self.assertEqual(ct_info['image'], 'edyan/php:7.0')
 
         self.assertTrue(docker._container_in_network('test_php', 'test_stakkr'))
-        self.assertTrue(docker._network_exists('test_stakkr'))
+        self.assertTrue(docker.network_exists('test_stakkr'))
         self.assertFalse(docker._container_in_network('test_php', 'bridge'))
 
         cmd = ['stakkr-compose', '-c', base_dir + '/static/config_valid.ini', 'stop']
@@ -84,7 +84,7 @@ class DockerTest(unittest.TestCase):
         self._exec_cmd(['stakkr', 'stop'])
         self._exec_cmd(['stakkr', 'dns', 'stop'])
         self._exec_cmd(['docker', 'network', 'rm', 'test_stakkr'])
-        self.assertFalse(docker._network_exists('test_stakkr'))
+        self.assertFalse(docker.network_exists('test_stakkr'))
 
 
     def test_create_network(self):
@@ -96,10 +96,11 @@ class DockerTest(unittest.TestCase):
         try:
             self._exec_cmd(['docker', 'stop', 'pytest'])
             self._exec_cmd(['docker', 'rm', 'pytest'])
+            self._exec_cmd(['docker', 'network', 'prune', '-f'])
         except Exception:
             pass
 
-        if docker._network_exists('nw_pytest'):
+        if docker.network_exists('nw_pytest'):
             self._exec_cmd(['docker', 'network', 'rm', 'nw_pytest'])
 
         cmd = ['docker', 'run', '-d', '--rm', '--name', 'pytest', 'nginx:stable-alpine']
@@ -107,8 +108,12 @@ class DockerTest(unittest.TestCase):
 
         self.assertTrue(docker.container_running('pytest'))
         self.assertFalse(docker._container_in_network('pytest', 'pytest'))
-        self.assertFalse(docker._network_exists('nw_pytest'))
-        self.assertTrue(docker.create_network('nw_pytest'))
+        self.assertFalse(docker.network_exists('nw_pytest'))
+
+        network_created = docker.create_network('nw_pytest')
+        self.assertNotEqual(False, network_created)
+        self.assertIs(str, type(network_created))
+
         self.assertFalse(docker.create_network('nw_pytest'))
         self.assertTrue(docker.add_container_to_network('pytest', 'nw_pytest'))
         self.assertFalse(docker.add_container_to_network('pytest', 'nw_pytest'))
@@ -119,7 +124,7 @@ class DockerTest(unittest.TestCase):
         except Exception:
             pass
 
-        if docker._network_exists('nw_pytest'):
+        if docker.network_exists('nw_pytest'):
             self._exec_cmd(['docker', 'network', 'rm', 'nw_pytest'])
 
 
