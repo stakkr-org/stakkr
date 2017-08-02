@@ -3,8 +3,6 @@
 import docker
 import subprocess
 
-from json import loads as json_loads
-
 
 cts_info = dict()
 docker_client = docker.APIClient()
@@ -23,15 +21,12 @@ def check_cts_are_running(project_name: str, config: str = None):
     return (running_cts, cts_info)
 
 
-def container_running(name: str):
+def container_running(container: str):
     """Returns True if the container is running else False"""
 
-    cmd = ['docker', 'inspect', '-f', '{{.State.Running}}', name]
-    try:
-        result = subprocess.check_output(cmd, stderr=subprocess.STDOUT).splitlines()[0]
-        return False if result.decode() == 'false' else True
-    except subprocess.CalledProcessError as e:
-        return False
+    ct_data = docker_client.inspect_container(container)
+
+    return ct_data['State']['Running']
 
 
 def get_ct_item(compose_name: str, item_name: str):
