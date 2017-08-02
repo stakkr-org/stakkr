@@ -2,8 +2,7 @@ import os
 import sys
 import subprocess
 
-from . import command
-from . import docker
+from . import command, docker, package_utils
 from .configreader import Config
 from clint.textui import colored, puts, columns
 from docker import client as DockerClient
@@ -53,7 +52,7 @@ class StakkrActions():
         }
 
         dns_started = docker.container_running('docker_dns')
-        print('To access your services:')
+        print()
         for service, options in sorted(services_to_display.items()):
             ip = docker.get_ct_item(service, 'ip')
             if ip == '':
@@ -155,7 +154,7 @@ class StakkrActions():
 
 
     def _call_service_post_script(self, service: str):
-        service_script = 'services/' + service + '.sh'
+        service_script = package_utils.get_file('static', 'services/{}.sh'.format(service))
         if os.path.isfile(service_script) is True:
             cmd = ['bash', service_script, docker.get_ct_item(service, 'name')]
             subprocess.call(cmd)
