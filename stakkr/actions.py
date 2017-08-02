@@ -157,7 +157,9 @@ class StakkrActions():
     def _call_service_post_script(self, service: str):
         service_script = 'services/' + service + '.sh'
         if os.path.isfile(service_script) is True:
-            subprocess.call(['bash', service_script, docker.get_ct_item(service, 'name')])
+            cmd = ['bash', service_script, docker.get_ct_item(service, 'name')]
+            subprocess.call(cmd)
+            self._verbose('Service Script : ' + ' '.join(cmd))
 
 
     def _docker_run_dns(self):
