@@ -106,18 +106,18 @@ def _get_services_from_dir(services_dir: str):
     return [service for service in os.listdir(services_dir) if service.endswith('.yml')]
 
 
-def _get_uid(uid):
+def _get_uid(uid: int):
     if uid is not None:
         return str(uid)
 
-    return 1000 if os.name == 'nt' else str(os.getuid())
+    return '1000' if os.name == 'nt' else str(os.getuid())
 
 
-def _get_gid(gid):
+def _get_gid(gid: int):
     if gid is not None:
         return str(gid)
 
-    return 1000 if os.name == 'nt' else str(os.getgid())
+    return '1000' if os.name == 'nt' else str(os.getgid())
 
 
 if __name__ == '__main__':
