@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Clean unused containers, images, volumes and networks
 That saves a lot of space ... should be removed later by "docker ***** prune
@@ -16,7 +16,7 @@ from subprocess import Popen, DEVNULL, PIPE, STDOUT
 @click.option('--force', '-f', help="Do it", is_flag=True)
 @click.option('--verbose', '-v', help="Display more information about what is removed", is_flag=True)
 def clean(force: bool, verbose: bool):
-    print(click.style('Clean Docker stopped containers, images, volumes and networks', fg='green'))
+    click.secho('Clean Docker stopped containers, images, volumes and networks', fg='green')
 
     remove_containers(force, verbose)
     print()
@@ -27,9 +27,9 @@ def clean(force: bool, verbose: bool):
     remove_networks(force, verbose)
 
     if force is False:
-        print(click.style("\n--force is not set so I won't do anything\n", fg='red'))
+        click.secho("\n--force is not set so I won't do anything\n", fg='red')
 
-    print(click.style('Done', fg='green'))
+    click.secho('Done', fg='green')
 
 
 def remove_containers(force: bool, verbose: bool):
@@ -109,7 +109,7 @@ def _prune_images():
     try:
         _exec_cmd(['docker', 'image', 'prune', '--all', '--force'])
     except Exception as e:
-        print(click.style('Error removing images'), fg='red')
+        click.secho('Error removing images', fg='red')
 
 
 def _remove_entry(entry_type: str, entry: str, force: bool):
@@ -123,7 +123,7 @@ def _remove_entry(entry_type: str, entry: str, force: bool):
         _exec_cmd(base_cmd + ['rm', entry])
     except Exception as e:
         output = e.output.decode()
-        print(click.style('Error removing a {}: {}'.format(entry_type, output), fg='red'))
+        click.secho('Error removing a {}: {}'.format(entry_type, output), fg='red')
 
 
 def main():
@@ -140,7 +140,7 @@ def main():
 """, fg='yellow')
         msg += click.style('{}'.format(e), fg='red')
 
-        print(msg)
+        click.echo(msg)
         print()
         # raise e
         sys.exit(1)
