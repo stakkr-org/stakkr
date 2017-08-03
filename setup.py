@@ -7,6 +7,10 @@ from stakkr.setup import StakkrPostInstall
 here = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, here)
 
+extra_packages = []
+if os.name == 'nt':
+    extra_packages.append('pypiwin32')
+
 
 setup(
     name='stakkr',
@@ -89,9 +93,8 @@ stakkr-compose=stakkr.stakkr_compose:cli''',
         'click', 'click-plugins',
         'docker', 'docker-compose',
         'configobj',
-        'requests>=2.11.0,<2.12',
-        'pypiwin32'
-        ],
+        'requests>=2.11.0,<2.12'
+        ] + extra_packages,
     cmdclass={'install': StakkrPostInstall},
     classifiers=[
       'Development Status :: 4 - Beta',
