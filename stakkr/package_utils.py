@@ -4,7 +4,7 @@ stakkr is installed as a package or directly cloned"""
 
 import os
 
-from distutils.sysconfig import get_python_lib
+from distutils.sysconfig import get_config_vars, get_python_lib
 
 
 def get_venv_basedir():
@@ -14,7 +14,7 @@ def get_venv_basedir():
         import virtualenv
         raise EnvironmentError("You must be in a virtual environment")
     except Exception:
-        return os.path.abspath(get_python_lib() + '/../../../../')
+        return os.path.abspath(get_config_vars()['exec_prefix'] + '/../')
 
 
 def get_dir(dirname: str):

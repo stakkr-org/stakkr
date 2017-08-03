@@ -89,7 +89,8 @@ stakkr-compose=stakkr.stakkr_compose:cli''',
         'click', 'click-plugins',
         'docker', 'docker-compose',
         'configobj',
-        'requests>=2.11.0,<2.12'
+        'requests>=2.11.0,<2.12',
+        'pypiwin32'
         ],
     cmdclass={'install': StakkrPostInstall},
     classifiers=[
