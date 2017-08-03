@@ -42,10 +42,10 @@ def get_ct_item(compose_name: str, item_name: str):
     return ''
 
 
-def get_ct_name(ct: str):
-    ct_name = get_ct_item(ct, 'name')
+def get_ct_name(container: str):
+    ct_name = get_ct_item(container, 'name')
     if ct_name == '':
-        raise Exception('{} does not seem to be started ...'.format(ct))
+        raise Exception('{} does not seem to be started ...'.format(container))
 
     return ct_name
 

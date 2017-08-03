@@ -2,8 +2,7 @@ import os
 import sys
 import subprocess
 
-from . import command
-from . import docker
+from . import command, docker, package_utils
 from .configreader import Config
 from clint.textui import colored, puts, columns
 from docker import client as DockerClient
@@ -11,6 +10,15 @@ from docker import client as DockerClient
 
 class StakkrActions():
     """Main class that does actions asked in the cli"""
+
+    _services_to_display = {
+        'apache': {'name': 'Web Server', 'url': 'http://{}'},
+        'mailcatcher': {'name': 'Mailcatcher (fake SMTP)', 'url': 'http://{}', 'extra_port': 25},
+        'maildev': {'name': 'Maildev (Fake SMTP)', 'url': 'http://{}', 'extra_port': 25},
+        'phpmyadmin': {'name': 'PhpMyAdmin', 'url': 'http://{}'},
+        'xhgui': {'name': 'XHGui (PHP Profiling)', 'url': 'http://{}'}
+    }
+
 
     def __init__(self, base_dir: str, ctx: dict):
         # Work with directories and move to the right place
@@ -37,34 +45,29 @@ class StakkrActions():
         docker.check_cts_are_running(self.project_name, self.config_file)
 
         ct_name = docker.get_ct_name(ct)
-        tty = 't' if sys.stdin.isatty() else ''
-        subprocess.call(['docker', 'exec', '-u', user, '-i' + tty, ct_name, 'env', 'TERM=xterm', 'bash'])
+        subprocess.call(['docker', 'exec', '-u', user, '-it', ct_name, 'env', 'TERM=xterm', 'bash'])
 
 
-    def display_services_ports(self):
+    def get_services_ports(self):
         """Once started, stakkr displays a message with the list of launched containers."""
 
-        services_to_display = {
-            'apache': {'name': 'Web Server', 'url': 'http://{}'},
-            'mailcatcher': {'name': 'Mailcatcher (fake SMTP)', 'url': 'http://{}', 'extra_port': 25},
-            'maildev': {'name': 'Maildev (Fake SMTP)', 'url': 'http://{}', 'extra_port': 25},
-            'phpmyadmin': {'name': 'PhpMyAdmin', 'url': 'http://{}'},
-            'xhgui': {'name': 'XHGui (PHP Profiling)', 'url': 'http://{}'}
-        }
-
         dns_started = docker.container_running('docker_dns')
-        print('To access your services:')
-        for service, options in sorted(services_to_display.items()):
-            ip = docker.get_ct_item(service, 'ip')
-            if ip == '':
+
+        running_cts, cts = docker.get_running_containers(self.project_name, self.config_file)
+
+        text = ''
+        for ct, ct_info in cts.items():
+            if ct_info['compose_name'] not in self._services_to_display:
                 continue
 
-            url = self._get_url(options['url'], service, dns_started)
-            puts('  - For {}'.format(colored.yellow(options['name'])).ljust(55, ' ') + ' : ' + url)
+            options = self._services_to_display[ct_info['compose_name']]
+            url = self._get_url(options['url'], ct_info['compose_name'], dns_started)
+            text += '  - For {}'.format(colored.yellow(options['name'])).ljust(55, ' ') + ' : ' + url + '\n'
 
             if 'extra_port' in options:
-                puts(' '*3 + ' ... in your containers use the port {}'.format(options['extra_port']))
-                print()
+                text += ' '*3 + ' ... in your containers use the port {}\n'.format(options['extra_port'])
+
+        return text
 
 
     def exec(self, container: str, user: str, args: tuple):
@@ -155,7 +158,7 @@ class StakkrActions():
 
 
     def _call_service_post_script(self, service: str):
-        service_script = 'services/' + service + '.sh'
+        service_script = package_utils.get_file('static', 'services/{}.sh'.format(service))
         if os.path.isfile(service_script) is True:
             cmd = ['bash', service_script, docker.get_ct_item(service, 'name')]
             subprocess.call(cmd)
@@ -254,4 +257,4 @@ class StakkrActions():
 
     def _verbose(self, message: str):
         if self.context['VERBOSE'] is True:
-            print(colored.green('[VERBOSE]') + ' {}'.format(message))
+            print(colored.green('[VERBOSE]') + ' {}'.format(message), file=sys.stderr)

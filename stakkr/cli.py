@@ -36,7 +36,7 @@ Valid values for CONTAINER : 'apache', 'mysql' or 'php'""")
 @click.option('--user', '-u', help="User's name. Valid choices : www-data or root",
               default='www-data',
               type=click.Choice(['www-data', 'root']))
-@click.argument('container', required=True, type=click.Choice(['apache', 'mysql', 'python', 'php']))
+@click.argument('container', required=True)
 @click.pass_context
 def console(ctx, container: str, user: str):
     cmd_user = None
@@ -149,7 +149,14 @@ def run(ctx, container: str, user: str, run_args: tuple):
 def start(ctx, pull: bool, recreate: bool):
     print(click.style('[STARTING]', fg='green') + ' your stakkr services')
     ctx.obj['STAKKR'].start(pull, recreate)
-    ctx.obj['STAKKR'].display_services_ports()
+    services_ports = ctx.obj['STAKKR'].get_services_ports()
+    if services_ports == '':
+        print('\nServices Status:')
+        ctx.invoke(status)
+        return
+
+    print('\nServices URLs :')
+    print(services_ports)
 
 
 @stakkr.command(help="Display a list of running containers")
