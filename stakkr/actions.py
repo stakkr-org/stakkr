@@ -125,6 +125,7 @@ class StakkrActions():
         if self.running_cts is 0:
             raise SystemError("Couldn't start the containers, run the start with '-v' and '-d'")
 
+        self._patch_oses()
         self._run_services_post_scripts()
 
 
@@ -209,6 +210,29 @@ class StakkrActions():
         name = docker.get_ct_name(service) if dns_started else docker.get_ct_item(service, 'ip')
 
         return service_url.format(name)
+
+
+    def _patch_oses(self):
+        """For Windows we need to do a few manipulations to be able to access
+        our dev environment from the host ...
+
+        Found here: https://github.com/docker/for-win/issues/221#issuecomment-270576243"""
+
+        if os.name not in ['nt']:
+            return
+
+        msg = 'As you are under windows we need to create a route for the network to work ...'
+        puts(colored.yellow(msg))
+
+        self.docker_client.containers.run(
+            'justincormack/nsenter1', remove=True, tty=True, privileged=True, network_mode='none',
+            pid_mode='host', command='bin/sh -c "iptables -A FORWARD -j ACCEPT"')
+
+        network_info = self.docker_client.networks.get(self.project_name.replace('-', '') + '_stakkr').attrs
+        subnet = network_info['IPAM']['Config'][0]['Subnet'].split('/')[0]
+        print('Creating route with {} : '.format(subnet), end='')
+        subprocess.check_output(['route', 'delete', subnet])
+        subprocess.call(['route', 'add', subnet, 'MASK', '255.255.255.0', '10.0.75.2'])
 
 
     def _print_status_headers(self, dns_started: bool):

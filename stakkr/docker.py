@@ -55,7 +55,8 @@ def get_running_containers(project_name: str, config: str = None):
 
     filters = {
         'name': '{}_'.format(project_name),
-        'network': '{}_stakkr'.format(project_name)}
+        'network': '{}_stakkr'.format(project_name).replace('-', '')}
+
     cts = docker_client.containers.list(filters=filters)
     running_cts = len(cts)
 
@@ -87,6 +88,7 @@ def _extract_container_info(project_name: str, ct_id: str):
 def _get_ip_from_networks(project_name: str, networks: list):
     """Get a list of IPs for a network"""
 
+    project_name = project_name.replace('-', '')
     network_settings = {}
     if '{}_stakkr'.format(project_name) in networks:
         network_settings = networks['{}_stakkr'.format(project_name)]
