@@ -70,6 +70,7 @@ It'll run a `post_install` script that copy some templates / create base directo
 If you want to install the dev version, you can do the following :
 
 .. code:: shell
+
     $ pip install git+https://github.com/edyan/stakkr.git
 
 
