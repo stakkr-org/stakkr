@@ -231,7 +231,6 @@ class StakkrActions():
         network_info = self.docker_client.networks.get(self.project_name.replace('-', '') + '_stakkr').attrs
         subnet = network_info['IPAM']['Config'][0]['Subnet'].split('/')[0]
         print('Creating route for {} : '.format(subnet), end='')
-        subprocess.call(['route', 'delete', subnet])
         subprocess.call(['route', 'add', subnet, 'MASK', '255.255.255.0', '10.0.75.2'])
 
 
