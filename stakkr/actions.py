@@ -228,9 +228,10 @@ class StakkrActions():
             pid_mode='host', command='bin/sh -c "iptables -A FORWARD -j ACCEPT"')
 
         subnet = docker.get_subnet(self.project_name)
-        msg = 'As you are under windows we need to create a route for the network {} to work...'
-        click.secho(msg.format(subnet), fg='yellow', nl=False)
-        subprocess.call(['route', 'add', subnet, 'MASK', '255.255.255.0', '10.0.75.2'])
+        switch_ip = docker.get_switch_ip()
+        msg = 'We need to create a route for the network {} via {} to work...'
+        click.secho(msg.format(subnet, switch_ip), fg='yellow', nl=False)
+        subprocess.call(['route', 'add', subnet, 'MASK', '255.255.255.0', switch_ip])
         print()
 
 

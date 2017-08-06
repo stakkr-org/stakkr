@@ -111,6 +111,22 @@ def get_subnet(project_name: str):
     return network_info['IPAM']['Config'][0]['Subnet'].split('/')[0]
 
 
+def get_switch_ip():
+    import socket
+    from subprocess import check_output
+
+    cmd = r"""/bin/sh -c "ip addr show hvint0 | grep -oE '([0-9]{1,3}\.){3}[0-9]{1,3}'" """
+    res = docker_client.containers.run(
+        'alpine', remove=True, tty=True, privileged=True, network_mode='host', pid_mode='host', command=cmd)
+    ip = res.strip().decode()
+
+    try:
+        socket.inet_aton(ip)
+        return ip
+    except socket.error:
+        raise ValueError('{} is not a valid ip, check docker is running')
+
+
 def network_exists(network: str):
     try:
         docker_client.networks.get(network)
