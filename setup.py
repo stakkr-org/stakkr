@@ -14,7 +14,7 @@ if os.name == 'nt':
 
 setup(
     name='stakkr',
-    version='3.2.3',
+    version='3.3',
     description='A configurable stack based on docker to run any combination of services (PHP, MySQL, Apache, Nginx, Mongo, etc..)',
     long_description=""".. image:: https://raw.githubusercontent.com/edyan/stakkr/master/docs/stakkr-logo.png
     :width: 200px
