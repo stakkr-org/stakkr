@@ -103,7 +103,7 @@ class CliTest(unittest.TestCase):
         # Check for PHP Version
         cmd = self.cmd_base + ['exec', 'php', 'php', '-v']
         res = self._exec_cmd(cmd)
-        self.assertRegex(res['stdout'], '.*The PHP GroupZend Engine.*')
+        self.assertRegex(res['stdout'], '.*The PHP Group.*', 'stderr was : ' + res['stderr'])
         self.assertEqual(res['stderr'], '')
         self.assertIs(res['status'], 0)
 
@@ -204,17 +204,18 @@ class CliTest(unittest.TestCase):
         self.assertIs(res['status'], 0)
 
         # With DNS
-        res = self._exec_cmd(self.cmd_base + ['dns', 'start'])
-        self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], '.*\[START\].*DNS forwarder.*')
+        if os.name not in ['nt']:
+            res = self._exec_cmd(self.cmd_base + ['dns', 'start'])
+            self.assertEqual(res['stderr'], '')
+            self.assertRegex(res['stdout'], '.*\[START\].*DNS forwarder.*')
 
-        res = self._exec_cmd(cmd)
-        self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], '.*Container\s*HostName\s*Ports\s*Image.*')
-        self.assertNotRegex(res['stdout'], '.*192.168.*')
-        self.assertRegex(res['stdout'], '.*test_maildev.*')
-        self.assertRegex(res['stdout'], '.*test_php.*')
-        self.assertIs(res['status'], 0)
+            res = self._exec_cmd(cmd)
+            self.assertEqual(res['stderr'], '')
+            self.assertRegex(res['stdout'], '.*Container\s*HostName\s*Ports\s*Image.*')
+            self.assertNotRegex(res['stdout'], '.*192.168.*')
+            self.assertRegex(res['stdout'], '.*test_maildev.*')
+            self.assertRegex(res['stdout'], '.*test_php.*')
+            self.assertIs(res['status'], 0)
 
         self._exec_cmd(self.cmd_base + ['stop'])
 
@@ -261,7 +262,6 @@ class CliTest(unittest.TestCase):
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = p.communicate()
         status = p.returncode
-
         stdout = stdout.decode().strip().replace('\n', '')
         stderr = stderr.decode().strip().replace('\n', '')
 

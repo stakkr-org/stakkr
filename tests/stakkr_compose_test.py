@@ -25,12 +25,12 @@ class StakkrComposeTest(unittest.TestCase):
 
 
     def test_get_uid(self):
-        uid = str(os.getuid())
+        uid = '1000' if os.name == 'nt' else str(os.getuid())
         self.assertEqual(sc._get_uid(None), uid)
 
 
     def test_get_gid(self):
-        gid = str(os.getgid())
+        gid = '1000' if os.name == 'nt' else str(os.getgid())
         self.assertEqual(sc._get_gid(None), gid)
 
 
