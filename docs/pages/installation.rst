@@ -35,12 +35,13 @@ Stakkr is usable as a library, it's clean, you have a very beautiful tree
 once installed, and it's **recommended**. You can install as many stakkrs that you need.
 Just be careful to set different names and networks in `conf/compose.ini`
 
-Installation :
+1.1 Installation under Linux
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: shell
 
-    $ mkdir myenv
-    $ cd myenv
+    $ mkdir mydev
+    $ cd mydev
     $ virtualenv -p /usr/bin/python3 ${PWD##*/}_stakkr
     $ source ${PWD##*/}_stakkr/bin/activate
     $ pip install stakkr
@@ -48,7 +49,25 @@ Installation :
 It'll run a `post_install` script that copy some templates / create base directories to work.
 
 
-If you want to install the dev version, you can do the following : 
+1.2 Installation under Windows
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: shell
+
+    > mkdir mydev
+    > cd mydev
+    > virtualenv venv
+    > venv\Scripts\activate
+    > pip install stakkr
+
+
+.. WARNING::
+	There are known limitations under windows : First the DNS won't work and Second, `stakkr` has to create a route and change a few parameters inside MobyLinux.
+
+
+1.3 Development version
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If you want to install the dev version, you can do the following :
 
 .. code:: shell
     $ pip install git+https://github.com/edyan/stakkr.git

@@ -52,6 +52,7 @@ def console(ctx, container: str, user: str):
 @stakkr.command(
     help="""Start or Stop the DNS forwarder.
 Only one DNS Forwarded by host is possible. Done with mgood/resolvable.
+Also, that is completely useless under Windows as we can't mount /etc/resolv.conf
 
 Valid values for ACTION : 'start' or 'stop'""",
     name="dns"
