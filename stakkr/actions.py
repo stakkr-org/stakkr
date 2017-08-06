@@ -1,3 +1,4 @@
+import click
 import os
 import sys
 import subprocess
@@ -125,7 +126,7 @@ class StakkrActions():
         if self.running_cts is 0:
             raise SystemError("Couldn't start the containers, run the start with '-v' and '-d'")
 
-        self._patch_oses()
+        self._patch_oses_start()
         self._run_services_post_scripts()
 
 
@@ -152,6 +153,7 @@ class StakkrActions():
 
         docker.check_cts_are_running(self.project_name, self.config_file)
         command.launch_cmd_displays_output(self.compose_base_cmd + ['stop'], verb, debug, True)
+        self._patch_oses_stop()
 
         self.running_cts, self.cts = docker.get_running_containers(self.project_name, self.config_file)
         if self.running_cts is not 0:
@@ -212,7 +214,7 @@ class StakkrActions():
         return service_url.format(name)
 
 
-    def _patch_oses(self):
+    def _patch_oses_start(self):
         """For Windows we need to do a few manipulations to be able to access
         our dev environment from the host ...
 
@@ -221,17 +223,27 @@ class StakkrActions():
         if os.name not in ['nt']:
             return
 
-        msg = 'As you are under windows we need to create a route for the network to work ...'
-        puts(colored.yellow(msg))
-
         self.docker_client.containers.run(
             'justincormack/nsenter1', remove=True, tty=True, privileged=True, network_mode='none',
             pid_mode='host', command='bin/sh -c "iptables -A FORWARD -j ACCEPT"')
 
-        network_info = self.docker_client.networks.get(self.project_name.replace('-', '') + '_stakkr').attrs
-        subnet = network_info['IPAM']['Config'][0]['Subnet'].split('/')[0]
-        print('Creating route for {} : '.format(subnet), end='')
+        subnet = docker.get_subnet(self.project_name)
+        msg = 'As you are under windows we need to create a route for the network {} to work...'
+        click.secho(msg.format(subnet), fg='yellow', nl=False)
         subprocess.call(['route', 'add', subnet, 'MASK', '255.255.255.0', '10.0.75.2'])
+        print()
+
+
+    def _patch_oses_stop(self):
+        """Opposite action than _patch_oses_start()"""
+
+        if os.name not in ['nt']:
+            return
+
+        subnet = docker.get_subnet(self.project_name)
+        click.secho("Let's remove the route that has been added for {}...".format(subnet), fg='yellow', nl=False)
+        subprocess.call(['route', 'delete', subnet])
+        print()
 
 
     def _print_status_headers(self, dns_started: bool):
@@ -271,7 +283,7 @@ class StakkrActions():
         """
 
         if os.name == 'nt':
-            puts(colored.red('Could not run service post scripts under Windows'))
+            click.secho('Could not run service post scripts under Windows', fg='red')
             return
 
         for service in self.user_config_main.get('services'):

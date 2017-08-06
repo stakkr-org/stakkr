@@ -105,6 +105,12 @@ def create_network(network: str):
     return docker_client.networks.create(network, driver='bridge').id
 
 
+def get_subnet(project_name: str):
+    network_info = docker_client.networks.get(project_name.replace('-', '') + '_stakkr').attrs
+
+    return network_info['IPAM']['Config'][0]['Subnet'].split('/')[0]
+
+
 def network_exists(network: str):
     try:
         docker_client.networks.get(network)
