@@ -284,6 +284,9 @@ class StakkrActions():
 
         block_config = self.config['network-block']
         for service, ports in block_config.items():
+            if docker.container_running(service) is False:
+                return
+            
             self._verbose('Blocking ports {} on container {}'.format(', '.join(ports), service))
             if docker.block_ct_ports(service, ports, self.project_name) is False:
                 click.secho("Can't block ports on {}, is iptables installed ?".format(service), fg='red')
