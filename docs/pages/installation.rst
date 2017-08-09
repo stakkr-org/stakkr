@@ -69,7 +69,7 @@ docker from https://docs.docker.com/docker-for-windows/install/
 	There are known limitations under windows : First the DNS won't work and Second, `stakkr` has to create a route and change a few parameters inside MobyLinux.
 
 
-1.2 Installation under MacOSX
+1.3 Installation under MacOSX
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 First install python3 from https://www.python.org/downloads/mac-osx/ (3.6 is ok) and
