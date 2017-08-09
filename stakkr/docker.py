@@ -11,25 +11,26 @@ docker_client = client.from_env()
 running_cts = 0
 
 
-def block_ct_ports(service: str, ports: list, project_name: str):
-    ct = docker_client.containers.get(get_ct_item(service, 'id'))
+def block_ct_ports(service: str, ports: list, project_name: str) -> tuple:
+    try:
+        ct = docker_client.containers.get(get_ct_item(service, 'id'))
+    except Exception:
+        return (False, '{} is not started, no port to block'.format(service))
+
     iptables = ct.exec_run(['which', 'iptables']).decode().strip()
     if iptables == '':
-        return False
+        return (True, "Can't block ports on {}, is iptables installed ?".format(service))
 
-    subnet = get_subnet(project_name) + '/24'
-    # Allow internal network
-    try:
-        ct.exec_run([iptables, '-D', 'OUTPUT', '-d', subnet, '-j', 'ACCEPT'])
-    finally:
-        ct.exec_run([iptables, '-A', 'OUTPUT', '-d', subnet, '-j', 'ACCEPT'])
-
+    _allow_contact_subnet(project_name, ct)
+    
     # Now for each port, add an iptable rule
     for port in ports:
         try:
             ct.exec_run([iptables, '-D', 'OUTPUT', '-p', 'tcp', '--dport', port, '-j', 'REJECT'])
         finally:
             ct.exec_run([iptables, '-A', 'OUTPUT', '-p', 'tcp', '--dport', port, '-j', 'REJECT'])
+
+    return (False, 'Blocked ports {} on container {}'.format(', '.join(ports), service))
 
 
 def check_cts_are_running(project_name: str, config: str = None):
@@ -175,6 +176,19 @@ def add_container_to_network(container: str, network: str):
     docker_network.connect(container)
 
     return True
+
+
+def _allow_contact_subnet(project_name: str, ct) -> None:
+    iptables = ct.exec_run(['which', 'iptables']).decode().strip()
+    if iptables == '':
+        return False
+
+    subnet = get_subnet(project_name) + '/24'
+    # Allow internal network
+    try:
+        ct.exec_run([iptables, '-D', 'OUTPUT', '-d', subnet, '-j', 'ACCEPT'])
+    finally:
+        ct.exec_run([iptables, '-A', 'OUTPUT', '-d', subnet, '-j', 'ACCEPT'])
 
 
 def _container_in_network(container: str, expected_network: str):
