@@ -18,3 +18,6 @@ services:
             - ${COMPOSE_BASE_DIR}/conf/php-fpm-override:/etc/php5/fpm/user-conf.d
             - ${COMPOSE_BASE_DIR}/conf/php-fpm-override:/etc/php/7.0/fpm/user-conf.d
             - ${COMPOSE_BASE_DIR}/conf/php-fpm-override:/etc/php/7.1/fpm/user-conf.d
+        cap_add:
+          - NET_ADMIN
+          - NET_RAW

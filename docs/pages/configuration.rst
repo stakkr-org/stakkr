@@ -4,7 +4,10 @@ Configuration
 Copy the file ``conf/compose.ini.tpl`` to ``conf/compose.ini`` and set
 the right Configuration parameters. The config validation is defined in configspec.ini
 
-Everything should be defined in the ``[main]`` section.
+Main configuration parameters should be defined in the ``[main]`` section.
+Another section (``[network-block]``) has been created to define TCP ports to block for outgoing
+requests.
+
 
 .. WARNING::
    Don't use double quotes to protect your values.
@@ -88,6 +91,15 @@ Memory assigned to the VMS:
     php.ram=512M
 
 .. _documentation: https://github.com/edyan/docker-xhgui
+
+
+Port Blocking: by default, we can block ports only for the PHP container (as iptables is installed).
+Define in a list what port you want to **block for OUTPUT TCP requests**. That has been done to
+avoid mistakes such as using a production database and send a lot of emails ...
+
+.. code:: ini
+    [network-block]
+    php=25, 465, 587
 
 
 

@@ -11,6 +11,27 @@ docker_client = client.from_env()
 running_cts = 0
 
 
+def block_ct_ports(service: str, ports: list, project_name: str):
+    ct = docker_client.containers.get(get_ct_item(service, 'id'))
+    iptables = ct.exec_run(['which', 'iptables']).decode().strip()
+    if iptables == '':
+        return False
+
+    subnet = get_subnet(project_name) + '/24'
+    # Allow internal network
+    try:
+        ct.exec_run([iptables, '-D', 'OUTPUT', '-d', subnet, '-j', 'ACCEPT'])
+    finally:
+        ct.exec_run([iptables, '-A', 'OUTPUT', '-d', subnet, '-j', 'ACCEPT'])
+
+    # Now for each port, add an iptable rule
+    for port in ports:
+        try:
+            ct.exec_run([iptables, '-D', 'OUTPUT', '-p', 'tcp', '--dport', port, '-j', 'REJECT'])
+        finally:
+            ct.exec_run([iptables, '-A', 'OUTPUT', '-p', 'tcp', '--dport', port, '-j', 'REJECT'])
+
+
 def check_cts_are_running(project_name: str, config: str = None):
     """Throws an error if cts are not running"""
 
@@ -36,6 +57,10 @@ def container_running(container: str):
 
 def get_ct_item(compose_name: str, item_name: str):
     """Get a value from a container, such as name or IP"""
+
+    if len(cts_info) is 0:
+        raise RuntimeError('Before getting an info from a ct, run check_cts_are_running()')
+
     for ct_id, ct_data in cts_info.items():
         if ct_data['compose_name'] == compose_name:
             return ct_data[item_name]
@@ -119,7 +144,6 @@ def get_subnet(project_name: str):
 
 def get_switch_ip():
     import socket
-    from subprocess import check_output
 
     cmd = r"""/bin/sh -c "ip addr show hvint0 | grep -oE '([0-9]{1,3}\.){3}[0-9]{1,3}'" """
     res = docker_client.containers.run(

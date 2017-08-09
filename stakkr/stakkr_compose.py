@@ -12,19 +12,19 @@ from subprocess import Popen
 @click.argument('command', nargs=-1, type=click.UNPROCESSED)
 def cli(config: str, command):
     config = Config(config)
-    user_config_main = config.read()
-    if user_config_main is False:
+    main_config = config.read()
+    if main_config is False:
         config.display_errors()
         sys.exit(1)
 
-    user_config_main = user_config_main['main']
-    set_env_values_from_conf(user_config_main)
+    main_config = main_config['main']
+    set_env_values_from_conf(main_config)
 
-    project_name = user_config_main.get('project_name')
+    project_name = main_config.get('project_name')
     os.putenv('COMPOSE_PROJECT_NAME', project_name)
 
     # Services from config
-    configured_services = user_config_main.get('services')
+    configured_services = main_config.get('services')
 
     # Services available from base and plugins
     available_services = get_available_services()

@@ -36,8 +36,9 @@ class StakkrActions():
         self.docker_client = DockerClient.from_env()
 
         # Get info from config
-        self.user_config_main = self._get_config()
-        self.project_name = self.user_config_main.get('project_name')
+        self.config = self._get_config()
+        self.main_config = self.config['main']
+        self.project_name = self.main_config.get('project_name')
 
 
     def console(self, ct: str, user: str):
@@ -126,6 +127,7 @@ class StakkrActions():
             raise SystemError("Couldn't start the containers, run the start with '-v' and '-d'")
 
         self._patch_oses_start()
+        self._run_iptables_rules()
         self._run_services_post_scripts()
 
 
@@ -192,12 +194,12 @@ class StakkrActions():
 
     def _get_config(self):
         config = Config(self.config_file)
-        user_config_main = config.read()
-        if user_config_main is False:
+        main_config = config.read()
+        if main_config is False:
             config.display_errors()
             sys.exit(1)
 
-        return user_config_main['main']
+        return main_config
 
 
     def _get_relative_dir(self):
@@ -277,6 +279,16 @@ class StakkrActions():
                 ))
 
 
+    def _run_iptables_rules(self):
+        """For some containers we need to add iptables rules added from the config"""
+
+        block_config = self.config['network-block']
+        for service, ports in block_config.items():
+            self._verbose('Blocking ports {} on container {}'.format(', '.join(ports), service))
+            if docker.block_ct_ports(service, ports, self.project_name) is False:
+                click.secho("Can't block ports on {}, is iptables installed ?".format(service), fg='red')
+
+
     def _run_services_post_scripts(self):
         """A service can have a .sh file that will be executed once it's started.
         Useful to override some actions of the classical /run.sh
@@ -287,7 +299,7 @@ class StakkrActions():
             click.secho('Could not run service post scripts under Windows', fg='red')
             return
 
-        for service in self.user_config_main.get('services'):
+        for service in self.main_config.get('services'):
             self._call_service_post_script(service)
 
 
