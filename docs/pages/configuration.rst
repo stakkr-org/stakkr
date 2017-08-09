@@ -98,6 +98,7 @@ Define in a list what port you want to **block for OUTPUT TCP requests**. That h
 avoid mistakes such as using a production database and send a lot of emails ...
 
 .. code:: ini
+
     [network-block]
     php=25, 465, 587
 
