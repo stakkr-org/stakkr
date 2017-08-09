@@ -100,8 +100,7 @@ avoid mistakes such as using a production database and send a lot of emails ...
 .. code:: ini
 
     [network-block]
-    php=25, 465, 587
-
+    php=25,465,587
 
 
 Files location
