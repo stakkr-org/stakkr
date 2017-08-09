@@ -42,8 +42,8 @@ Just be careful to set different names and networks in `conf/compose.ini`
 
     $ mkdir mydev
     $ cd mydev
-    $ virtualenv -p /usr/bin/python3 ${PWD##*/}_stakkr
-    $ source ${PWD##*/}_stakkr/bin/activate
+    $ virtualenv -p /usr/bin/python3 mydev_stakkr
+    $ source mydev_stakkr/bin/activate
     $ pip install stakkr
 
 It'll run a `post_install` script that copy some templates / create base directories to work.
@@ -52,8 +52,12 @@ It'll run a `post_install` script that copy some templates / create base directo
 1.2 Installation under Windows
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+First install python3 from https://www.python.org/downloads/ and
+docker from https://docs.docker.com/docker-for-windows/install/
+
 .. code:: shell
 
+    > pip install virtualenv
     > mkdir mydev
     > cd mydev
     > virtualenv venv
@@ -65,7 +69,27 @@ It'll run a `post_install` script that copy some templates / create base directo
 	There are known limitations under windows : First the DNS won't work and Second, `stakkr` has to create a route and change a few parameters inside MobyLinux.
 
 
-1.3 Development version
+1.2 Installation under MacOSX
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+First install python3 from https://www.python.org/downloads/mac-osx/ (3.6 is ok) and
+docker from https://docs.docker.com/docker-for-mac/install/
+
+
+.. code:: shell
+
+    $ mkdir mydev
+    $ cd mydev
+    $ pyvenv-3.6 mydev_stakkr
+    $ source mydev_stakkr/bin/activate
+    $ pip install stakkr
+
+
+.. WARNING::
+	WIP : I am currently trying to test it on Mac .... but it's not done yet
+
+
+1.4 Development version
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If you want to install the dev version, you can do the following :
 

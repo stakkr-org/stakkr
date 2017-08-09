@@ -2,6 +2,7 @@
 
 from docker import APIClient, client
 from docker.errors import NotFound
+from requests.exceptions import ConnectionError
 
 
 cts_info = dict()
@@ -55,15 +56,19 @@ def get_running_containers(project_name: str, config: str = None):
 
     filters = {
         'name': '{}_'.format(project_name),
+        'status': 'running',
         'network': '{}_stakkr'.format(project_name).replace('-', '')}
 
-    cts = docker_client.containers.list(filters=filters)
-    running_cts = len(cts)
+    try:
+        cts = docker_client.containers.list(filters=filters)
+    except ConnectionError:
+        raise Exception('Make sure docker is installed and running')
 
     for ct in cts:
-        cts_info[ct.id] = _extract_container_info(project_name, ct.id)
+        container_info = _extract_container_info(project_name, ct.id)
+        cts_info[container_info['name']] = container_info
 
-    return (running_cts, cts_info)
+    return (len(cts), cts_info)
 
 
 def _extract_container_info(project_name: str, ct_id: str):
@@ -72,6 +77,7 @@ def _extract_container_info(project_name: str, ct_id: str):
     try:
         ct_data = docker_apiclient.inspect_container(ct_id)
         ct_info = {
+            'id': ct_id,
             'name': ct_data['Name'].lstrip('/'),
             'compose_name': ct_data['Config']['Labels']['com.docker.compose.service'],
             'ports': ct_data['Config']['ExposedPorts'].keys() if 'ExposedPorts' in ct_data['Config'] else [],

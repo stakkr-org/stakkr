@@ -62,6 +62,7 @@ Valid values for ACTION : 'start' or 'stop'""",
 def dns(ctx, action: str):
     print(click.style('[{}]'.format(action.upper()), fg='green') + ' DNS forwarder ...')
     ctx.obj['STAKKR'].manage_dns(action)
+    _show_status(ctx)
 
 
 @stakkr.command(help="""Execute a command into a container.
@@ -150,14 +151,7 @@ def run(ctx, container: str, user: str, run_args: tuple):
 def start(ctx, pull: bool, recreate: bool):
     print(click.style('[STARTING]', fg='green') + ' your stakkr services')
     ctx.obj['STAKKR'].start(pull, recreate)
-    services_ports = ctx.obj['STAKKR'].get_services_ports()
-    if services_ports == '':
-        print('\nServices Status:')
-        ctx.invoke(status)
-        return
-
-    print('\nServices URLs :')
-    print(services_ports)
+    _show_status(ctx)
 
 
 @stakkr.command(help="Display a list of running containers")
@@ -171,6 +165,17 @@ def status(ctx):
 def stop(ctx):
     print(click.style('[STOPPING]', fg='yellow') + ' your stakkr services')
     ctx.obj['STAKKR'].stop()
+
+
+def _show_status(ctx):
+    services_ports = ctx.obj['STAKKR'].get_services_ports()
+    if services_ports == '':
+        print('\nServices Status:')
+        ctx.invoke(status)
+        return
+
+    print('\nServices URLs :')
+    print(services_ports)
 
 
 def debug_mode():

@@ -60,7 +60,6 @@ class StakkrActions():
         for ct, ct_info in cts.items():
             if ct_info['compose_name'] not in self._services_to_display:
                 continue
-
             options = self._services_to_display[ct_info['compose_name']]
             url = self._get_url(options['url'], ct_info['compose_name'], dns_started)
             text += '  - For {}'.format(colored.yellow(options['name'])).ljust(55, ' ') + ' : ' + url + '\n'
@@ -236,7 +235,7 @@ class StakkrActions():
 
 
     def _patch_oses_stop(self):
-        """Opposite action than _patch_oses_start()"""
+        """Opposite actions than _patch_oses_start()"""
 
         if os.name not in ['nt']:
             return
@@ -264,7 +263,8 @@ class StakkrActions():
 
 
     def _print_status_body(self, dns_started: bool):
-        for ct_id, ct_data in self.cts.items():
+        for ct in sorted(self.cts.keys()):
+            ct_data = self.cts[ct]
             if ct_data['ip'] == '':
                 continue
 
@@ -273,7 +273,7 @@ class StakkrActions():
             puts(columns(
                 [ct_data['compose_name'], 16], [host_ip, 25], [', '.join(ct_data['ports']), 25],
                 [ct_data['image'], 32],
-                [ct_id[:12], 15], [ct_data['name'], 25]
+                [ct_data['id'][:12], 15], [ct_data['name'], 25]
                 ))
 
 
