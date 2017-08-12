@@ -67,12 +67,19 @@ Versions
 Examples
 ========
 
-You can combine services as you want to have : \* A Dev LAMP stack
-(Apache + MySQL 5.7 + PHP 7.1 with xdebug and xhprof) ... and if
+You can combine services as you want to have :
+
+- A Dev LAMP stack (Apache + MySQL 5.7 + PHP 7.1 with xdebug and xhprof) ... and if
 suddenly you want to test your code with PHP 7.1, change it in
-``conf/compose.ini``, restart, it's done ! \* Or Apache 2.4 + PHP 5.6 +
-MongoDB for a production environment \* Or only Maildev \* Or only PHP
-5.4 + ElasticSearch \* etc...
+``conf/compose.ini``, restart, it's done !
+
+- Or Apache 2.4 + PHP 5.6 + MongoDB for a production environment
+
+- Or only Maildev
+
+- Or only PHP5.4 + ElasticSearch
+
+ etc...
 
 
 Documentation
