@@ -1,4 +1,49 @@
+# language: python
+
 checks:
     python:
         code_rating: true
         duplicate_code: true
+        variables_used_before_assignment: true
+        variables_unused_wildcard_import: true
+        variables_unused_variable: true
+        variables_unused_import: true
+        variables_unused_argument: true
+        variables_unpacking_non_sequence: true
+        variables_undefined_variable: true
+        variables_undefined_all_variable: true
+        variables_undefined_loop_variable: true
+        variables_unbalanced_tuple_unpacking: true
+        variables_redefined_outer_name: true
+
+filter:
+    excluded_paths:
+        - "tests/"
+
+build:
+    environment:
+        mysql: false
+        postgresql: false
+        mongodb: false
+        elasticsearch: false
+        redis: false
+        memcached: false
+        neo4j: false
+        rabbitmq: false
+        docker:
+            remote_engine: true
+
+    # tests:
+    #     before:
+    #         - "virtualenv -p /usr/bin/python3 venv"
+    #         - "source venv/bin/activate"
+    #         - "pip install -e ."
+    #         - "pip install ."
+    #         - "python -c 'from stakkr.setup import _post_install; _post_install()'"
+    #         - "pip install -r requirements.txt"
+    #     override:
+    #         -
+    #             command: py.test
+    #             coverage:
+    #                 file: '.coverage'
+    #                 format: 'py-cc'
