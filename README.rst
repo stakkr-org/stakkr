@@ -5,13 +5,11 @@
 Overview
 ========
 
-.. |Scrutinizer Code Quality| image:: https://scrutinizer-ci.com/g/edyan/stakkr/badges/quality-score.png?b=master
+.. image:: https://scrutinizer-ci.com/g/edyan/stakkr/badges/quality-score.png?b=master
    :target: https://scrutinizer-ci.com/g/edyan/stakkr/?branch=master
-
-.. |Build Status| image:: https://travis-ci.org/edyan/stakkr.svg?branch=master
+.. image:: https://travis-ci.org/edyan/stakkr.svg?branch=master
    :target: https://travis-ci.org/edyan/stakkr
-
-.. |PyPI| image:: https://img.shields.io/pypi/l/stakkr.svg
+.. image:: https://img.shields.io/pypi/l/stakkr.svg
    :target: https://pypi.python.org/pypi/stakkr
 
 
@@ -57,14 +55,13 @@ Versions
 =============
 
 .. IMPORTANT::
-
    Stakkr has known 3 versions and 3 names :
-   - 1.x : it was called ``docker-lamp`` and was made to setup an Apache + PHP + MySQL Environment
-   - 2.x : it was called ``marina`` (nice name!) and was made to have a stack build around various
-   services.
-   - 3.x : current version (and probably future ones) , now ``stakkr``. Why changing its name again ?
-   Because marina is used by various people and therefore our tool could add more confusion.
 
+   - 1.x : it was called ``docker-lamp`` and was made to setup an Apache + PHP + MySQL Environment
+
+   - 2.x : it was called ``marina`` (nice name!) and was made to have a stack build around various services.
+
+   - 3.x : current version (and probably future ones) , now ``stakkr``. Why changing its name again ? Because marina is used by various people and therefore our tool could add more confusion.
 
 
 Examples
