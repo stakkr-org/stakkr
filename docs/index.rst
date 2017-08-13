@@ -5,7 +5,7 @@
 Overview
 ==================================
 .. image:: https://scrutinizer-ci.com/g/edyan/stakkr/badges/quality-score.png?b=master
-.. image:: https://scrutinizer-ci.com/g/edyan/stakkr/badges/build.png?b=master
+.. image:: https://travis-ci.org/edyan/stakkr.svg?branch=master
 .. image:: https://img.shields.io/pypi/l/stakkr.svg
    :target: https://pypi.python.org/pypi/stakkr
 
