@@ -11,13 +11,15 @@ extra_packages = []
 if os.name == 'nt':
     extra_packages.append('pypiwin32')
 
+__version__ = '3.3'
+
 # Get the long description from the README file
 with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
     name='stakkr',
-    version='3.3',
+    version=__version__,
     description='A configurable stack based on docker to run any combination of services (PHP, MySQL, Apache, Nginx, Mongo, etc..)',
     long_description=long_description,
     url='http://github.com/edyan/stakkr',
