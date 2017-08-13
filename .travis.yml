@@ -10,7 +10,7 @@ python:
 install:
     - pip install .
     - python -c 'from stakkr.setup import _post_install; _post_install()'
-    - pip install -r requirements.txt
+    - pip install -r requirements-dev.txt
 
 # command to run tests
 script: pytest
