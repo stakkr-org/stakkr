@@ -1,13 +1,15 @@
 """Docker functions to get info about containers"""
 
-from docker import APIClient, client as DockerClient
-from docker.errors import NotFound
-from docker.utils import kwargs_from_env
+from docker import APIClient, client as DockerClient, utils, errors
 from requests.exceptions import ConnectionError
 cts_info = dict()
-apiclient = APIClient(kwargs_from_env())
-client = DockerClient.from_env()
 running_cts = 0
+
+params = utils.kwargs_from_env()
+base_url = None if 'base_url' not in params else params['base_url']
+tls = None if 'tls' not in params else params['tls']
+apiclient = APIClient(base_url=base_url, tls=tls)
+client = DockerClient.from_env()
 
 
 def block_ct_ports(service: str, ports: list, project_name: str) -> tuple:
@@ -161,7 +163,7 @@ def network_exists(network: str):
     try:
         client.networks.get(network)
         return True
-    except NotFound:
+    except errors.NotFound:
         return False
 
 
