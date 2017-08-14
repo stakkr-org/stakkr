@@ -33,17 +33,17 @@ build:
         docker:
             remote_engine: true
 
-    # tests:
-    #     before:
-    #         - "virtualenv -p /usr/bin/python3 venv"
-    #         - "source venv/bin/activate"
-    #         - "pip install -e ."
-    #         - "pip install ."
-    #         - "python -c 'from stakkr.setup import _post_install; _post_install()'"
-    #         - "pip install -r requirements.txt"
-    #     override:
-    #         -
-    #             command: py.test
-    #             coverage:
-    #                 file: '.coverage'
-    #                 format: 'py-cc'
+    tests:
+        before:
+            - "virtualenv -p /usr/bin/python3 venv"
+            - "source venv/bin/activate"
+            - "pip install -e ."
+            - "pip install ."
+            - "python -c 'from stakkr.setup import _post_install; _post_install()'"
+            - "pip install -r requirements-dev.txt"
+        override:
+            -
+                command: py.test
+                coverage:
+                    file: '.coverage'
+                    format: 'py-cc'

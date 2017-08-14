@@ -1,21 +1,18 @@
 """Docker functions to get info about containers"""
 
-import os
-from docker import APIClient as DockerAPIClient, client as DockerClient
-from docker.tls import TLSConfig as DockerTLSConfig
+from docker import APIClient, client as DockerClient
 from docker.errors import NotFound
+from docker.utils import kwargs_from_env
 from requests.exceptions import ConnectionError
 cts_info = dict()
-docker_host = os.getenv('DOCKER_HOST')
-tls_config = DockerTLSConfig(os.getenv('DOCKER_CERT_PATH')) if docker_host is not None else None
-docker_apiclient = DockerAPIClient(base_url=os.getenv('DOCKER_HOST'), tls=tls_config)
-docker_client = DockerClient.from_env()
+apiclient = APIClient(kwargs_from_env())
+client = DockerClient.from_env()
 running_cts = 0
 
 
 def block_ct_ports(service: str, ports: list, project_name: str) -> tuple:
     try:
-        ct = docker_client.containers.get(get_ct_item(service, 'id'))
+        ct = client.containers.get(get_ct_item(service, 'id'))
     except Exception:
         return (False, '{} is not started, no port to block'.format(service))
 
@@ -51,7 +48,7 @@ def container_running(container: str):
     """Returns True if the container is running else False"""
 
     try:
-        ct_data = docker_apiclient.inspect_container(container)
+        ct_data = apiclient.inspect_container(container)
 
         return ct_data['State']['Running']
     except Exception:
@@ -88,7 +85,7 @@ def get_running_containers(project_name: str, config: str = None):
         'network': '{}_stakkr'.format(project_name).replace('-', '')}
 
     try:
-        cts = docker_client.containers.list(filters=filters)
+        cts = client.containers.list(filters=filters)
     except ConnectionError:
         raise Exception('Make sure docker is installed and running')
 
@@ -103,7 +100,7 @@ def _extract_container_info(project_name: str, ct_id: str):
     """Get a hash of info about a container : name, ports, image, ip ..."""
 
     try:
-        ct_data = docker_apiclient.inspect_container(ct_id)
+        ct_data = apiclient.inspect_container(ct_id)
         ct_info = {
             'id': ct_id,
             'name': ct_data['Name'].lstrip('/'),
@@ -136,11 +133,11 @@ def create_network(network: str):
     if network_exists(network):
         return False
 
-    return docker_client.networks.create(network, driver='bridge').id
+    return client.networks.create(network, driver='bridge').id
 
 
 def get_subnet(project_name: str):
-    network_info = docker_client.networks.get(project_name.replace('-', '') + '_stakkr').attrs
+    network_info = client.networks.get(project_name.replace('-', '') + '_stakkr').attrs
 
     return network_info['IPAM']['Config'][0]['Subnet'].split('/')[0]
 
@@ -149,7 +146,7 @@ def get_switch_ip():
     import socket
 
     cmd = r"""/bin/sh -c "ip addr show hvint0 | grep -oE '([0-9]{1,3}\.){3}[0-9]{1,3}'" """
-    res = docker_client.containers.run(
+    res = client.containers.run(
         'alpine', remove=True, tty=True, privileged=True, network_mode='host', pid_mode='host', command=cmd)
     ip = res.strip().decode()
 
@@ -162,7 +159,7 @@ def get_switch_ip():
 
 def network_exists(network: str):
     try:
-        docker_client.networks.get(network)
+        client.networks.get(network)
         return True
     except NotFound:
         return False
@@ -174,7 +171,7 @@ def add_container_to_network(container: str, network: str):
     if _container_in_network(container, network) is True:
         return False
 
-    docker_network = docker_client.networks.get(network)
+    docker_network = client.networks.get(network)
     docker_network.connect(container)
 
     return True
@@ -197,7 +194,7 @@ def _container_in_network(container: str, expected_network: str):
     """Returns True if a container is in a network else false. Used by add_container_to_network"""
 
     try:
-        ct_data = docker_apiclient.inspect_container(container)
+        ct_data = apiclient.inspect_container(container)
     except Exception:
         raise SystemError('Container {} does not seem to exist'.format(container))
 
