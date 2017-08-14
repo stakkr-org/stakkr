@@ -1,13 +1,15 @@
 """Docker functions to get info about containers"""
 
-from docker import APIClient, client
+import os
+from docker import APIClient as DockerAPIClient, client as DockerClient
+from docker.tls import TLSConfig as DockerTLSConfig
 from docker.errors import NotFound
 from requests.exceptions import ConnectionError
-
-
 cts_info = dict()
-docker_apiclient = APIClient()
-docker_client = client.from_env()
+docker_host = os.getenv('DOCKER_HOST')
+tls_config = DockerTLSConfig(os.getenv('DOCKER_CERT_PATH')) if docker_host is not None else None
+docker_apiclient = DockerAPIClient(base_url=os.getenv('DOCKER_HOST'), tls=tls_config)
+docker_client = DockerClient.from_env()
 running_cts = 0
 
 
@@ -22,7 +24,7 @@ def block_ct_ports(service: str, ports: list, project_name: str) -> tuple:
         return (True, "Can't block ports on {}, is iptables installed ?".format(service))
 
     _allow_contact_subnet(project_name, ct)
-    
+
     # Now for each port, add an iptable rule
     for port in ports:
         try:

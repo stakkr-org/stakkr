@@ -179,7 +179,7 @@ def _show_status(ctx):
 
 
 def debug_mode():
-    if '--debug' in sys.argv:
+    if '--debug' in sys.argv or '-d' in sys.argv:
         return True
 
     return False
