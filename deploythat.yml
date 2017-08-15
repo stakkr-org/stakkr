@@ -1,4 +1,0 @@
-language: python
-files:
-    - stakkr/cli.py
-tests_dir: tests/

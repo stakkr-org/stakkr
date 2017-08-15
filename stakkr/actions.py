@@ -46,8 +46,9 @@ class StakkrActions():
 
         docker.check_cts_are_running(self.project_name, self.config_file)
 
-        ct_name = docker.get_ct_name(ct)
-        subprocess.call(['docker', 'exec', '-u', user, '-it', ct_name, 'env', 'TERM=xterm', 'bash'])
+        cmd = ['docker', 'exec', '-u', user, '-it', docker.get_ct_name(ct), 'bash']
+        subprocess.call(cmd)
+        self._verbose('Command : "' + ' '.join(cmd) + '"')
 
 
     def get_services_ports(self):
@@ -290,7 +291,7 @@ class StakkrActions():
                 continue
 
             self._verbose(msg)
-            
+
 
     def _run_services_post_scripts(self):
         """A service can have a .sh file that will be executed once it's started.

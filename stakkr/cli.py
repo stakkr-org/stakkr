@@ -33,9 +33,7 @@ def stakkr(ctx, config, debug, verbose):
 @stakkr.command(help="""Enter a container to perform direct actions such as install packages, run commands ...
 
 Valid values for CONTAINER : 'apache', 'mysql' or 'php'""")
-@click.option('--user', '-u', help="User's name. Valid choices : www-data or root",
-              default='www-data',
-              type=click.Choice(['www-data', 'root']))
+@click.option('--user', '-u', help="User's name. Valid choices : www-data or root", default='www-data')
 @click.argument('container', required=True)
 @click.pass_context
 def console(ctx, container: str, user: str):
@@ -142,11 +140,8 @@ def run(ctx, container: str, user: str, run_args: tuple):
 
 
 @stakkr.command(help="Start containers defined in compose.ini")
-@click.option('--pull', help="Force a pull of the latest images versions", is_flag=True)
-@click.option(
-    '--recreate',
-    help="Remove images once stopped (useful for containers that consumes spaces)",
-    is_flag=True)
+@click.option('--pull', '-p', help="Force a pull of the latest images versions", is_flag=True)
+@click.option('--recreate', '-r', help="Recreate all containers", is_flag=True)
 @click.pass_context
 def start(ctx, pull: bool, recreate: bool):
     print(click.style('[STARTING]', fg='green') + ' your stakkr services')

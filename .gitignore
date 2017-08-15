@@ -13,6 +13,7 @@ htmlcov
 
 # Local configuration
 /conf
+deploythat.yml
 
 # Data added during install
 .env
