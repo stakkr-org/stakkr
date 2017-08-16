@@ -4,9 +4,7 @@ Installation
 
 Docker
 ----------
-You must have Docker installed on your computer.
-
-Example for Ubuntu: https://docs.docker.com/engine/installation/ubuntulinux/
+You must have Docker installed on your computer. Pick the right version for your OS from https://www.docker.com/community-edition
 
 
 Prerequisites
@@ -37,6 +35,8 @@ Just be careful to set different names and networks in `conf/compose.ini`
 
 1.1 Installation under Linux
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For Ubuntu, you can download Docker from : https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/
 
 .. code:: shell
 
