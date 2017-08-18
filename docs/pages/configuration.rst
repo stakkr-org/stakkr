@@ -17,7 +17,7 @@ requests.
 
 Network and changes in general
 ------------------------------------
-You can define your own network in compose.ini (``subnet`` and ``gateway``).
+You can define your own network in compose.ini by setting a ``subnet``.
 
 .. WARNING::
    If you change that, run ``docker-clean`` which
