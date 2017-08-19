@@ -10,6 +10,10 @@ venv_dir = package_utils.get_venv_basedir()
 
 
 def _post_install():
+    # If already installed don't do anything
+    if os.path.isfile('conf/compose.ini'):
+        return
+
     required_dirs = [
         'conf',
         'conf/mysql-override',
