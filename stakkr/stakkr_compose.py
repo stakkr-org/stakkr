@@ -90,6 +90,10 @@ def get_enabled_services(configured_services: list):
 
     return services_files
 
+def get_configured_services(config_file: str = None):
+    # Services configured in the given config file. 
+    configured_services = get_main_config(config_file).get('services')
+    return configured_services
 
 def get_main_config(config: str):
     config = Config(config)
