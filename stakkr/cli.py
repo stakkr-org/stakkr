@@ -1,7 +1,7 @@
 import click
 import sys
-
 from . import package_utils
+from .docker import get_running_containers_name
 from click_plugins import with_plugins
 from pkg_resources import iter_entry_points
 
@@ -19,6 +19,7 @@ linking and managing everything for you.""")
 @click.pass_context
 def stakkr(ctx, config, debug, verbose):
     from stakkr.actions import StakkrActions
+    global running_cts
 
     # Add the virtual env in the path
     venv_base = package_utils.get_venv_basedir()
@@ -28,15 +29,17 @@ def stakkr(ctx, config, debug, verbose):
     ctx.obj['DEBUG'] = debug
     ctx.obj['VERBOSE'] = verbose
     ctx.obj['STAKKR'] = StakkrActions(venv_base, ctx.obj)
+    ctx.obj['CTS'] = get_running_containers_name(ctx.obj['STAKKR'].project_name)
 
 
-@stakkr.command(help="""Enter a container to perform direct actions such as install packages, run commands ...
-
-Valid values for CONTAINER : 'apache', 'mysql' or 'php'""")
+@stakkr.command(help="Enter a container to perform direct actions such as install packages, run commands, etc.")
 @click.option('--user', '-u', help="User's name. Valid choices : www-data or root", default='www-data')
 @click.argument('container', required=True)
 @click.pass_context
 def console(ctx, container: str, user: str):
+    ct_choice = click.Choice(ctx.obj['CTS'])
+    ct_choice.convert(container, None, ctx)
+
     cmd_user = None
 
     if container not in ['php', 'apache'] and user == 'www-data':
@@ -75,6 +78,9 @@ Examples:\n
 @click.argument('container', required=True)
 @click.argument('command', required=True, nargs=-1, type=click.UNPROCESSED)
 def exec(ctx, user: str, container: str, command: tuple):
+    ct_choice = click.Choice(ctx.obj['CTS'])
+    ct_choice.convert(container, None, ctx)
+
     users = {
         'php': 'www-data'
     }
@@ -128,15 +134,6 @@ def restart(ctx, pull: bool, recreate: bool):
         print()
 
     ctx.invoke(start, pull=pull, recreate=recreate)
-
-
-@stakkr.command(help='DEPRECATED, USE `stakkr exec`', context_settings=dict(ignore_unknown_options=True))
-@click.pass_context
-@click.option('--user', '-u', help="User's name. Valid values: www-data or root", type=click.Choice(['www-data', 'root']))
-@click.argument('container', required=True, type=click.Choice(['mysql', 'php']))
-@click.argument('run_args', nargs=-1, type=click.UNPROCESSED)
-def run(ctx, container: str, user: str, run_args: tuple):
-    print(click.style('[DEPRECATED]', fg='red') + ' You must use either `stakkr mysql` or `stakkr exec php php`')
 
 
 @stakkr.command(help="Start containers defined in compose.ini")

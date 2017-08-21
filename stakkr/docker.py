@@ -39,7 +39,7 @@ def check_cts_are_running(project_name: str, config: str = None):
 
     global cts_info
 
-    running_cts, cts_info = get_running_containers(project_name, config)
+    running_cts, cts_info = get_running_containers(project_name)
     if running_cts is 0:
         raise SystemError('Have you started your server with the start action ?')
 
@@ -78,8 +78,8 @@ def get_ct_name(container: str):
     return ct_name
 
 
-def get_running_containers(project_name: str, config: str = None):
-    """Get a list of IDs of running containers for the current stakkr instance"""
+def get_running_containers(project_name: str) -> tuple:
+    """Get the number of running containers and theirs details for the current stakkr instance"""
 
     filters = {
         'name': '{}_'.format(project_name),
@@ -96,6 +96,27 @@ def get_running_containers(project_name: str, config: str = None):
         cts_info[container_info['name']] = container_info
 
     return (len(cts), cts_info)
+
+
+def get_running_containers_name(project_name: str) -> list:
+    """Get a list of compose names of running containers for the current stakkr instance"""
+
+    num_cts, cts = get_running_containers(project_name)
+
+    return sorted([ct_data['compose_name'] for docker_name, ct_data in cts.items()])
+
+
+def guess_shell(service: str):
+    ct = client.containers.get(get_ct_item(service, 'id'))
+
+    shells = ct.exec_run('/bin/which bash sh', stdout=True, stderr=False).splitlines()
+
+    if b'/bin/bash' in shells:
+        return '/bin/bash'
+    elif b'/bin/sh' in shells:
+        return '/bin/sh'
+
+    raise EnvironmentError('Could not find a shell for that container')
 
 
 def _extract_container_info(project_name: str, ct_id: str):

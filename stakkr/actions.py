@@ -16,6 +16,7 @@ class StakkrActions():
         'apache': {'name': 'Web Server', 'url': 'http://{}'},
         'mailcatcher': {'name': 'Mailcatcher (fake SMTP)', 'url': 'http://{}', 'extra_port': 25},
         'maildev': {'name': 'Maildev (Fake SMTP)', 'url': 'http://{}', 'extra_port': 25},
+        'portainer': {'name': 'Portainer (Docker GUI)', 'url': 'http://{}'},
         'phpmyadmin': {'name': 'PhpMyAdmin', 'url': 'http://{}'},
         'xhgui': {'name': 'XHGui (PHP Profiling)', 'url': 'http://{}'}
     }
@@ -46,8 +47,9 @@ class StakkrActions():
 
         docker.check_cts_are_running(self.project_name, self.config_file)
 
-        cmd = ['docker', 'exec', '-u', user, '-it', docker.get_ct_name(ct), 'bash']
+        cmd = ['docker', 'exec', '-u', user, '-it', docker.get_ct_name(ct), docker.guess_shell(ct)]
         subprocess.call(cmd)
+
         self._verbose('Command : "' + ' '.join(cmd) + '"')
 
 
@@ -56,7 +58,7 @@ class StakkrActions():
 
         dns_started = docker.container_running('docker_dns')
 
-        running_cts, cts = docker.get_running_containers(self.project_name, self.config_file)
+        running_cts, cts = docker.get_running_containers(self.project_name)
 
         text = ''
         for ct, ct_info in cts.items():
@@ -123,7 +125,7 @@ class StakkrActions():
         self._verbose('Command: ' + ' '.join(cmd))
         command.launch_cmd_displays_output(cmd, verb, debug, True)
 
-        self.running_cts, self.cts = docker.get_running_containers(self.project_name, self.config_file)
+        self.running_cts, self.cts = docker.get_running_containers(self.project_name)
         if self.running_cts is 0:
             raise SystemError("Couldn't start the containers, run the start with '-v' and '-d'")
 
@@ -157,7 +159,7 @@ class StakkrActions():
         command.launch_cmd_displays_output(self.compose_base_cmd + ['stop'], verb, debug, True)
         self._patch_oses_stop()
 
-        self.running_cts, self.cts = docker.get_running_containers(self.project_name, self.config_file)
+        self.running_cts, self.cts = docker.get_running_containers(self.project_name)
         if self.running_cts is not 0:
             raise SystemError("Couldn't stop services ...")
 

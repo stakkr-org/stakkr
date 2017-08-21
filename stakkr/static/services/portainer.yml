@@ -1,0 +1,13 @@
+version: '2.2'
+
+# See also https://github.com/francescou/docker-compose-ui
+services:
+    portainer:
+        image: portainer/portainer
+        container_name: ${COMPOSE_PROJECT_NAME}_portainer
+        hostname: ${COMPOSE_PROJECT_NAME}_portainer
+        networks: [stakkr]
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ${COMPOSE_BASE_DIR}/data/portainer:/data
+        command: ['--logo', 'https://raw.githubusercontent.com/edyan/stakkr/master/docs/stakkr-logo.png', '-p', ':80', '--no-analytics']

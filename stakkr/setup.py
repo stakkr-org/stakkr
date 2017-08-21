@@ -1,26 +1,42 @@
-import sys
 import os
+import sys
 import shutil
-
 from stakkr import package_utils
 from setuptools.command.install import install
-
-
 venv_dir = package_utils.get_venv_basedir()
 
 
-def _post_install():
+try:
+    import click
+
+    @click.command(help="Initialize for the first time stakkr by copying templates and directory structure")
+    @click.option('--force', '-f', help="Force recreate directories structure", is_flag=True)
+    def init(force: bool):
+
+        if os.path.isfile(package_utils.get_venv_basedir() + '/conf/compose.ini') and force is False:
+            click.secho('Config file (conf/compose.ini) already present. Leaving.', fg='yellow')
+            return
+
+        click.secho('Config file (conf/compose.ini) not present, do not forget to create it', fg='yellow')
+        _post_install(force)
+except ImportError:
+    def init():
+        print('Stakkr has not been installed yet')
+        sys.exit(1)
+
+
+def _post_install(force: bool = False):
+    print('Post Installation : create templates')
+
     # If already installed don't do anything
-    if os.path.isfile('conf/compose.ini'):
+    if os.path.isfile(venv_dir + '/conf/compose.ini'):
         return
 
     required_dirs = [
-        'conf',
         'conf/mysql-override',
         'conf/php-fpm-override',
         'conf/xhgui-override',
         'data',
-        'home',
         'home/www-data',
         'home/www-data/bin',
         'logs',
@@ -42,28 +58,31 @@ def _post_install():
         'home/www-data/.bashrc'
     ]
     for required_tpl in required_tpls:
-        _copy_file(required_tpl)
+        _copy_file(required_tpl, force)
 
 
 def _create_dir(dir_name: str):
     dir_name = venv_dir + '/' + dir_name.lstrip('/')
     if not os.path.isdir(dir_name):
-        os.mkdir(dir_name)
+        os.makedirs(dir_name)
 
 
-def _copy_file(source_file: str):
+def _copy_file(source_file: str, force: bool):
     full_path = package_utils.get_file('tpls', source_file)
     dest_file = venv_dir + '/' + source_file
-    if not os.path.isfile(dest_file):
-        try:
-            shutil.copy(full_path, dest_file)
-        except Exception:
-            msg = "Met an error trying to copy {} .. check that the file is there ...".format(full_path)
-            print(msg, file=sys.stderr)
+    if os.path.isfile(dest_file) and force is False:
+        print('  - {} exists, do not overwrite'.format(source_file))
+        return
 
+    print('  - {} written'.format(source_file))
+    try:
+        shutil.copy(full_path, dest_file)
+    except Exception:
+        msg = "Met an error trying to copy {} .. check that the file is there ...".format(full_path)
+        print(msg, file=sys.stderr)
 
 
 class StakkrPostInstall(install):
     def run(self):
         install.run(self)
-        _post_install()
+        _post_install(False)

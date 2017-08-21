@@ -29,8 +29,9 @@ setup(
     packages=['stakkr'],
     py_modules=['stakkr'],
     entry_points='''[console_scripts]
-stakkr=stakkr.cli:main
 docker-clean=stakkr.docker_clean:main
+stakkr=stakkr.cli:main
+stakkr-init=stakkr.setup:init
 stakkr-compose=stakkr.stakkr_compose:cli''',
     include_package_data=True,
     install_requires=[
