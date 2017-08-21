@@ -3,7 +3,6 @@ import sys
 import shutil
 from stakkr import package_utils
 from setuptools.command.install import install
-venv_dir = package_utils.get_venv_basedir()
 
 
 try:
@@ -28,6 +27,7 @@ except ImportError:
 def _post_install(force: bool = False):
     print('Post Installation : create templates')
 
+    venv_dir = package_utils.get_venv_basedir()
     # If already installed don't do anything
     if os.path.isfile(venv_dir + '/conf/compose.ini'):
         return
@@ -45,7 +45,7 @@ def _post_install(force: bool = False):
         'www'
     ]
     for required_dir in required_dirs:
-        _create_dir(required_dir)
+        _create_dir(venv_dir, required_dir)
 
     required_tpls = [
         '.env',
@@ -58,16 +58,16 @@ def _post_install(force: bool = False):
         'home/www-data/.bashrc'
     ]
     for required_tpl in required_tpls:
-        _copy_file(required_tpl, force)
+        _copy_file(venv_dir, required_tpl, force)
 
 
-def _create_dir(dir_name: str):
+def _create_dir(venv_dir: str, dir_name: str):
     dir_name = venv_dir + '/' + dir_name.lstrip('/')
     if not os.path.isdir(dir_name):
         os.makedirs(dir_name)
 
 
-def _copy_file(source_file: str, force: bool):
+def _copy_file(venv_dir: str, source_file: str, force: bool):
     full_path = package_utils.get_file('tpls', source_file)
     dest_file = venv_dir + '/' + source_file
     if os.path.isfile(dest_file) and force is False:
@@ -85,4 +85,10 @@ def _copy_file(source_file: str, force: bool):
 class StakkrPostInstall(install):
     def run(self):
         install.run(self)
-        _post_install(False)
+
+        try:
+            package_utils.get_venv_basedir()
+            _post_install(False)
+        except OSError:
+            msg = 'You must run setup.py from a virtualenv if you want to have the templates installed'
+            print(msg)

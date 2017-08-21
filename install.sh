@@ -21,7 +21,7 @@ echo "Creating the virtualenv"
 virtualenv -p /usr/bin/python3  ${PWD##*/}_stakkr > /dev/null
 source ${PWD##*/}_stakkr/bin/activate > /dev/null
 pip3 install -e . > /dev/null
-python -c 'from stakkr.setup import _post_install; _post_install()'
+stakkr-init
 echo ""
 
 echo "Deactivate and reactivate the virtualenv again by launching:"

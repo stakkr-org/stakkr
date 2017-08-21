@@ -38,7 +38,7 @@ build:
             - "virtualenv -p /usr/bin/python3 venv"
             - "source venv/bin/activate"
             - "pip install ."
-            - "python -c 'from stakkr.setup import _post_install; _post_install()'"
+            - "stakkr-init"
             - "pip install -r requirements-dev.txt"
         override:
             -
