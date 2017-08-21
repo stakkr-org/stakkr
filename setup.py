@@ -3,9 +3,9 @@ import sys
 
 from distutils.core import setup
 from stakkr.setup import StakkrPostInstall
-
 here = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, here)
+
 
 extra_packages = []
 if os.name == 'nt':

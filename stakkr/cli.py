@@ -33,7 +33,7 @@ def stakkr(ctx, config, debug, verbose):
 
 
 @stakkr.command(help="Enter a container to perform direct actions such as install packages, run commands, etc.")
-@click.option('--user', '-u', help="User's name. Valid choices : www-data or root", default='www-data')
+@click.option('--user', '-u', help="User's name. Valid choices : www-data or root")
 @click.argument('container', required=True)
 @click.pass_context
 def console(ctx, container: str, user: str):
@@ -41,13 +41,7 @@ def console(ctx, container: str, user: str):
         ct_choice = click.Choice(ctx.obj['CTS'])
         ct_choice.convert(container, None, ctx)
 
-    cmd_user = None
-    if container not in ['php', 'apache'] and user == 'www-data':
-        cmd_user = 'root'
-    elif cmd_user is None:
-        cmd_user = user
-
-    ctx.obj['STAKKR'].console(container, cmd_user)
+    ctx.obj['STAKKR'].console(container, _get_cmd_user(user, container))
 
 
 @stakkr.command(
@@ -79,16 +73,9 @@ Examples:\n
 @click.argument('command', required=True, nargs=-1, type=click.UNPROCESSED)
 def exec(ctx, user: str, container: str, command: tuple):
     if len(ctx.obj['CTS']) is not 0:
-        ct_choice = click.Choice(ctx.obj['CTS'])
-        ct_choice.convert(container, None, ctx)
+        click.Choice(ctx.obj['CTS']).convert(container, None, ctx)
 
-    users = {
-        'php': 'www-data'
-    }
-    if user is None:
-        user = users[container] if container in users else 'root'
-
-    ctx.obj['STAKKR'].exec(container, user, command)
+    ctx.obj['STAKKR'].exec(container, _get_cmd_user(user, container), command)
 
 
 @stakkr.command(
@@ -158,6 +145,16 @@ def status(ctx):
 def stop(ctx):
     print(click.style('[STOPPING]', fg='yellow') + ' your stakkr services')
     ctx.obj['STAKKR'].stop()
+
+
+def _get_cmd_user(user: str, ct: str):
+    users = {'apache': 'www-data', 'php': 'www-data'}
+
+    cmd_user = 'root' if user is None else user
+    if ct in users and user is None:
+        cmd_user = users[ct]
+
+    return cmd_user
 
 
 def _show_status(ctx):
