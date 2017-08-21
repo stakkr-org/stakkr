@@ -61,3 +61,15 @@ class StakkrComposeTest(unittest.TestCase):
 
         self.assertEqual('static/services/apache.yml', services['apache'][-26:])
         self.assertEqual('static/services/mongo.yml', services['mongo'][-25:])
+
+    def test_get_valid_configured_services(self):
+        services = sc.get_configured_services('/static/config_valid.ini')
+        self.assertTrue('maildev' in services)
+        self.assertTrue('php' in services)
+        self.assertFalse('mongo' in services)
+        self.assertFalsae('elasticsearch' in services)
+
+    def test_get_invalid_configured_services(self):
+        services = sc.get_configured_services('/static/config_invalid.ini')
+        self.assertFalse('maildev' in services)
+        self.assertFalse('php' in services)
