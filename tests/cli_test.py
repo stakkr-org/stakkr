@@ -43,10 +43,10 @@ class CliTest(unittest.TestCase):
     def test_debug_mode(self):
         self._exec_cmd(self.cmd_base + ['start'])
 
-        cmd = self.cmd_base + ['--debug', 'exec', 'notexist', 'bad']
+        cmd = self.cmd_base + ['--debug', 'console', 'maildev']
         res = self._exec_cmd(cmd)
         self.assertEqual(res['stdout'], '')
-        self.assertRegex(res['stderr'], '.*Exception: notexist does not seem to be started.*')
+        self.assertRegex(res['stderr'], '.*OSError: Could not find a shell for that container*', ' '.join(cmd))
         self.assertIs(res['status'], 1)
 
 
@@ -75,9 +75,9 @@ class CliTest(unittest.TestCase):
 
         cmd = self.cmd_base + ['console', 'mysql']
         res = self._exec_cmd(cmd)
-        self.assertRegex(res['stderr'], '.*mysql does not seem to be started.*')
+        self.assertRegex(res['stderr'], '.*Invalid value: invalid choice: mysql\. \(choose from.*')
         self.assertEqual(res['stdout'], '')
-        self.assertIs(res['status'], 1)
+        self.assertIs(res['status'], 2)
 
         self._exec_cmd(self.cmd_base + ['stop'])
 
@@ -123,8 +123,8 @@ class CliTest(unittest.TestCase):
         cmd = self.cmd_base + ['mysql', '--version']
         res = self._exec_cmd(cmd)
         self.assertEqual(res['stdout'], '')
-        self.assertRegex(res['stderr'], '.*mysql does not seem to be started.*')
-        self.assertIs(res['status'], 1)
+        self.assertRegex(res['stderr'], '.*Invalid value: invalid choice: mysql.*')
+        self.assertIs(res['status'], 2)
 
 
     def test_restart_stopped(self):
@@ -228,15 +228,6 @@ class CliTest(unittest.TestCase):
         res = self._exec_cmd(cmd)
         self.assertEqual(res['stdout'], '[INFO] stakkr is currently stopped')
         self.assertEqual(res['stderr'], '')
-        self.assertIs(res['status'], 0)
-
-
-    def test_run_deprecated(self):
-        self._exec_cmd(self.cmd_base + ['start'])
-        cmd = self.cmd_base + ['run', 'php', '-v']
-        res = self._exec_cmd(cmd)
-        self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], '\[DEPRECATED\].*You must use either.*')
         self.assertIs(res['status'], 0)
 
 

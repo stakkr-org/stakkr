@@ -6,7 +6,6 @@ import subprocess
 from . import command, docker, package_utils
 from .configreader import Config
 from clint.textui import colored, puts, columns
-from docker import client as DockerClient
 
 
 class StakkrActions():
@@ -34,7 +33,6 @@ class StakkrActions():
         self.dns_container_name = 'docker_dns'
         self.config_file = ctx['CONFIG']
         self.compose_base_cmd = self._get_compose_base_cmd()
-        self.docker_client = DockerClient.from_env()
 
         # Get info from config
         self.config = self._get_config()
@@ -93,7 +91,7 @@ class StakkrActions():
 
         dns_started = docker.container_running(self.dns_container_name)
         if dns_started is True and action == 'stop':
-            dns = self.docker_client.containers.get('docker_dns')
+            dns = docker.client.containers.get('docker_dns')
             return dns.stop()
 
         elif dns_started is False and action == 'start':
@@ -227,7 +225,7 @@ class StakkrActions():
         if os.name not in ['nt']:
             return
 
-        self.docker_client.containers.run(
+        docker.client.containers.run(
             'justincormack/nsenter1', remove=True, tty=True, privileged=True, network_mode='none',
             pid_mode='host', command='bin/sh -c "iptables -A FORWARD -j ACCEPT"')
 

@@ -44,12 +44,12 @@ class StakkrComposeTest(unittest.TestCase):
 
     def test_get_wrong_enabled_service(self):
         with self.assertRaises(SystemExit):
-            sc.get_enabled_services(['c'], self.services)
+            sc.get_enabled_services(['c'])
 
 
     def test_get_right_enabled_service(self):
-        services_files = sc.get_enabled_services(['a'], self.services)
-        self.assertEqual(services_files, ['-f', 'service_a.yml'])
+        services_files = sc.get_enabled_services(['maildev'])
+        self.assertTrue(services_files[0].endswith('static/services/maildev.yml'))
 
 
     def test_get_available_services(self):

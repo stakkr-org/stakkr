@@ -37,11 +37,11 @@ def stakkr(ctx, config, debug, verbose):
 @click.argument('container', required=True)
 @click.pass_context
 def console(ctx, container: str, user: str):
-    ct_choice = click.Choice(ctx.obj['CTS'])
-    ct_choice.convert(container, None, ctx)
+    if len(ctx.obj['CTS']) is not 0:
+        ct_choice = click.Choice(ctx.obj['CTS'])
+        ct_choice.convert(container, None, ctx)
 
     cmd_user = None
-
     if container not in ['php', 'apache'] and user == 'www-data':
         cmd_user = 'root'
     elif cmd_user is None:
@@ -78,8 +78,9 @@ Examples:\n
 @click.argument('container', required=True)
 @click.argument('command', required=True, nargs=-1, type=click.UNPROCESSED)
 def exec(ctx, user: str, container: str, command: tuple):
-    ct_choice = click.Choice(ctx.obj['CTS'])
-    ct_choice.convert(container, None, ctx)
+    if len(ctx.obj['CTS']) is not 0:
+        ct_choice = click.Choice(ctx.obj['CTS'])
+        ct_choice.convert(container, None, ctx)
 
     users = {
         'php': 'www-data'

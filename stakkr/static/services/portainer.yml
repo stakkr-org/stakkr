@@ -10,4 +10,4 @@ services:
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
             - ${COMPOSE_BASE_DIR}/data/portainer:/data
-        command: ['--logo', 'https://raw.githubusercontent.com/edyan/stakkr/master/docs/stakkr-logo.png', '-p', ':80', '--no-analytics']
+        command: ['-p', ':80', '--no-analytics']
