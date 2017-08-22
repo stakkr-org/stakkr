@@ -43,7 +43,7 @@ class CliTest(unittest.TestCase):
     def test_debug_mode(self):
         self._exec_cmd(self.cmd_base + ['start'])
 
-        cmd = self.cmd_base + ['--debug', 'console', 'maildev']
+        cmd = self.cmd_base + ['--debug', 'console', 'portainer']
         res = self._exec_cmd(cmd)
         self.assertEqual(res['stdout'], '')
         self.assertRegex(res['stderr'], '.*OSError: Could not find a shell for that container*', ' '.join(cmd))
