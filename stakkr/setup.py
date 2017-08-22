@@ -45,7 +45,7 @@ def _post_install(force: bool = False):
         'www'
     ]
     for required_dir in required_dirs:
-        _create_dir(venv_dir, required_dir)
+        _create_dir(venv_dir, required_dir, force)
 
     required_tpls = [
         '.env',
@@ -61,8 +61,11 @@ def _post_install(force: bool = False):
         _copy_file(venv_dir, required_tpl, force)
 
 
-def _create_dir(venv_dir: str, dir_name: str):
+def _create_dir(venv_dir: str, dir_name: str, force: bool):
     dir_name = venv_dir + '/' + dir_name.lstrip('/')
+    if os.path.isdir(dir_name) and force is False:
+        return
+
     if not os.path.isdir(dir_name):
         os.makedirs(dir_name)
 
