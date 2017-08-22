@@ -109,7 +109,7 @@ def get_running_containers_name(project_name: str) -> list:
 def guess_shell(service: str):
     ct = client.containers.get(get_ct_item(service, 'id'))
 
-    shells = ct.exec_run('which bash sh', stdout=True, stderr=False).splitlines()
+    shells = ct.exec_run('which -a bash sh', stdout=True, stderr=False).splitlines()
     if b'/bin/bash' in shells:
         return '/bin/bash'
     elif b'/bin/sh' in shells:
