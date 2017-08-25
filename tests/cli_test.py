@@ -103,7 +103,7 @@ class CliTest(unittest.TestCase):
         # Check for PHP Version
         # TODO make it work under windows (problem with TTY)
         if os.name != 'nt':
-            cmd = self.cmd_base + ['exec', 'php', 'php', '-v']
+            cmd = self.cmd_base + ['exec', '--no-tty', 'php', '--', 'php', '-v']
             res = self._exec_cmd(cmd)
             self.assertRegex(res['stdout'], '.*The PHP Group.*', 'stderr was : ' + res['stderr'])
             self.assertEqual(res['stderr'], '')
