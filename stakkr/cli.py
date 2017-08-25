@@ -34,20 +34,20 @@ def stakkr(ctx, config, debug, verbose):
 
 @stakkr.command(help="Enter a container to perform direct actions such as install packages, run commands, etc.")
 @click.option('--user', '-u', help="User's name. Valid choices : www-data or root")
+@click.option('--tty/--no-tty', is_flag=True, default=True, help="Force Console to use a TTY")
 @click.argument('container', required=True)
 @click.pass_context
-def console(ctx, container: str, user: str):
+def console(ctx, container: str, user: str, tty: bool):
     if len(ctx.obj['CTS']) is not 0:
         ct_choice = click.Choice(ctx.obj['CTS'])
         ct_choice.convert(container, None, ctx)
 
-    ctx.obj['STAKKR'].console(container, _get_cmd_user(user, container))
+    ctx.obj['STAKKR'].console(container, _get_cmd_user(user, container), tty)
 
 
 @stakkr.command(
-    help="""Start or Stop the DNS forwarder.
-Only one DNS Forwarded by host is possible. Done with mgood/resolvable.
-Also, that is completely useless under Windows as we can't mount /etc/resolv.conf
+    help="""Start or Stop the DNS forwarder. Useful to access your containers directly by their names.
+Does not work under Windows as we can't mount /etc/resolv.conf
 
 Valid values for ACTION : 'start' or 'stop'""",
     name="dns"
@@ -55,8 +55,9 @@ Valid values for ACTION : 'start' or 'stop'""",
 @click.argument('action', required=True, type=click.Choice(['start', 'stop']))
 @click.pass_context
 def dns(ctx, action: str):
-    print(click.style('[{}]'.format(action.upper()), fg='green') + ' DNS forwarder ...')
     ctx.obj['STAKKR'].manage_dns(action)
+    click.echo(click.style('[{}]'.format(action.upper()), fg='green') + ' DNS forwarder ...', nl=False)
+    click.echo('Wait a little before calling services by their DNS')
     _show_status(ctx)
 
 
@@ -69,13 +70,14 @@ Examples:\n
 """, context_settings=dict(ignore_unknown_options=True))
 @click.pass_context
 @click.option('--user', '-u', help="User's name. Be careful, each container have its own users.")
+@click.option('--tty/--no-tty', is_flag=True, default=True, help="Force Exec to use a TTY")
 @click.argument('container', required=True)
 @click.argument('command', required=True, nargs=-1, type=click.UNPROCESSED)
-def exec(ctx, user: str, container: str, command: tuple):
+def exec(ctx, user: str, container: str, command: tuple, tty: bool):
     if len(ctx.obj['CTS']) is not 0:
         click.Choice(ctx.obj['CTS']).convert(container, None, ctx)
 
-    ctx.obj['STAKKR'].exec(container, _get_cmd_user(user, container), command)
+    ctx.obj['STAKKR'].exec(container, _get_cmd_user(user, container), command, tty)
 
 
 @stakkr.command(

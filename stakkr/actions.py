@@ -40,12 +40,13 @@ class StakkrActions():
         self.project_name = self.main_config.get('project_name')
 
 
-    def console(self, ct: str, user: str):
+    def console(self, ct: str, user: str, tty: bool):
         """Enter a container (stakkr allows only apache / php and mysql)"""
 
         docker.check_cts_are_running(self.project_name, self.config_file)
 
-        cmd = ['docker', 'exec', '-u', user, '-it', docker.get_ct_name(ct), docker.guess_shell(ct)]
+        tty = 't' if tty is True else ''
+        cmd = ['docker', 'exec', '-u', user, '-i' + tty, docker.get_ct_name(ct), docker.guess_shell(ct)]
         subprocess.call(cmd)
 
         self._verbose('Command : "' + ' '.join(cmd) + '"')
@@ -72,14 +73,15 @@ class StakkrActions():
         return text
 
 
-    def exec(self, container: str, user: str, args: tuple):
+    def exec(self, container: str, user: str, args: tuple, tty: bool):
         """Run a command from outside to any container. Wrapped into /bin/sh"""
 
         docker.check_cts_are_running(self.project_name, self.config_file)
 
+        # Protect args to avoid strange behavior in exec
         args = ['"{}"'.format(arg) for arg in args]
 
-        tty = 't' if sys.stdin.isatty() else ''
+        tty = 't' if tty is True else ''
         cmd = ['docker', 'exec', '-u', user, '-i' + tty, docker.get_ct_name(container), 'sh', '-c']
         cmd += ["""test -d "/var/{0}" && cd "/var/{0}" ; exec {1}""".format(self.current_dir_relative, ' '.join(args))]
         self._verbose('Command : "' + ' '.join(cmd) + '"')
@@ -94,11 +96,11 @@ class StakkrActions():
             dns = docker.client.containers.get('docker_dns')
             return dns.stop()
 
-        elif dns_started is False and action == 'start':
+        elif action == 'start':
             self._docker_run_dns()
             return
 
-        puts(colored.red('[ERROR]') + " Can't {} the dns container (already done?)".format(action))
+        click.echo(click.style('[ERROR]', fg='red') + " DNS already stopped")
         sys.exit(1)
 
 
@@ -171,18 +173,23 @@ class StakkrActions():
 
 
     def _docker_run_dns(self):
-        docker.check_cts_are_running(self.project_name, self.config_file)
+        network = self.project_name + '_stakkr'
 
+        # Started ? Only attach it to the current network
+        if docker.container_running(self.dns_container_name) is True:
+            docker.add_container_to_network(self.dns_container_name, network)
+            self._verbose('{} attached to network {}'.format(self.dns_container_name, network))
+            return
+
+        # Not started ? Create it and add it to the network
         try:
-            cmd = ['docker', 'run', '--rm', '-d', '--hostname', 'docker-dns', '--name', self.dns_container_name]
-            cmd += ['--network', self.project_name + '_stakkr']
-            cmd += ['-v', '/var/run/docker.sock:/tmp/docker.sock', '-v', '/etc/resolv.conf:/tmp/resolv.conf']
-            cmd += ['mgood/resolvable']
-            self._verbose('Command : ' + ' '.join(cmd))
-            command.launch_cmd_displays_output(cmd, self.context['VERBOSE'], self.context['DEBUG'])
+            volumes = ['/var/run/docker.sock:/tmp/docker.sock', '/etc/resolv.conf:/tmp/resolv.conf']
+            docker.client.containers.run(
+                'mgood/resolvable', remove=True, detach=True, network=network,
+                hostname='docker-dns', name=self.dns_container_name, volumes=volumes)
         except Exception as e:
-            puts(colored.red('[ERROR]') + " Can't start the DNS, maybe it exists already ?")
-            print('       -> {}'.format(e))
+            click.echo(click.style('[ERROR]', fg='red') + " Can't start the DNS ...")
+            click.echo('       -> {}'.format(e))
             sys.exit(1)
 
 
