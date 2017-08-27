@@ -5,8 +5,8 @@ from requests.exceptions import ConnectionError
 CTS_INFO = dict()
 RUNNING_CTS = 0
 PARAMS = utils.kwargs_from_env()
-BASE_URL = None if 'BASE_URL' not in PARAMS else PARAMS['BASE_URL']
-TLS = None if 'TLS' not in PARAMS else PARAMS['TLS']
+BASE_URL = None if 'base_url' not in PARAMS else PARAMS['base_url']
+TLS = None if 'tls' not in PARAMS else PARAMS['tls']
 APICLIENT = APIClient(base_url=BASE_URL, tls=TLS)
 CLIENT = DockerClient.from_env()
 
