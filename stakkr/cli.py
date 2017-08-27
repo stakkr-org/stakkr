@@ -7,8 +7,8 @@ import sys
 import click
 from click_plugins import with_plugins
 from pkg_resources import iter_entry_points
-from . import dns as dns_manager, package_utils
-from .docker_actions import get_running_containers_name
+from stakkr import dns as dns_manager, package_utils
+from stakkr.docker_actions import get_running_containers_name
 
 
 @with_plugins(iter_entry_points('stakkr.plugins'))
@@ -25,7 +25,7 @@ linking and managing everything for you.""")
 def stakkr(ctx, config, debug, verbose):
     """click group, set context and main object"""
 
-    from .actions import StakkrActions
+    from stakkr.actions import StakkrActions
 
     # Add the virtual env in the path
     venv_base = package_utils.get_venv_basedir()
@@ -116,7 +116,7 @@ def mysql(ctx, command: tuple):
 def refresh_plugins(ctx):
     """See command Help"""
 
-    from .plugins import add_plugins
+    from stakkr.plugins import add_plugins
 
     print(click.style('Adding plugins from plugins/', fg='green'))
     plugins = add_plugins()
@@ -204,6 +204,8 @@ def debug_mode():
 
 
 def main():
+    """Main function when the CLI Script is called directly"""
+
     try:
         stakkr(obj={})
     except Exception as error:

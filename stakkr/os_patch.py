@@ -6,7 +6,7 @@ and later for Mac (TBD)
 import os
 import subprocess
 from click import echo, secho
-from . import docker_actions
+from stakkr import docker_actions
 
 
 def start(project_name: str):

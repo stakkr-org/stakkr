@@ -3,10 +3,10 @@ Setup post actions, used in the main setup.py
 """
 
 import os
-import sys
 import shutil
-from stakkr import package_utils
+import sys
 from setuptools.command.install import install
+from stakkr import package_utils
 
 
 try:

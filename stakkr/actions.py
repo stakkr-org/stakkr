@@ -7,8 +7,8 @@ import subprocess
 import sys
 import click
 from clint.textui import colored, puts, columns
-from . import command, docker_actions, os_patch, package_utils
-from .configreader import Config
+from stakkr import command, docker_actions, os_patch, package_utils
+from stakkr.configreader import Config
 
 
 class StakkrActions():

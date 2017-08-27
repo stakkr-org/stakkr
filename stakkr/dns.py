@@ -6,7 +6,7 @@ current stakkr network
 import sys
 import click
 from docker.errors import DockerException
-from . import docker_actions
+from stakkr import docker_actions
 CT_NAME = 'docker_dns'
 
 

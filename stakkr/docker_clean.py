@@ -5,7 +5,7 @@ That saves a lot of space ... should be removed later by "docker ***** prune
 """
 
 import sys
-from subprocess import Popen, PIPE, STDOUT
+from subprocess import check_output, CalledProcessError, STDOUT
 import click
 
 
@@ -36,8 +36,8 @@ def clean(force: bool, verbose: bool):
 def remove_containers(force: bool, verbose: bool):
     """Remove exited containers"""
 
-    containers = _exec_cmd(['docker', 'ps', '--no-trunc', '-a', '-q', '-f', 'status=exited'])
-
+    res = _exec_cmd(['docker', 'ps', '--no-trunc', '-a', '-q', '-f', 'status=exited'])
+    containers = res.splitlines()
     if len(containers) is 0:
         print('No exited container to remove')
         return
@@ -49,17 +49,16 @@ def remove_containers(force: bool, verbose: bool):
         _remove_entry('container', container.decode(), force)
 
 
-
 def remove_images(force: bool):
     """Prune all images"""
 
-    images = _exec_cmd(['docker', 'image', 'ls'])
-
-    if len(images) is 0:
+    res = _exec_cmd(['docker', 'image', 'ls'])
+    images = res.splitlines()
+    if len(images) is 1:
         print('No image to remove')
         return
 
-    print('Removing {} image(s)'.format(len(images)))
+    print('Removing {} image(s)'.format(len(images) - 1))
     if force is True:
         _prune_images()
 
@@ -67,8 +66,8 @@ def remove_images(force: bool):
 def remove_networks(force: bool, verbose: bool):
     """Remove custom networks (not systems)"""
 
-    networks = _exec_cmd(['docker', 'network', 'ls', '--no-trunc', '-q', '--filter', 'type=custom'])
-
+    res = _exec_cmd(['docker', 'network', 'ls', '--no-trunc', '-q', '--filter', 'type=custom'])
+    networks = res.splitlines()
     if len(networks) is 0:
         print('No network to remove')
         return
@@ -83,8 +82,8 @@ def remove_networks(force: bool, verbose: bool):
 def remove_volumes(force: bool, verbose: bool):
     """Remove dangling volumes"""
 
-    volumes = _exec_cmd(['docker', 'volume', 'ls', '-q', '-f', 'dangling=true'])
-
+    res = _exec_cmd(['docker', 'volume', 'ls', '-q', '-f', 'dangling=true'])
+    volumes = res.splitlines()
     if len(volumes) is 0:
         print('No volume to remove')
         return
@@ -106,19 +105,20 @@ def _display_entry_info(entry_type: str, entry: str, verbose: bool):
     if entry_type != 'container':
         base_cmd += [entry_type]
 
-    info = _exec_cmd(base_cmd + ['inspect', '--format={{.Name}}', entry])[0]
+    res = _exec_cmd(base_cmd + ['inspect', '--format={{.Name}}', entry])
+    info = res.splitlines()[0]
     print('  Removing {} {}'.format(entry_type, info.decode()))
 
 
 def _exec_cmd(cmd: list):
-    return Popen(cmd, stdout=PIPE, stderr=STDOUT).communicate()[0].splitlines()
+    try:
+        return check_output(cmd, stderr=STDOUT)
+    except CalledProcessError:
+        click.secho('Error removing images with "{}"'.format(' '.join(cmd)), fg='red')
 
 
 def _prune_images():
-    try:
-        _exec_cmd(['docker', 'image', 'prune', '--all', '--force'])
-    except Exception:
-        click.secho('Error removing images', fg='red')
+    _exec_cmd(['docker', 'image', 'prune', '--all', '--force'])
 
 
 def _remove_entry(entry_type: str, entry: str, force: bool):
@@ -136,6 +136,8 @@ def _remove_entry(entry_type: str, entry: str, force: bool):
 
 
 def main():
+    """Main function when the CLI Script is called directly"""
+
     try:
         clean()
     except Exception as error:
@@ -151,7 +153,7 @@ def main():
 
         click.echo(msg)
         print()
-        # raise e
+        # raise error
         sys.exit(1)
 
 

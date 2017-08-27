@@ -5,7 +5,7 @@ import os
 import sys
 from configobj import ConfigObj, flatten_errors
 from validate import Validator
-from . import package_utils
+from stakkr import package_utils
 
 
 class Config():

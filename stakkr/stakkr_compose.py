@@ -6,14 +6,17 @@ import os
 import subprocess
 import sys
 import click
-from . import package_utils
-from .configreader import Config
+from stakkr import package_utils
+from stakkr.configreader import Config
 
 
-@click.command(help="Wrapper for docker-compose", context_settings=dict(ignore_unknown_options=True))
+@click.command(help="Wrapper for docker-compose",
+               context_settings=dict(ignore_unknown_options=True))
 @click.option('--config', '-c', help="Override the conf/compose.ini")
 @click.argument('command', nargs=-1, type=click.UNPROCESSED)
 def cli(config: str, command):
+    """Command line entry point"""
+
     main_config = get_main_config(config)
     set_env_values_from_conf(main_config)
 

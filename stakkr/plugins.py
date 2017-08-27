@@ -2,7 +2,6 @@
 
 import re
 import subprocess
-
 from os import listdir, path
 
 
@@ -27,7 +26,7 @@ def _add_plugin_from_dir(plugins: list, full_path: str):
     for plugin in files:
         plugin_name = full_path.strip('/').split('/')[1]
         try:
-            cmd_install = ['pip', 'install', '--upgrade', full_path]
+            cmd_install = ['pip', 'install', '-e', full_path]
             subprocess.check_call(cmd_install, stdout=subprocess.DEVNULL)
             print('  -> Plugin "{}" added'.format(plugin_name))
             plugins.append(plugin_name)
@@ -54,7 +53,7 @@ def _get_subfolders(directory: str):
 def _remove_plugins():
     cmd = ['pip', 'freeze']
     res = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    regex = re.compile('^stakkr(.+?)==(.+)$', re.IGNORECASE)
+    regex = re.compile('.+=stakkr(.+)$', re.IGNORECASE)
 
     for line in res.stdout:
         plugin = re.search(regex, line.decode())
