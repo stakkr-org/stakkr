@@ -33,7 +33,6 @@ def run_dns(project_name: str):
     # Started ? Only attach it to the current network
     if docker.container_running(CT_NAME) is True:
         docker.add_container_to_network(CT_NAME, network)
-        click.echo('{} attached to network {}'.format(CT_NAME, network))
         return
 
     # Not started ? Create it and add it to the network

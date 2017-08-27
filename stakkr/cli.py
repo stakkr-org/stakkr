@@ -41,7 +41,7 @@ def stakkr(ctx, config, debug, verbose):
 @stakkr.command(help="""Enter a container to perform direct actions such as
 install packages, run commands, etc.""")
 @click.option('--user', '-u', help="User's name. Valid choices : www-data or root")
-@click.option('--tty/--no-tty', is_flag=True, default=True, help="Force Console to use a TTY")
+@click.option('--tty/--no-tty', '-t/ ', is_flag=True, default=True, help="Use a TTY")
 @click.argument('container', required=True)
 @click.pass_context
 def console(ctx, container: str, user: str, tty: bool):
@@ -80,7 +80,7 @@ Examples:\n
 """, name='exec', context_settings=dict(ignore_unknown_options=True))
 @click.pass_context
 @click.option('--user', '-u', help="User's name. Be careful, each container have its own users.")
-@click.option('--tty/--no-tty', is_flag=True, default=True, help="Force Exec to use a TTY")
+@click.option('--tty/--no-tty', '-t/ ', is_flag=True, default=True, help="Use a TTY")
 @click.argument('container', required=True)
 @click.argument('command', required=True, nargs=-1, type=click.UNPROCESSED)
 def exec_cmd(ctx, user: str, container: str, command: tuple, tty: bool):
