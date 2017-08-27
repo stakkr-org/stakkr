@@ -1,11 +1,14 @@
-import click
-import os
-import sys
-import subprocess
+"""
+Stakkr main controller. Used by the CLI to do all its actions
+"""
 
-from . import command, docker, package_utils
-from .configreader import Config
+import os
+import subprocess
+import sys
+import click
 from clint.textui import colored, puts, columns
+from . import command, docker, os_patch, package_utils
+from .configreader import Config
 
 
 class StakkrActions():
@@ -25,14 +28,15 @@ class StakkrActions():
         # Work with directories and move to the right place
         self.stakkr_base_dir = base_dir
         self.context = ctx
-        self.current_dir = os.getcwd()
-        self.current_dir_relative = self._get_relative_dir()
+        self.cwd_abs = os.getcwd()
+        self.cwd_relative = self._get_relative_dir()
         os.chdir(self.stakkr_base_dir)
 
         # Set some general variables
-        self.dns_container_name = 'docker_dns'
         self.config_file = ctx['CONFIG']
         self.compose_base_cmd = self._get_compose_base_cmd()
+        self.cts = []
+        self.running_cts = []
 
         # Get info from config
         self.config = self._get_config()
@@ -40,16 +44,17 @@ class StakkrActions():
         self.project_name = self.main_config.get('project_name')
 
 
-    def console(self, ct: str, user: str, tty: bool):
+    def console(self, container: str, user: str, tty: bool):
         """Enter a container (stakkr allows only apache / php and mysql)"""
 
-        docker.check_cts_are_running(self.project_name, self.config_file)
+        docker.check_cts_are_running(self.project_name)
 
         tty = 't' if tty is True else ''
-        cmd = ['docker', 'exec', '-u', user, '-i' + tty, docker.get_ct_name(ct), docker.guess_shell(ct)]
+        cmd = ['docker', 'exec', '-u', user, '-i' + tty]
+        cmd += [docker.get_ct_name(container), docker.guess_shell(container)]
         subprocess.call(cmd)
 
-        self._verbose('Command : "' + ' '.join(cmd) + '"')
+        command.verbose(self.context['VERBOSE'], 'Command : "' + ' '.join(cmd) + '"')
 
 
     def get_services_ports(self):
@@ -60,15 +65,18 @@ class StakkrActions():
         running_cts, cts = docker.get_running_containers(self.project_name)
 
         text = ''
-        for ct, ct_info in cts.items():
+        for container, ct_info in cts.items():
             if ct_info['compose_name'] not in self._services_to_display:
                 continue
             options = self._services_to_display[ct_info['compose_name']]
-            url = self._get_url(options['url'], ct_info['compose_name'], dns_started)
-            text += '  - For {}'.format(colored.yellow(options['name'])).ljust(55, ' ') + ' : ' + url + '\n'
+            url = get_url(options['url'], ct_info['compose_name'], dns_started)
+            name = colored.yellow(options['name'])
+            text += '  - For {}'.format(name).ljust(55, ' ') + ' : ' + url + '\n'
 
             if 'extra_port' in options:
-                text += ' '*3 + ' ... in your containers use the port {}\n'.format(options['extra_port'])
+                port = str(options['extra_port'])
+                text += ' '*3 + ' ... in your containers use the port ' + port
+                text += '\n'
 
         return text
 
@@ -76,32 +84,16 @@ class StakkrActions():
     def exec(self, container: str, user: str, args: tuple, tty: bool):
         """Run a command from outside to any container. Wrapped into /bin/sh"""
 
-        docker.check_cts_are_running(self.project_name, self.config_file)
+        docker.check_cts_are_running(self.project_name)
 
         # Protect args to avoid strange behavior in exec
         args = ['"{}"'.format(arg) for arg in args]
 
         tty = 't' if tty is True else ''
         cmd = ['docker', 'exec', '-u', user, '-i' + tty, docker.get_ct_name(container), 'sh', '-c']
-        cmd += ["""test -d "/var/{0}" && cd "/var/{0}" ; exec {1}""".format(self.current_dir_relative, ' '.join(args))]
-        self._verbose('Command : "' + ' '.join(cmd) + '"')
+        cmd += ["""test -d "/var/{0}" && cd "/var/{0}" ; exec {1}""".format(self.cwd_relative, ' '.join(args))]
+        command.verbose(self.context['VERBOSE'], 'Command : "' + ' '.join(cmd) + '"')
         subprocess.call(cmd, stdin=sys.stdin)
-
-
-    def manage_dns(self, action: str):
-        """Starts or stop the DNS forwarder"""
-
-        dns_started = docker.container_running(self.dns_container_name)
-        if dns_started is True and action == 'stop':
-            dns = docker.client.containers.get('docker_dns')
-            return dns.stop()
-
-        elif action == 'start':
-            self._docker_run_dns()
-            return
-
-        click.echo(click.style('[ERROR]', fg='red') + " DNS already stopped")
-        sys.exit(1)
 
 
     def start(self, pull: bool, recreate: bool):
@@ -111,7 +103,7 @@ class StakkrActions():
         debug = self.context['DEBUG']
 
         try:
-            docker.check_cts_are_running(self.project_name, self.config_file)
+            docker.check_cts_are_running(self.project_name)
             puts(colored.yellow('[INFO]') + ' stakkr is already started ...')
             sys.exit(0)
         except Exception:
@@ -122,14 +114,14 @@ class StakkrActions():
 
         recreate_param = '--force-recreate' if recreate is True else '--no-recreate'
         cmd = self.compose_base_cmd + ['up', '-d', recreate_param, '--remove-orphans']
-        self._verbose('Command: ' + ' '.join(cmd))
+        command.verbose(self.context['VERBOSE'], 'Command: ' + ' '.join(cmd))
         command.launch_cmd_displays_output(cmd, verb, debug, True)
 
         self.running_cts, self.cts = docker.get_running_containers(self.project_name)
         if self.running_cts is 0:
             raise SystemError("Couldn't start the containers, run the start with '-v' and '-d'")
 
-        self._patch_oses_start()
+        os_patch.start(self.project_name)
         self._run_iptables_rules()
         self._run_services_post_scripts()
 
@@ -138,7 +130,7 @@ class StakkrActions():
         """Returns a nice table with the list of started containers"""
 
         try:
-            self.running_cts, self.cts = docker.check_cts_are_running(self.project_name, self.config_file)
+            self.running_cts, self.cts = docker.check_cts_are_running(self.project_name)
         except Exception:
             puts(colored.yellow('[INFO]') + ' stakkr is currently stopped')
             sys.exit(0)
@@ -155,9 +147,9 @@ class StakkrActions():
         verb = self.context['VERBOSE']
         debug = self.context['DEBUG']
 
-        docker.check_cts_are_running(self.project_name, self.config_file)
+        docker.check_cts_are_running(self.project_name)
         command.launch_cmd_displays_output(self.compose_base_cmd + ['stop'], verb, debug, True)
-        self._patch_oses_stop()
+        os_patch.stop(self.project_name)
 
         self.running_cts, self.cts = docker.get_running_containers(self.project_name)
         if self.running_cts is not 0:
@@ -169,28 +161,7 @@ class StakkrActions():
         if os.path.isfile(service_script) is True:
             cmd = ['bash', service_script, docker.get_ct_item(service, 'name')]
             subprocess.call(cmd)
-            self._verbose('Service Script : ' + ' '.join(cmd))
-
-
-    def _docker_run_dns(self):
-        network = self.project_name + '_stakkr'
-
-        # Started ? Only attach it to the current network
-        if docker.container_running(self.dns_container_name) is True:
-            docker.add_container_to_network(self.dns_container_name, network)
-            self._verbose('{} attached to network {}'.format(self.dns_container_name, network))
-            return
-
-        # Not started ? Create it and add it to the network
-        try:
-            volumes = ['/var/run/docker.sock:/tmp/docker.sock', '/etc/resolv.conf:/tmp/resolv.conf']
-            docker.client.containers.run(
-                'mgood/resolvable', remove=True, detach=True, network=network,
-                hostname='docker-dns', name=self.dns_container_name, volumes=volumes)
-        except Exception as e:
-            click.echo(click.style('[ERROR]', fg='red') + " Can't start the DNS ...")
-            click.echo('       -> {}'.format(e))
-            sys.exit(1)
+            command.verbose(self.context['VERBOSE'], 'Service Script : ' + ' '.join(cmd))
 
 
     def _get_compose_base_cmd(self):
@@ -211,49 +182,10 @@ class StakkrActions():
 
 
     def _get_relative_dir(self):
-        if self.current_dir.startswith(self.stakkr_base_dir):
-            return self.current_dir[len(self.stakkr_base_dir):].lstrip('/')
+        if self.cwd_abs.startswith(self.stakkr_base_dir):
+            return self.cwd_abs[len(self.stakkr_base_dir):].lstrip('/')
 
         return ''
-
-
-    def _get_url(self, service_url: str, service: str, dns_started: bool):
-        name = docker.get_ct_name(service) if dns_started else docker.get_ct_item(service, 'ip')
-
-        return service_url.format(name)
-
-
-    def _patch_oses_start(self):
-        """For Windows we need to do a few manipulations to be able to access
-        our dev environment from the host ...
-
-        Found here: https://github.com/docker/for-win/issues/221#issuecomment-270576243"""
-
-        if os.name not in ['nt']:
-            return
-
-        docker.client.containers.run(
-            'justincormack/nsenter1', remove=True, tty=True, privileged=True, network_mode='none',
-            pid_mode='host', command='bin/sh -c "iptables -A FORWARD -j ACCEPT"')
-
-        subnet = docker.get_subnet(self.project_name)
-        switch_ip = docker.get_switch_ip()
-        msg = 'We need to create a route for the network {} via {} to work...'
-        click.secho(msg.format(subnet, switch_ip), fg='yellow', nl=False)
-        subprocess.call(['route', 'add', subnet, 'MASK', '255.255.255.0', switch_ip])
-        print()
-
-
-    def _patch_oses_stop(self):
-        """Opposite actions than _patch_oses_start()"""
-
-        if os.name not in ['nt']:
-            return
-
-        subnet = docker.get_subnet(self.project_name)
-        click.secho("Let's remove the route that has been added for {}...".format(subnet), fg='yellow', nl=False)
-        subprocess.call(['route', 'delete', subnet])
-        print()
 
 
     def _print_status_headers(self, dns_started: bool):
@@ -273,8 +205,8 @@ class StakkrActions():
 
 
     def _print_status_body(self, dns_started: bool):
-        for ct in sorted(self.cts.keys()):
-            ct_data = self.cts[ct]
+        for container in sorted(self.cts.keys()):
+            ct_data = self.cts[container]
             if ct_data['ip'] == '':
                 continue
 
@@ -297,7 +229,7 @@ class StakkrActions():
                 click.secho(msg, fg='red')
                 continue
 
-            self._verbose(msg)
+            command.verbose(self.context['VERBOSE'], msg)
 
 
     def _run_services_post_scripts(self):
@@ -314,6 +246,8 @@ class StakkrActions():
             self._call_service_post_script(service)
 
 
-    def _verbose(self, message: str):
-        if self.context['VERBOSE'] is True:
-            print(colored.green('[VERBOSE]') + ' {}'.format(message), file=sys.stderr)
+def get_url(service_url: str, service: str, dns_started: bool):
+    """Build URL to be displayed"""
+    name = docker.get_ct_name(service) if dns_started else docker.get_ct_item(service, 'ip')
+
+    return service_url.format(name)

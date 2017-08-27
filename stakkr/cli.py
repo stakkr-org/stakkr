@@ -1,6 +1,11 @@
-import click
+"""
+CLI Entry Point. From click, build stakkr and give all options to manage
+services to be launched, stopped, etc.
+"""
+
 import sys
-from . import package_utils
+import click
+from . import dns as dns_manager, package_utils
 from .docker import get_running_containers_name
 from click_plugins import with_plugins
 from pkg_resources import iter_entry_points
@@ -18,8 +23,9 @@ linking and managing everything for you.""")
 @click.option('--verbose', '-v', is_flag=True)
 @click.pass_context
 def stakkr(ctx, config, debug, verbose):
-    from stakkr.actions import StakkrActions
-    global running_cts
+    """click group, set context and main object"""
+
+    from .actions import StakkrActions
 
     # Add the virtual env in the path
     venv_base = package_utils.get_venv_basedir()
@@ -32,12 +38,15 @@ def stakkr(ctx, config, debug, verbose):
     ctx.obj['CTS'] = get_running_containers_name(ctx.obj['STAKKR'].project_name)
 
 
-@stakkr.command(help="Enter a container to perform direct actions such as install packages, run commands, etc.")
+@stakkr.command(help="""Enter a container to perform direct actions such as
+install packages, run commands, etc.""")
 @click.option('--user', '-u', help="User's name. Valid choices : www-data or root")
 @click.option('--tty/--no-tty', is_flag=True, default=True, help="Force Console to use a TTY")
 @click.argument('container', required=True)
 @click.pass_context
 def console(ctx, container: str, user: str, tty: bool):
+    """See command Help"""
+
     if len(ctx.obj['CTS']) is not 0:
         ct_choice = click.Choice(ctx.obj['CTS'])
         ct_choice.convert(container, None, ctx)
@@ -45,18 +54,19 @@ def console(ctx, container: str, user: str, tty: bool):
     ctx.obj['STAKKR'].console(container, _get_cmd_user(user, container), tty)
 
 
-@stakkr.command(
-    help="""Start or Stop the DNS forwarder. Useful to access your containers directly by their names.
-Does not work under Windows as we can't mount /etc/resolv.conf
+@stakkr.command(help="""Start or Stop the DNS forwarder.
+Useful to access your containers directly by their names.
+Does not work under Windows as we can't mount /etc/resolv.conf.
 
-Valid values for ACTION : 'start' or 'stop'""",
-    name="dns"
-    )
+Valid values for ACTION : 'start' or 'stop'""", name="dns")
 @click.argument('action', required=True, type=click.Choice(['start', 'stop']))
 @click.pass_context
 def dns(ctx, action: str):
-    ctx.obj['STAKKR'].manage_dns(action)
-    click.echo(click.style('[{}]'.format(action.upper()), fg='green') + ' DNS forwarder ...', nl=False)
+    """See command Help"""
+
+    dns_manager.manage_dns(ctx.obj['STAKKR'].project_name, action)
+    action = click.style('[{}]'.format(action.upper()), fg='green')
+    click.echo(action + ' DNS forwarder ...', nl=False)
     click.echo('Wait a little before calling services by their DNS')
     _show_status(ctx)
 
@@ -67,21 +77,23 @@ Examples:\n
 - ``stakkr -v exec mysql mysqldump -p'$MYSQL_ROOT_PASSWORD' mydb > /tmp/backup.sql``\n
 - ``stakkr exec php php -v`` : Execute the php binary in the php container with option -v\n
 - ``stakkr exec apache service apache2 restart``\n
-""", context_settings=dict(ignore_unknown_options=True))
+""", name='exec', context_settings=dict(ignore_unknown_options=True))
 @click.pass_context
 @click.option('--user', '-u', help="User's name. Be careful, each container have its own users.")
 @click.option('--tty/--no-tty', is_flag=True, default=True, help="Force Exec to use a TTY")
 @click.argument('container', required=True)
 @click.argument('command', required=True, nargs=-1, type=click.UNPROCESSED)
-def exec(ctx, user: str, container: str, command: tuple, tty: bool):
+def exec_cmd(ctx, user: str, container: str, command: tuple, tty: bool):
+    """See command Help"""
+
     if len(ctx.obj['CTS']) is not 0:
         click.Choice(ctx.obj['CTS']).convert(container, None, ctx)
 
     ctx.obj['STAKKR'].exec(container, _get_cmd_user(user, container), command, tty)
 
 
-@stakkr.command(
-    help="""`stakkr mysql` is a wrapper for the mysql binary located in the mysql service.
+@stakkr.command(help="""`stakkr mysql` is a wrapper for the mysql binary
+located in the mysql service.
 
 You can run any mysql command as root, such as :\n
 - ``stakkr mysql -e "CREATE DATABASE mydb"`` to create a DB from outside\n
@@ -93,14 +105,18 @@ For scripts, you must use the relative path.
 @click.pass_context
 @click.argument('command', nargs=-1, type=click.UNPROCESSED)
 def mysql(ctx, command: tuple):
+    """See command Help"""
+
     command = ('mysql', '-p$MYSQL_ROOT_PASSWORD') + command
-    ctx.invoke(exec, user='root', container='mysql', command=command)
+    ctx.invoke(exec_cmd, user='root', container='mysql', command=command)
 
 
 @stakkr.command(help='Required to be launched if you install a new plugin', name="refresh-plugins")
 @click.pass_context
 def refresh_plugins(ctx):
-    from stakkr.plugins import add_plugins
+    """See command Help"""
+
+    from .plugins import add_plugins
 
     print(click.style('Adding plugins from plugins/', fg='green'))
     plugins = add_plugins()
@@ -117,6 +133,8 @@ def refresh_plugins(ctx):
 @click.option('--recreate', '-r', help="Recreate all containers", is_flag=True)
 @click.pass_context
 def restart(ctx, pull: bool, recreate: bool):
+    """See command Help"""
+
     print(click.style('[RESTARTING]', fg='green') + ' your stakkr services')
     try:
         ctx.invoke(stop)
@@ -131,6 +149,8 @@ def restart(ctx, pull: bool, recreate: bool):
 @click.option('--recreate', '-r', help="Recreate all containers", is_flag=True)
 @click.pass_context
 def start(ctx, pull: bool, recreate: bool):
+    """See command Help"""
+
     print(click.style('[STARTING]', fg='green') + ' your stakkr services')
     ctx.obj['STAKKR'].start(pull, recreate)
     _show_status(ctx)
@@ -139,22 +159,26 @@ def start(ctx, pull: bool, recreate: bool):
 @stakkr.command(help="Display a list of running containers")
 @click.pass_context
 def status(ctx):
+    """See command Help"""
+
     ctx.obj['STAKKR'].status()
 
 
 @stakkr.command(help="Stop the services")
 @click.pass_context
 def stop(ctx):
+    """See command Help"""
+
     print(click.style('[STOPPING]', fg='yellow') + ' your stakkr services')
     ctx.obj['STAKKR'].stop()
 
 
-def _get_cmd_user(user: str, ct: str):
+def _get_cmd_user(user: str, container: str):
     users = {'apache': 'www-data', 'php': 'www-data'}
 
     cmd_user = 'root' if user is None else user
-    if ct in users and user is None:
-        cmd_user = users[ct]
+    if container in users and user is None:
+        cmd_user = users[container]
 
     return cmd_user
 
@@ -171,6 +195,8 @@ def _show_status(ctx):
 
 
 def debug_mode():
+    """Guess if we are in debug mode, useful to display runtime errors"""
+
     if '--debug' in sys.argv or '-d' in sys.argv:
         return True
 
@@ -180,7 +206,7 @@ def debug_mode():
 def main():
     try:
         stakkr(obj={})
-    except Exception as e:
+    except Exception as error:
         msg = click.style(r""" ______ _____  _____   ____  _____
 |  ____|  __ \|  __ \ / __ \|  __ \
 | |__  | |__) | |__) | |  | | |__) |
@@ -189,11 +215,11 @@ def main():
 |______|_|  \_\_|  \_\\____/|_|  \_\
 
 """, fg='yellow')
-        msg += click.style('{}'.format(e), fg='red')
+        msg += click.style('{}'.format(error), fg='red')
         print(msg + '\n', file=sys.stderr)
 
         if debug_mode() is True:
-            raise e
+            raise error
 
         sys.exit(1)
 

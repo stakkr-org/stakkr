@@ -3,10 +3,9 @@
 
 import os
 import sys
-
 from configobj import ConfigObj, flatten_errors
-from stakkr import package_utils
 from validate import Validator
+from . import package_utils
 
 
 class Config():
@@ -43,7 +42,8 @@ class Config():
     def _parse(self):
         """Parse the config from configspecs that is a file either local or from a package"""
 
-        config = ConfigObj(infile=self.config_file, configspec=package_utils.get_file('static', 'configspec.ini'))
+        config_spec_file = package_utils.get_file('static', 'configspec.ini')
+        config = ConfigObj(infile=self.config_file, configspec=config_spec_file)
 
         validator = Validator()
         validated = config.validate(validator, preserve_errors=True)
@@ -55,7 +55,7 @@ class Config():
 
 
     def _register_errors(self, config: dict, validated):
-        for [sectionList, key, error] in flatten_errors(config, validated):
+        for [section_list, key, error] in flatten_errors(config, validated):
             if key is not None:
                 error = 'Missing' if error is False else str(error)
                 self.errors[key] = error

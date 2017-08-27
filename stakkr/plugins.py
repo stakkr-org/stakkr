@@ -27,12 +27,14 @@ def _add_plugin_from_dir(plugins: list, full_path: str):
     for plugin in files:
         plugin_name = full_path.strip('/').split('/')[1]
         try:
-            subprocess.check_call(['pip', 'install', '--upgrade', full_path], stdout=subprocess.DEVNULL)
+            cmd_install = ['pip', 'install', '--upgrade', full_path]
+            subprocess.check_call(cmd_install, stdout=subprocess.DEVNULL)
             print('  -> Plugin "{}" added'.format(plugin_name))
             plugins.append(plugin_name)
 
-        except Exception as e:
-            raise TypeError('Problem installing {} (Reason: {})'.format(plugin_name[:-3], e))
+        except Exception as error:
+            msg = 'Problem installing {} (Reason: {})'.format(plugin_name[:-3], error)
+            raise TypeError(msg)
 
     return plugins
 

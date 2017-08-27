@@ -4,23 +4,24 @@ Clean unused containers, images, volumes and networks
 That saves a lot of space ... should be removed later by "docker ***** prune
 """
 
-import click
 import sys
+from subprocess import Popen, PIPE, STDOUT
+import click
 
-from subprocess import Popen, DEVNULL, PIPE, STDOUT
 
-
-@click.command(
-    help="Clean Docker containers, images, volumes and networks that are not in use",
-    name="docker-clean")
+@click.command(help="""Clean Docker containers, images, volumes and networks
+that are not in use""", name="docker-clean")
 @click.option('--force', '-f', help="Do it", is_flag=True)
-@click.option('--verbose', '-v', help="Display more information about what is removed", is_flag=True)
+@click.option('--verbose', '-v', help="Display more information about what is removed",
+              is_flag=True)
 def clean(force: bool, verbose: bool):
+    """See command help"""
+
     click.secho('Clean Docker stopped containers, images, volumes and networks', fg='green')
 
     remove_containers(force, verbose)
     print()
-    remove_images(force, verbose)
+    remove_images(force)
     print()
     remove_volumes(force, verbose)
     print()
@@ -33,9 +34,11 @@ def clean(force: bool, verbose: bool):
 
 
 def remove_containers(force: bool, verbose: bool):
+    """Remove exited containers"""
+
     containers = _exec_cmd(['docker', 'ps', '--no-trunc', '-a', '-q', '-f', 'status=exited'])
 
-    if len(containers) == 0:
+    if len(containers) is 0:
         print('No exited container to remove')
         return
 
@@ -47,10 +50,12 @@ def remove_containers(force: bool, verbose: bool):
 
 
 
-def remove_images(force: bool, verbose: bool):
+def remove_images(force: bool):
+    """Prune all images"""
+
     images = _exec_cmd(['docker', 'image', 'ls'])
 
-    if len(images) == 0:
+    if len(images) is 0:
         print('No image to remove')
         return
 
@@ -60,9 +65,11 @@ def remove_images(force: bool, verbose: bool):
 
 
 def remove_networks(force: bool, verbose: bool):
+    """Remove custom networks (not systems)"""
+
     networks = _exec_cmd(['docker', 'network', 'ls', '--no-trunc', '-q', '--filter', 'type=custom'])
 
-    if len(networks) == 0:
+    if len(networks) is 0:
         print('No network to remove')
         return
 
@@ -74,9 +81,11 @@ def remove_networks(force: bool, verbose: bool):
 
 
 def remove_volumes(force: bool, verbose: bool):
+    """Remove dangling volumes"""
+
     volumes = _exec_cmd(['docker', 'volume', 'ls', '-q', '-f', 'dangling=true'])
 
-    if len(volumes) == 0:
+    if len(volumes) is 0:
         print('No volume to remove')
         return
 
@@ -108,7 +117,7 @@ def _exec_cmd(cmd: list):
 def _prune_images():
     try:
         _exec_cmd(['docker', 'image', 'prune', '--all', '--force'])
-    except Exception as e:
+    except Exception:
         click.secho('Error removing images', fg='red')
 
 
@@ -121,15 +130,15 @@ def _remove_entry(entry_type: str, entry: str, force: bool):
         if entry_type != 'container':
             base_cmd += [entry_type]
         _exec_cmd(base_cmd + ['rm', entry])
-    except Exception as e:
-        output = e.output.decode()
+    except Exception as error:
+        output = str(error)
         click.secho('Error removing a {}: {}'.format(entry_type, output), fg='red')
 
 
 def main():
     try:
         clean()
-    except Exception as e:
+    except Exception as error:
         msg = click.style(r""" ______ _____  _____   ____  _____
 |  ____|  __ \|  __ \ / __ \|  __ \
 | |__  | |__) | |__) | |  | | |__) |
@@ -138,7 +147,7 @@ def main():
 |______|_|  \_\_|  \_\\____/|_|  \_\
 
 """, fg='yellow')
-        msg += click.style('{}'.format(e), fg='red')
+        msg += click.style('{}'.format(error), fg='red')
 
         click.echo(msg)
         print()

@@ -1,3 +1,7 @@
+"""
+Setup post actions, used in the main setup.py
+"""
+
 import os
 import sys
 import shutil
@@ -8,18 +12,25 @@ from setuptools.command.install import install
 try:
     import click
 
-    @click.command(help="Initialize for the first time stakkr by copying templates and directory structure")
-    @click.option('--force', '-f', help="Force recreate directories structure", is_flag=True)
+    @click.command(help="""Initialize for the first time stakkr by copying
+templates and directory structure""")
+    @click.option('--force', '-f', help="Force recreate directories structure",
+                  is_flag=True)
     def init(force: bool):
+        """CLI Entry point, when initializing stakkr manually"""
 
-        if os.path.isfile(package_utils.get_venv_basedir() + '/conf/compose.ini') and force is False:
+        config_file = package_utils.get_venv_basedir() + '/conf/compose.ini'
+        if os.path.isfile(config_file) and force is False:
             click.secho('Config file (conf/compose.ini) already present. Leaving.', fg='yellow')
             return
 
-        click.secho('Config file (conf/compose.ini) not present, do not forget to create it', fg='yellow')
+        msg = 'Config file (conf/compose.ini) not present, do not forget to create it'
+        click.secho(msg, fg='yellow')
         _post_install(force)
 except ImportError:
     def init():
+        """If click is not installed, display that message"""
+
         print('Stakkr has not been installed yet')
         sys.exit(1)
 
@@ -86,6 +97,8 @@ def _copy_file(venv_dir: str, source_file: str, force: bool):
 
 
 class StakkrPostInstall(install):
+    """Class called by the main setup.py"""
+
     def run(self):
         install.run(self)
 
@@ -93,5 +106,6 @@ class StakkrPostInstall(install):
             package_utils.get_venv_basedir()
             _post_install(False)
         except OSError:
-            msg = 'You must run setup.py from a virtualenv if you want to have the templates installed'
+            msg = 'You must run setup.py from a virtualenv if you want to have '
+            msg += 'the templates installed'
             print(msg)

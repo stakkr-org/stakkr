@@ -1,11 +1,13 @@
-import click
+"""
+CLI Tool that wrap docker-compose and build it from what has been taken from config
+"""
+
 import os
 import subprocess
 import sys
-
-from stakkr import package_utils
-from stakkr.configreader import Config
-verbose = click.style('[VERBOSE] ', fg='green')
+import click
+from . import package_utils
+from .configreader import Config
 
 
 @click.command(help="Wrapper for docker-compose", context_settings=dict(ignore_unknown_options=True))
@@ -30,13 +32,15 @@ def cli(config: str, command):
 
     base_cmd = ['docker-compose', '-f', compose_file] + services + ['-p', project_name]
 
-    # _dump_compose_config(base_cmd, project_name)
-
-    click.echo(verbose + 'Compose command: ' + ' '.join(base_cmd + list(command)), err=True)
+    msg = click.style('[VERBOSE] ', fg='green')
+    msg += 'Compose command: ' + ' '.join(base_cmd + list(command))
+    click.echo(msg, err=True)
     subprocess.call(base_cmd + list(command))
 
 
 def add_services_from_plugins(available_services: list):
+    """Read plugin path and extract services in subdirectories services/"""
+
     from pkg_resources import iter_entry_points
 
     # Override services with plugins
@@ -45,9 +49,6 @@ def add_services_from_plugins(available_services: list):
         services_dir = package_utils.get_venv_basedir() + '/plugins/' + plugin_dir + '/services'
 
         conf_files = _get_services_from_dir(services_dir)
-        if conf_files is []:
-            continue
-
         for conf_file in conf_files:
             available_services[conf_file[:-4]] = services_dir + '/' + conf_file
 
@@ -55,6 +56,8 @@ def add_services_from_plugins(available_services: list):
 
 
 def add_local_services(available_services: list):
+    """Get services in the virtualenv services/ directory, so specific to that stakkr"""
+
     services_dir = package_utils.get_venv_basedir() + '/services'
 
     conf_files = _get_services_from_dir(services_dir)
@@ -65,6 +68,8 @@ def add_local_services(available_services: list):
 
 
 def get_available_services():
+    """Get standard services bundled with stakkr"""
+
     services_dir = package_utils.get_dir('static') + '/services/'
     conf_files = _get_services_from_dir(services_dir)
 
@@ -76,7 +81,8 @@ def get_available_services():
 
 
 def get_enabled_services(configured_services: list):
-    # Services available from base and plugins
+    """Compile all available services : standard, plugins, local install"""
+
     available_services = get_available_services()
     available_services = add_services_from_plugins(available_services)
     available_services = add_local_services(available_services)
@@ -84,18 +90,24 @@ def get_enabled_services(configured_services: list):
     services_files = []
     for service in configured_services:
         if service not in available_services:
-            print(click.style('Error: service "{}" has no configuration file. Check your compose.ini'.format(service), fg='red'))
+            msg = 'Error: service "{}" has no configuration file. '.format(service)
+            msg += 'Check your compose.ini'
+            click.secho(msg, fg='red')
             sys.exit(1)
         services_files.append(available_services[service])
 
     return services_files
 
 def get_configured_services(config_file: str = None):
-    # Services configured in the given config file. 
+    """Get services set in compose.ini"""
+
     configured_services = get_main_config(config_file).get('services')
     return configured_services
 
+
 def get_main_config(config: str):
+    """Read main compose.ini file"""
+
     config = Config(config)
     main_config = config.read()
 
@@ -107,6 +119,8 @@ def get_main_config(config: str):
 
 
 def set_env_values_from_conf(config: list):
+    """Define environment variables to be used in services yaml"""
+
     os.environ['DOCKER_UID'] = _get_uid(config.pop('uid'))
     os.environ['DOCKER_GID'] = _get_gid(config.pop('gid'))
     os.environ['COMPOSE_BASE_DIR'] = package_utils.get_venv_basedir()
@@ -135,20 +149,6 @@ def _get_gid(gid: int):
         return str(gid)
 
     return '1000' if os.name == 'nt' else str(os.getgid())
-
-
-# def _dump_compose_config(base_cmd: list, project_name: str):
-    # import tempfile
-
-    # tmpdir = '{}/stakkr/{}'.format(tempfile.gettempdir(), project_name)
-    # os.putenv('TMP_COMPOSE_CONFIG_DIR', tmpdir)
-    # try:
-        # os.makedirs(tmpdir)
-    # except:
-        # pass
-
-    # with open(tmpdir + '/docker-compose.yml', 'w') as file:
-        # file.write(subprocess.check_output(base_cmd + ['config']).decode())
 
 
 if __name__ == '__main__':
