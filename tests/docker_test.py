@@ -2,8 +2,7 @@ import os
 import subprocess
 import sys
 import unittest
-
-from stakkr import docker
+from stakkr import docker_actions
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, base_dir + '/../')
@@ -22,7 +21,7 @@ class DockerTest(unittest.TestCase):
         cmd = ['docker', 'run', '-d', '--rm', '--name', 'pytest', 'nginx:stable-alpine']
         subprocess.call(cmd)
 
-        self.assertTrue(docker.container_running('pytest'))
+        self.assertTrue(docker_actions.container_running('pytest'))
 
 
     def test_container_not_running(self):
@@ -33,7 +32,7 @@ class DockerTest(unittest.TestCase):
         except Exception:
             pass
 
-        self.assertFalse(docker.container_running('pytest'))
+        self.assertFalse(docker_actions.container_running('pytest'))
 
 
     def test_get_container_info(self):
@@ -50,7 +49,7 @@ class DockerTest(unittest.TestCase):
 
         cmd = ['stakkr-compose', '-c', base_dir + '/static/config_valid.ini', 'up', '-d']
         self._exec_cmd(cmd)
-        numcts, cts = docker.get_running_containers('test')
+        numcts, cts = docker_actions.get_running_containers('test')
         self.assertIs(len(cts), 3)
         for ct_id, ct_info in cts.items():
             if ct_info['name'] in ('test_maildev', 'test_portainer'):
@@ -69,22 +68,22 @@ class DockerTest(unittest.TestCase):
             self.assertEqual(ct_info['ip'][:8], '192.168.')
             self.assertEqual(ct_info['image'], 'edyan/php:7.0')
 
-        self.assertTrue(docker._container_in_network('test_php', 'test_stakkr'))
-        self.assertTrue(docker.network_exists('test_stakkr'))
-        self.assertFalse(docker._container_in_network('test_php', 'bridge'))
+        self.assertTrue(docker_actions._container_in_network('test_php', 'test_stakkr'))
+        self.assertTrue(docker_actions.network_exists('test_stakkr'))
+        self.assertFalse(docker_actions._container_in_network('test_php', 'bridge'))
 
         cmd = ['stakkr-compose', '-c', base_dir + '/static/config_valid.ini', 'stop']
         self._exec_cmd(cmd)
         self._exec_cmd(['docker', 'stop', 'test_php'])
         self._exec_cmd(['docker', 'rm', 'test_php'])
 
-        with self.assertRaisesRegex(SystemError, 'Container test_php does not seem to exist'):
-            docker._container_in_network('test_php', 'bridge')
+        with self.assertRaisesRegex(LookupError, 'Container test_php does not seem to exist'):
+            docker_actions._container_in_network('test_php', 'bridge')
 
         self._exec_cmd(['stakkr', 'stop'])
         self._exec_cmd(['stakkr', 'dns', 'stop'])
         self._exec_cmd(['docker', 'network', 'rm', 'test_stakkr'])
-        self.assertFalse(docker.network_exists('test_stakkr'))
+        self.assertFalse(docker_actions.network_exists('test_stakkr'))
 
 
     def test_create_network(self):
@@ -100,36 +99,36 @@ class DockerTest(unittest.TestCase):
         except Exception:
             pass
 
-        if docker.network_exists('nw_pytest'):
+        if docker_actions.network_exists('nw_pytest'):
             self._exec_cmd(['docker', 'network', 'rm', 'nw_pytest'])
 
         cmd = ['docker', 'run', '-d', '--rm', '--name', 'pytest', 'nginx:stable-alpine']
         subprocess.call(cmd)
 
-        self.assertTrue(docker.container_running('pytest'))
-        self.assertFalse(docker._container_in_network('pytest', 'pytest'))
-        self.assertFalse(docker.network_exists('nw_pytest'))
+        self.assertTrue(docker_actions.container_running('pytest'))
+        self.assertFalse(docker_actions._container_in_network('pytest', 'pytest'))
+        self.assertFalse(docker_actions.network_exists('nw_pytest'))
 
-        network_created = docker.create_network('nw_pytest')
+        network_created = docker_actions.create_network('nw_pytest')
         self.assertNotEqual(False, network_created)
         self.assertIs(str, type(network_created))
 
-        self.assertFalse(docker.create_network('nw_pytest'))
-        self.assertTrue(docker.add_container_to_network('pytest', 'nw_pytest'))
-        self.assertFalse(docker.add_container_to_network('pytest', 'nw_pytest'))
-        self.assertTrue(docker._container_in_network('pytest', 'nw_pytest'))
+        self.assertFalse(docker_actions.create_network('nw_pytest'))
+        self.assertTrue(docker_actions.add_container_to_network('pytest', 'nw_pytest'))
+        self.assertFalse(docker_actions.add_container_to_network('pytest', 'nw_pytest'))
+        self.assertTrue(docker_actions._container_in_network('pytest', 'nw_pytest'))
         try:
             self._exec_cmd(['docker', 'stop', 'pytest'])
             self._exec_cmd(['docker', 'rm', 'pytest'])
         except Exception:
             pass
 
-        if docker.network_exists('nw_pytest'):
+        if docker_actions.network_exists('nw_pytest'):
             self._exec_cmd(['docker', 'network', 'rm', 'nw_pytest'])
 
 
     def test_get_container_info_not_exists(self):
-        self.assertIs(None, docker._extract_container_info('not_exists', 'not_exists'))
+        self.assertIs(None, docker_actions._extract_container_info('not_exists', 'not_exists'))
 
 
     def _exec_cmd(self, cmd: list):

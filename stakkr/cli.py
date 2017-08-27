@@ -5,10 +5,10 @@ services to be launched, stopped, etc.
 
 import sys
 import click
-from . import dns as dns_manager, package_utils
-from .docker import get_running_containers_name
 from click_plugins import with_plugins
 from pkg_resources import iter_entry_points
+from . import dns as dns_manager, package_utils
+from .docker_actions import get_running_containers_name
 
 
 @with_plugins(iter_entry_points('stakkr.plugins'))
@@ -89,7 +89,7 @@ def exec_cmd(ctx, user: str, container: str, command: tuple, tty: bool):
     if len(ctx.obj['CTS']) is not 0:
         click.Choice(ctx.obj['CTS']).convert(container, None, ctx)
 
-    ctx.obj['STAKKR'].exec(container, _get_cmd_user(user, container), command, tty)
+    ctx.obj['STAKKR'].exec_cmd(container, _get_cmd_user(user, container), command, tty)
 
 
 @stakkr.command(help="""`stakkr mysql` is a wrapper for the mysql binary
