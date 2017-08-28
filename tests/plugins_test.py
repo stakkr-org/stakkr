@@ -7,8 +7,10 @@ import subprocess
 import sys
 import unittest
 from shutil import rmtree
+from stakkr import package_utils
 __base_dir__ = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, __base_dir__ + '/../')
+__venv_dir__ = package_utils.get_venv_basedir()
 
 
 class PluginsTest(unittest.TestCase):
@@ -18,7 +20,7 @@ class PluginsTest(unittest.TestCase):
         """Make sure I have the right message when no plugin is present"""
 
         clean_plugin_dir()
-        os.rmdir(__base_dir__ + '/../plugins')
+        os.rmdir(__venv_dir__ + '/plugins')
 
         cmd = self.cmd_base + ['refresh-plugins']
         res = exec_cmd(cmd)
@@ -27,7 +29,7 @@ class PluginsTest(unittest.TestCase):
         self.assertEqual(res['stderr'], '')
         self.assertIs(res['status'], 0)
 
-        os.mkdir(__base_dir__ + '/../plugins')
+        os.mkdir(__venv_dir__ + '/plugins')
 
 
     def test_no_plugin(self):
@@ -48,7 +50,7 @@ class PluginsTest(unittest.TestCase):
 
         clean_plugin_dir()
 
-        folder = __base_dir__ + '/../plugins/empty_plugin'
+        folder = __venv_dir__ + '/plugins/empty_plugin'
         os.mkdir(folder)
         self.assertTrue(os.path.isdir(folder))
 
@@ -67,7 +69,7 @@ class PluginsTest(unittest.TestCase):
 
         clean_plugin_dir()
 
-        folder = __base_dir__ + '/../plugins/test_bad_plugin'
+        folder = __venv_dir__ + '/plugins/test_bad_plugin'
         os.mkdir(folder)
 
         # Add setup
@@ -99,7 +101,7 @@ setup(
 
         clean_plugin_dir()
 
-        folder = __base_dir__ + '/../plugins/test_plugin'
+        folder = __venv_dir__ + '/plugins/test_plugin'
         os.mkdir(folder)
         os.mkdir(folder + '/test_plugin')
 
@@ -161,14 +163,17 @@ def my_test(ctx):
 
 
 def clean_plugin_dir():
-    if os.path.isdir(__base_dir__ + '/../plugins/empty_plugin'):
-        os.rmdir(__base_dir__ + '/../plugins/empty_plugin')
+    if not os.path.isdir(__venv_dir__ + '/plugins'):
+        os.mkdir(__venv_dir__ + '/plugins')
 
-    if os.path.isdir(__base_dir__ + '/../plugins/test_plugin'):
-        rmtree(__base_dir__ + '/../plugins/test_plugin')
+    if os.path.isdir(__venv_dir__ + '/plugins/empty_plugin'):
+        os.rmdir(__venv_dir__ + '/plugins/empty_plugin')
 
-    if os.path.isdir(__base_dir__ + '/../plugins/test_bad_plugin'):
-        rmtree(__base_dir__ + '/../plugins/test_bad_plugin')
+    if os.path.isdir(__venv_dir__ + '/plugins/test_plugin'):
+        rmtree(__venv_dir__ + '/plugins/test_plugin')
+
+    if os.path.isdir(__venv_dir__ + '/plugins/test_bad_plugin'):
+        rmtree(__venv_dir__ + '/plugins/test_bad_plugin')
 
 
 def exec_cmd(cmd: list):

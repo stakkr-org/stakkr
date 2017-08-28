@@ -4,10 +4,8 @@ import os
 import re
 import sys
 import unittest
-
 from stakkr import package_utils
 from stakkr.configreader import Config
-
 base_dir = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, base_dir + '/../')
 
