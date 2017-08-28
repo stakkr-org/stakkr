@@ -9,8 +9,8 @@ python:
 
 install:
     - pip install .
-    - python -c 'from stakkr.setup import _post_install; _post_install()'
+    - stakkr-init
     - pip install -r requirements-dev.txt
 
 # command to run tests
-script: pytest
+script: py.test --cov-report html --cov-report term --cov=stakkr tests/

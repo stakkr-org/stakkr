@@ -42,7 +42,7 @@ build:
             - "pip install -r requirements-dev.txt"
         override:
             -
-                command: py.test
+                command: "py.test --cov-report html --cov-report term --cov=stakkr tests/"
                 coverage:
                     file: '.coverage'
                     format: 'py-cc'
