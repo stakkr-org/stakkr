@@ -11,7 +11,6 @@ from stakkr import package_utils
 class Config():
     """Parser of Stakkr. Set default values and validate
     conf/compose.ini with conf/configspec.ini
-
     """
 
     def __init__(self, config_file: str = None):

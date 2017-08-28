@@ -23,17 +23,20 @@ def add_plugins():
 
 def _add_plugin_from_dir(plugins: list, full_path: str):
     files = _get_files_from_folder(full_path)
-    for plugin in files:
-        plugin_name = full_path.strip('/').split('/')[1]
-        try:
-            cmd_install = ['pip', 'install', '-e', full_path]
-            subprocess.check_call(cmd_install, stdout=subprocess.DEVNULL)
-            print('  -> Plugin "{}" added'.format(plugin_name))
-            plugins.append(plugin_name)
+    if len(files) is 0:
+        print('  -> No plugin found in "{}"'.format(full_path))
+        return
 
-        except Exception as error:
-            msg = 'Problem installing {} (Reason: {})'.format(plugin_name[:-3], error)
-            raise TypeError(msg)
+    plugin_name = full_path.strip('/').split('/')[1]
+    try:
+        cmd_install = ['pip', 'install', '-e', full_path]
+        subprocess.check_call(cmd_install, stdout=subprocess.DEVNULL)
+    except Exception as error:
+        msg = 'Problem installing {} (Reason: {})'.format(plugin_name[:-3], error)
+        raise TypeError(msg)
+
+    print('  -> Plugin "{}" added'.format(plugin_name))
+    plugins.append(plugin_name)
 
     return plugins
 

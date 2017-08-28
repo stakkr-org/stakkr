@@ -20,17 +20,12 @@ def clean(force: bool, verbose: bool):
     click.secho('Clean Docker stopped containers, images, volumes and networks', fg='green')
 
     remove_containers(force, verbose)
-    print()
     remove_images(force)
-    print()
     remove_volumes(force, verbose)
-    print()
     remove_networks(force, verbose)
 
     if force is False:
-        click.secho("\n--force is not set so I won't do anything\n", fg='red')
-
-    click.secho('Done', fg='green')
+        click.secho("\n--force is not set so I won't do anything", fg='red')
 
 
 def remove_containers(force: bool, verbose: bool):
@@ -39,10 +34,10 @@ def remove_containers(force: bool, verbose: bool):
     res = _exec_cmd(['docker', 'ps', '--no-trunc', '-a', '-q', '-f', 'status=exited'])
     containers = res.splitlines()
     if len(containers) is 0:
-        print('No exited container to remove')
+        print('- No exited container to remove')
         return
 
-    print('Removing {} exited container(s)'.format(len(containers)))
+    click.echo('- Removing {} exited container(s)'.format(len(containers)))
 
     for container in containers:
         _display_entry_info('container', container.decode(), verbose)
@@ -55,10 +50,10 @@ def remove_images(force: bool):
     res = _exec_cmd(['docker', 'image', 'ls'])
     images = res.splitlines()
     if len(images) is 1:
-        print('No image to remove')
+        click.echo('- No image to remove')
         return
 
-    print('Removing {} image(s)'.format(len(images) - 1))
+    click.echo('- Removing {} image(s)'.format(len(images) - 1))
     if force is True:
         _prune_images()
 
@@ -69,10 +64,10 @@ def remove_networks(force: bool, verbose: bool):
     res = _exec_cmd(['docker', 'network', 'ls', '--no-trunc', '-q', '--filter', 'type=custom'])
     networks = res.splitlines()
     if len(networks) is 0:
-        print('No network to remove')
+        click.echo('- No network to remove')
         return
 
-    print('Removing {} exited networks(s)'.format(len(networks)))
+    click.echo('- Removing {} exited networks(s)'.format(len(networks)))
 
     for network in networks:
         _display_entry_info('network', network.decode(), verbose)
@@ -85,14 +80,14 @@ def remove_volumes(force: bool, verbose: bool):
     res = _exec_cmd(['docker', 'volume', 'ls', '-q', '-f', 'dangling=true'])
     volumes = res.splitlines()
     if len(volumes) is 0:
-        print('No volume to remove')
+        click.echo('- No volume to remove')
         return
 
-    print('Removing {} exited volumes(s)'.format(len(volumes)))
+    click.echo('- Removing {} exited volumes(s)'.format(len(volumes)))
 
     for volume in volumes:
         if verbose is True:
-            print('  Removing volume {}'.format(volume.decode()))
+            click.echo('  Removing volume {}'.format(volume.decode()))
 
         _remove_entry('volume', volume.decode(), force)
 
@@ -101,20 +96,17 @@ def _display_entry_info(entry_type: str, entry: str, verbose: bool):
     if verbose is False:
         return
 
-    base_cmd = ['docker']
-    if entry_type != 'container':
-        base_cmd += [entry_type]
-
+    base_cmd = ['docker'] if entry_type == 'container' else ['docker', entry_type]
     res = _exec_cmd(base_cmd + ['inspect', '--format={{.Name}}', entry])
     info = res.splitlines()[0]
-    print('  Removing {} {}'.format(entry_type, info.decode()))
+    click.echo('  Removing {} {}'.format(entry_type, info.decode()))
 
 
 def _exec_cmd(cmd: list):
     try:
         return check_output(cmd, stderr=STDOUT)
     except CalledProcessError:
-        click.secho('Error removing images with "{}"'.format(' '.join(cmd)), fg='red')
+        click.secho('  Error running command : "{}"'.format(' '.join(cmd)), fg='red')
 
 
 def _prune_images():
@@ -125,14 +117,8 @@ def _remove_entry(entry_type: str, entry: str, force: bool):
     if force is False:
         return
 
-    try:
-        base_cmd = ['docker']
-        if entry_type != 'container':
-            base_cmd += [entry_type]
-        _exec_cmd(base_cmd + ['rm', entry])
-    except Exception as error:
-        output = str(error)
-        click.secho('Error removing a {}: {}'.format(entry_type, output), fg='red')
+    base_cmd = ['docker'] if entry_type == 'container' else ['docker', entry_type]
+    _exec_cmd(base_cmd + ['rm', entry])
 
 
 def main():
@@ -152,7 +138,7 @@ def main():
         msg += click.style('{}'.format(error), fg='red')
 
         click.echo(msg)
-        print()
+        click.echo()
         # raise error
         sys.exit(1)
 

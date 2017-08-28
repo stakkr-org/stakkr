@@ -92,7 +92,7 @@ def _copy_file(venv_dir: str, source_file: str, force: bool):
     try:
         shutil.copy(full_path, dest_file)
     except Exception:
-        msg = "Met an error trying to copy {} .. check that the file is there ...".format(full_path)
+        msg = "Error trying to copy {} .. check that the file is there ...".format(full_path)
         print(msg, file=sys.stderr)
 
 
