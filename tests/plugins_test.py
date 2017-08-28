@@ -6,7 +6,7 @@ import os
 import subprocess
 import sys
 import unittest
-from shutil import copytree, rmtree
+from shutil import rmtree
 __base_dir__ = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, __base_dir__ + '/../')
 
@@ -68,8 +68,22 @@ class PluginsTest(unittest.TestCase):
         clean_plugin_dir()
 
         folder = __base_dir__ + '/../plugins/test_bad_plugin'
-        copytree(__base_dir__ + '/static/test_bad_plugin', folder)
-        self.assertTrue(os.path.isdir(folder))
+        os.mkdir(folder)
+
+        # Add setup
+        with open(folder + '/setup.py', 'w') as file:
+            file.write(r"""from setuptools import setup
+
+setup(
+    name='StakkrTestPlugin',
+    version='3.5',
+    packages=['test_plugin'],
+    entry_points='''
+        [stakkr.plugins]
+        test_plugin=test_plugin.core:my_test
+    '''
+)
+""")
 
         cmd = self.cmd_base + ['refresh-plugins']
         res = exec_cmd(cmd)
@@ -86,8 +100,33 @@ class PluginsTest(unittest.TestCase):
         clean_plugin_dir()
 
         folder = __base_dir__ + '/../plugins/test_plugin'
-        copytree(__base_dir__ + '/static/test_plugin', folder)
-        self.assertTrue(os.path.isdir(folder))
+        os.mkdir(folder)
+        os.mkdir(folder + '/test_plugin')
+
+        # Add setup
+        with open(folder + '/setup.py', 'w') as file:
+            file.write(r"""from setuptools import setup
+
+setup(
+    name='StakkrTestPlugin',
+    version='3.5',
+    packages=['test_plugin'],
+    entry_points='''
+        [stakkr.plugins]
+        test_plugin=test_plugin.core:my_test
+    '''
+)
+""")
+
+        # Add plugin content
+        with open(folder + '/test_plugin/core.py', 'w') as file:
+            file.write(r"""import click
+
+@click.command(name="hello-world")
+@click.pass_context
+def my_test(ctx):
+    print('Hello test !')
+""")
 
         # Refresh plugins, plugin should be added
         cmd = self.cmd_base + ['refresh-plugins']
