@@ -29,120 +29,112 @@ class CliTest(unittest.TestCase):
 
 
     def test_pull(self):
-        self._exec_cmd(self.cmd_base + ['start', '--pull'])
+        exec_cmd(self.cmd_base + ['start', '--pull'])
 
 
     def test_recreate(self):
-        self._exec_cmd(self.cmd_base + ['start', '--recreate'])
+        exec_cmd(self.cmd_base + ['start', '--recreate'])
 
 
     def test_pull_recreate(self):
-        self._exec_cmd(self.cmd_base + ['start', '--pull', '--recreate'])
+        exec_cmd(self.cmd_base + ['start', '--pull', '--recreate'])
 
 
     def test_debug_mode(self):
-        self._exec_cmd(self.cmd_base + ['start'])
+        exec_cmd(self.cmd_base + ['start'])
 
         cmd = self.cmd_base + ['--debug', 'console', 'portainer']
-        res = self._exec_cmd(cmd)
+        res = exec_cmd(cmd)
         self.assertEqual(res['stdout'], '')
-        self.assertRegex(res['stderr'], '.*OSError: Could not find a shell for that container*', ' '.join(cmd))
+        self.assertRegex(res['stderr'], r'.*OSError: Could not find a shell for that container*', ' '.join(cmd))
         self.assertIs(res['status'], 1)
 
 
     def test_bad_config(self):
-        res = self._exec_cmd([
+        res = exec_cmd([
             'stakkr', '-c', base_dir + '/static/config_invalid.ini', 'start'])
-        self.assertRegex(res['stderr'], '.*Failed validating.*')
-        self.assertRegex(res['stderr'], '.*project_name.*Missing.*')
-        self.assertRegex(res['stderr'], '.*php\.version.*unacceptable.*')
+        self.assertRegex(res['stderr'], r'.*Failed validating.*')
+        self.assertRegex(res['stderr'], r'.*project_name.*Missing.*')
+        self.assertRegex(res['stderr'], r'.*php\.version.*unacceptable.*')
         self.assertEqual(res['stdout'], '')
         self.assertIs(res['status'], 1)
 
 
     def test_console_no_ct(self):
-        self._exec_cmd(self.cmd_base + ['start'])
+        exec_cmd(self.cmd_base + ['start'])
         cmd = self.cmd_base + ['console']
 
-        res = self._exec_cmd(cmd)
-        self.assertRegex(res['stderr'], 'Usage: stakkr console \[OPTIONS\] CONTAINER.*')
+        res = exec_cmd(cmd)
+        self.assertRegex(res['stderr'], r'Usage: stakkr console \[OPTIONS\] CONTAINER.*')
         self.assertEqual(res['stdout'], '')
         self.assertIs(res['status'], 2)
 
 
     def test_console(self):
-        self._exec_cmd(self.cmd_base + ['start'])
+        exec_cmd(self.cmd_base + ['start'])
 
         cmd = self.cmd_base + ['console', 'mysql']
-        res = self._exec_cmd(cmd)
-        self.assertRegex(res['stderr'], '.*Invalid value: invalid choice: mysql\. \(choose from.*')
+        res = exec_cmd(cmd)
+        self.assertRegex(res['stderr'], r'.*Invalid value: invalid choice: mysql\. \(choose from.*')
         self.assertEqual(res['stdout'], '')
         self.assertIs(res['status'], 2)
 
-        self._exec_cmd(self.cmd_base + ['stop'])
+        exec_cmd(self.cmd_base + ['stop'])
 
         cmd = self.cmd_base + ['console', 'php']
-        res = self._exec_cmd(cmd)
+        res = exec_cmd(cmd)
         self.assertEqual(res['stdout'], '')
-        self.assertRegex(res['stderr'], '.*Have you started your server with the start action.*')
+        self.assertRegex(res['stderr'], r'.*Have you started your server with the start action.*')
         self.assertIs(res['status'], 1)
 
 
-    def test_refresh_plugins(self):
-        cmd = self.cmd_base + ['refresh-plugins']
-        res = self._exec_cmd(cmd)
-        self.assertRegex(res['stdout'], '.*No plugin to add*')
-        self.assertEqual(res['stderr'], '')
-        self.assertIs(res['status'], 0)
-
-
     def test_exec_php(self):
-        self._exec_cmd(self.cmd_base + ['dns', 'stop'])
-        self._exec_cmd(self.cmd_base + ['start'])
+        exec_cmd(self.cmd_base + ['dns', 'stop'])
+        exec_cmd(self.cmd_base + ['start'])
 
         # Check for PHP Version
         # TODO make it work under windows (problem with TTY)
         if os.name != 'nt':
             cmd = self.cmd_base + ['exec', '--no-tty', 'php', '--', 'php', '-v']
-            res = self._exec_cmd(cmd)
-            self.assertRegex(res['stdout'], '.*The PHP Group.*', 'stderr was : ' + res['stderr'])
+            res = exec_cmd(cmd)
+            self.assertRegex(res['stdout'], r'.*The PHP Group.*', 'stderr was : ' + res['stderr'])
             self.assertEqual(res['stderr'], '')
             self.assertIs(res['status'], 0)
 
-        self._exec_cmd(self.cmd_base + ['stop'])
+        exec_cmd(self.cmd_base + ['stop'])
         cmd = self.cmd_base + ['exec', 'php', 'php', '-v']
-        res = self._exec_cmd(cmd)
+        res = exec_cmd(cmd)
         self.assertEqual(res['stdout'], '')
-        self.assertRegex(res['stderr'], '.*Have you started your server with the start action.*')
+        self.assertRegex(res['stderr'], r'.*Have you started your server with the start action.*')
         self.assertIs(res['status'], 1)
 
 
     def test_mysql(self):
-        self._exec_cmd(self.cmd_base + ['start'])
+        exec_cmd(self.cmd_base + ['start'])
 
         cmd = self.cmd_base + ['mysql', '--version']
-        res = self._exec_cmd(cmd)
+        res = exec_cmd(cmd)
         self.assertEqual(res['stdout'], '')
-        self.assertRegex(res['stderr'], '.*Invalid value: invalid choice: mysql.*')
+        self.assertRegex(res['stderr'], r'.*Invalid value: invalid choice: mysql.*')
         self.assertIs(res['status'], 2)
 
 
     def test_restart_stopped(self):
-        self._exec_cmd(self.cmd_base + ['stop'])
-        self._exec_cmd(self.cmd_base + ['dns', 'stop'])
+        exec_cmd(self.cmd_base + ['stop'])
+        exec_cmd(self.cmd_base + ['dns', 'stop'])
         cmd = self.cmd_base + ['restart']
 
         # Restart
-        res = self._exec_cmd(cmd)
+        res = exec_cmd(cmd)
         self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], 'RESTARTING.*your stakkr services.*STOPPING.*STARTING.*your stakkr services.*For Maildev.*')
+        self.assertRegex(res['stdout'], r'RESTARTING.*your stakkr services.*STOPPING.*STARTING.*your stakkr services.*For Maildev.*')
         self.assertIs(res['status'], 0)
 
         # Check it's fine
         cmd = self.cmd_base + ['status']
-        res = self._exec_cmd(cmd)
+        res = exec_cmd(cmd)
         self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], 'Container\s*IP\s*Ports\s*Image.*')
+        self.assertRegex(res['stdout'], r'Container\s*IP\s*Ports\s*Image.*')
         self.assertRegex(res['stdout'], '.*192.168.*')
         self.assertRegex(res['stdout'], '.*test_maildev.*')
         self.assertRegex(res['stdout'], '.*test_php.*')
@@ -150,22 +142,22 @@ class CliTest(unittest.TestCase):
 
 
     def test_restart_started(self):
-        self._exec_cmd(self.cmd_base + ['start'])
-        self._exec_cmd(self.cmd_base + ['dns', 'stop'])
+        exec_cmd(self.cmd_base + ['start'])
+        exec_cmd(self.cmd_base + ['dns', 'stop'])
 
         cmd = self.cmd_base + ['restart']
 
         # Restart
-        res = self._exec_cmd(cmd)
+        res = exec_cmd(cmd)
         self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], 'RESTARTING.*your stakkr services.*STOPPING.*your stakkr services.*STARTING.*your stakkr services.*For Maildev.*')
+        self.assertRegex(res['stdout'], r'RESTARTING.*your stakkr services.*STOPPING.*your stakkr services.*STARTING.*your stakkr services.*For Maildev.*')
         self.assertIs(res['status'], 0)
 
         # Check it's fine
         cmd = self.cmd_base + ['status']
-        res = self._exec_cmd(cmd)
+        res = exec_cmd(cmd)
         self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], 'Container\s*IP\s*Ports\s*Image.*')
+        self.assertRegex(res['stdout'], r'Container\s*IP\s*Ports\s*Image.*')
         self.assertRegex(res['stdout'], '.*192.168.*')
         self.assertRegex(res['stdout'], '.*test_maildev.*')
         self.assertRegex(res['stdout'], '.*test_php.*')
@@ -173,36 +165,36 @@ class CliTest(unittest.TestCase):
 
 
     def test_start(self):
-        self._exec_cmd(self.cmd_base + ['stop'])
-        self._exec_cmd(self.cmd_base + ['dns', 'stop'])
+        exec_cmd(self.cmd_base + ['stop'])
+        exec_cmd(self.cmd_base + ['dns', 'stop'])
 
         cmd = self.cmd_base + ['start']
 
         # Start
-        res = self._exec_cmd(cmd)
+        res = exec_cmd(cmd)
         self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], '\[STARTING\].*your stakkr services.*For Maildev.*')
+        self.assertRegex(res['stdout'], r'\[STARTING\].*your stakkr services.*For Maildev.*')
         # Problem with scrutinizer : can't get a correct status
         # TODO check and fix it later
         if 'SCRUTINIZER_API_ENDPOINT' not in os.environ:
             self.assertIs(res['status'], 0)
 
         # Again ....
-        res = self._exec_cmd(cmd)
+        res = exec_cmd(cmd)
         self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], '\[STARTING\].*your stakkr services.*\[INFO\] stakkr is already started.*')
+        self.assertRegex(res['stdout'], r'\[STARTING\].*your stakkr services.*\[INFO\] stakkr is already started.*')
         self.assertIs(res['status'], 0)
 
 
     def test_status(self):
-        self._exec_cmd(self.cmd_base + ['dns', 'stop'])
-        self._exec_cmd(self.cmd_base + ['start'])
+        exec_cmd(self.cmd_base + ['dns', 'stop'])
+        exec_cmd(self.cmd_base + ['start'])
         cmd = self.cmd_base + ['status']
 
         # Status OK
-        res = self._exec_cmd(cmd)
+        res = exec_cmd(cmd)
         self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], 'Container\s*IP\s*Ports\s*Image.*')
+        self.assertRegex(res['stdout'], r'Container\s*IP\s*Ports\s*Image.*')
         self.assertRegex(res['stdout'], '.*192.168.*')
         self.assertRegex(res['stdout'], '.*test_maildev.*')
         self.assertRegex(res['stdout'], '.*test_php.*')
@@ -210,55 +202,59 @@ class CliTest(unittest.TestCase):
 
         # With DNS
         if os.name not in ['nt']:
-            res = self._exec_cmd(self.cmd_base + ['dns', 'start'])
+            res = exec_cmd(self.cmd_base + ['dns', 'start'])
             self.assertEqual(res['stderr'], '')
-            self.assertRegex(res['stdout'], '.*\[START\].*DNS forwarder.*')
+            self.assertRegex(res['stdout'], r'.*\[START\].*DNS forwarder.*')
 
-            res = self._exec_cmd(cmd)
+            res = exec_cmd(cmd)
             self.assertEqual(res['stderr'], '')
-            self.assertRegex(res['stdout'], '.*Container\s*HostName\s*Ports\s*Image.*')
+            self.assertRegex(res['stdout'], r'.*Container\s*HostName\s*Ports\s*Image.*')
             self.assertNotRegex(res['stdout'], '.*192.168.*')
             self.assertRegex(res['stdout'], '.*test_maildev.*')
             self.assertRegex(res['stdout'], '.*test_php.*')
             self.assertIs(res['status'], 0)
 
-        self._exec_cmd(self.cmd_base + ['stop'])
+        exec_cmd(self.cmd_base + ['stop'])
 
         # Status not ok , it has been stopped
-        res = self._exec_cmd(cmd)
-        self.assertEqual(res['stdout'], '[INFO] stakkr is currently stopped')
+        res = exec_cmd(cmd)
+        self.assertEqual(res['stdout'], r'[INFO] stakkr is currently stopped')
         self.assertEqual(res['stderr'], '')
         self.assertIs(res['status'], 0)
 
 
     def test_stop(self):
-        self._exec_cmd(self.cmd_base + ['start'])
+        exec_cmd(self.cmd_base + ['start'])
         cmd = self.cmd_base + ['stop']
 
         # Stop OK
-        res = self._exec_cmd(cmd)
+        res = exec_cmd(cmd)
         self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], '\[STOPPING\].*your stakkr services.*')
+        self.assertRegex(res['stdout'], r'\[STOPPING\].*your stakkr services.*')
         self.assertIs(res['status'], 0)
 
         # Stop Error : it has been stopped already
-        res = self._exec_cmd(cmd)
-        self.assertRegex(res['stdout'], '\[STOPPING\].*your stakkr services.*')
-        self.assertRegex(res['stderr'], '.*Have you started your server with the start action.*')
+        res = exec_cmd(cmd)
+        self.assertRegex(res['stdout'], r'\[STOPPING\].*your stakkr services.*')
+        self.assertRegex(res['stderr'], r'.*Have you started your server with the start action.*')
         self.assertIs(res['status'], 1)
 
 
     def tearDownClass():
         cli = CliTest()
-        cli._exec_cmd(cli.cmd_base + ['stop'])
-        cli._exec_cmd(cli.cmd_base + ['dns', 'stop'])
+        exec_cmd(cli.cmd_base + ['stop'])
+        exec_cmd(cli.cmd_base + ['dns', 'stop'])
 
 
-    def _exec_cmd(self, cmd: list):
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = p.communicate()
-        status = p.returncode
-        stdout = stdout.decode().strip().replace('\n', '')
-        stderr = stderr.decode().strip().replace('\n', '')
+def exec_cmd(cmd: list):
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = p.communicate()
+    status = p.returncode
+    stdout = stdout.decode().strip().replace('\n', '')
+    stderr = stderr.decode().strip().replace('\n', '')
 
-        return {'stdout': stdout, 'stderr': stderr, 'status': status}
+    return {'stdout': stdout, 'stderr': stderr, 'status': status}
+
+
+if __name__ == "__main__":
+    unittest.main()

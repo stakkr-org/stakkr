@@ -50,8 +50,9 @@ class StakkrActions():
         docker_actions.check_cts_are_running(self.project_name)
 
         tty = 't' if tty is True else ''
+        ct_name = docker_actions.get_ct_name(container)
         cmd = ['docker', 'exec', '-u', user, '-i' + tty]
-        cmd += [docker_actions.get_ct_name(container), docker_actions.guess_shell(container)]
+        cmd += [docker_actions.get_ct_name(container), docker_actions.guess_shell(ct_name)]
         subprocess.call(cmd)
 
         command.verbose(self.context['VERBOSE'], 'Command : "' + ' '.join(cmd) + '"')

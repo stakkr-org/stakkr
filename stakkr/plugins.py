@@ -25,7 +25,7 @@ def _add_plugin_from_dir(plugins: list, full_path: str):
     files = _get_files_from_folder(full_path)
     if len(files) is 0:
         print('  -> No plugin found in "{}"'.format(full_path))
-        return
+        return plugins
 
     plugin_name = full_path.strip('/').split('/')[1]
     try:
@@ -56,7 +56,7 @@ def _get_subfolders(directory: str):
 def _remove_plugins():
     cmd = ['pip', 'freeze']
     res = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    regex = re.compile('.+=stakkr(.+)$', re.IGNORECASE)
+    regex = re.compile('.+=stakkr([0-9a-z]+).+$', re.IGNORECASE)
 
     for line in res.stdout:
         plugin = re.search(regex, line.decode())

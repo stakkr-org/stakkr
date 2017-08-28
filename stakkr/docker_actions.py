@@ -172,10 +172,10 @@ def get_running_containers_name(project_name: str) -> list:
     return sorted([ct_data['compose_name'] for docker_name, ct_data in cts.items()])
 
 
-def guess_shell(service: str) -> str:
+def guess_shell(container: str) -> str:
     """By searching for binaries, guess what could be the primary shell available"""
 
-    container = get_client().containers.get(get_ct_item(service, 'id'))
+    container = get_client().containers.get(container)
 
     cmd = 'which -a bash sh'
     shells = container.exec_run(cmd, stdout=True, stderr=False).splitlines()

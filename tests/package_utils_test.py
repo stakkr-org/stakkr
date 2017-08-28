@@ -16,3 +16,7 @@ class PackageUtilsTest(unittest.TestCase):
         venv_base = pu.get_venv_basedir()
 
         self.assertEqual(os.path.abspath(get_config_vars()['exec_prefix'] + '/../'), venv_base)
+
+
+if __name__ == "__main__":
+    unittest.main()

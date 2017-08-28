@@ -96,3 +96,7 @@ class DockerCleanTest(unittest.TestCase):
 
         cts = Popen(['docker', 'ps', '-a'], stdout=PIPE, stderr=DEVNULL).communicate()[0]
         self.assertIs(len(cts.splitlines()), 1)
+
+
+if __name__ == "__main__":
+    unittest.main()

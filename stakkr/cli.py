@@ -125,7 +125,7 @@ def refresh_plugins(ctx):
         exit(0)
 
     print()
-    print(click.style('Plugins refreshed.\n', fg='green'))
+    print(click.style('Plugins refreshed', fg='green'))
 
 
 @stakkr.command(help="Restart all containers")

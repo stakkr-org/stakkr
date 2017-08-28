@@ -68,3 +68,7 @@ class StakkrComposeTest(unittest.TestCase):
         self.assertTrue('php' in services)
         self.assertFalse('mongo' in services)
         self.assertFalse('elasticsearch' in services)
+
+
+if __name__ == "__main__":
+    unittest.main()

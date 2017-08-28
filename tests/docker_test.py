@@ -42,13 +42,13 @@ class DockerTest(unittest.TestCase):
 
         """
         try:
-            self._exec_cmd(['docker', 'stop', 'test_php'])
-            self._exec_cmd(['docker', 'rm', 'test_php'])
+            exec_cmd(['docker', 'stop', 'test_php'])
+            exec_cmd(['docker', 'rm', 'test_php'])
         except Exception:
             pass
 
         cmd = ['stakkr-compose', '-c', base_dir + '/static/config_valid.ini', 'up', '-d']
-        self._exec_cmd(cmd)
+        exec_cmd(cmd)
         numcts, cts = docker_actions.get_running_containers('test')
         self.assertIs(len(cts), 3)
         for ct_id, ct_info in cts.items():
@@ -73,16 +73,16 @@ class DockerTest(unittest.TestCase):
         self.assertFalse(docker_actions._container_in_network('test_php', 'bridge'))
 
         cmd = ['stakkr-compose', '-c', base_dir + '/static/config_valid.ini', 'stop']
-        self._exec_cmd(cmd)
-        self._exec_cmd(['docker', 'stop', 'test_php'])
-        self._exec_cmd(['docker', 'rm', 'test_php'])
+        exec_cmd(cmd)
+        exec_cmd(['docker', 'stop', 'test_php'])
+        exec_cmd(['docker', 'rm', 'test_php'])
 
         with self.assertRaisesRegex(LookupError, 'Container test_php does not seem to exist'):
             docker_actions._container_in_network('test_php', 'bridge')
 
-        self._exec_cmd(['stakkr', 'stop'])
-        self._exec_cmd(['stakkr', 'dns', 'stop'])
-        self._exec_cmd(['docker', 'network', 'rm', 'test_stakkr'])
+        exec_cmd(['stakkr', 'stop'])
+        exec_cmd(['stakkr', 'dns', 'stop'])
+        exec_cmd(['docker', 'network', 'rm', 'test_stakkr'])
         self.assertFalse(docker_actions.network_exists('test_stakkr'))
 
 
@@ -93,14 +93,14 @@ class DockerTest(unittest.TestCase):
 
         """
         try:
-            self._exec_cmd(['docker', 'stop', 'pytest'])
-            self._exec_cmd(['docker', 'rm', 'pytest'])
-            self._exec_cmd(['docker', 'network', 'prune', '-f'])
+            exec_cmd(['docker', 'stop', 'pytest'])
+            exec_cmd(['docker', 'rm', 'pytest'])
+            exec_cmd(['docker', 'network', 'prune', '-f'])
         except Exception:
             pass
 
         if docker_actions.network_exists('nw_pytest'):
-            self._exec_cmd(['docker', 'network', 'rm', 'nw_pytest'])
+            exec_cmd(['docker', 'network', 'rm', 'nw_pytest'])
 
         cmd = ['docker', 'run', '-d', '--rm', '--name', 'pytest', 'nginx:stable-alpine']
         subprocess.call(cmd)
@@ -117,23 +117,49 @@ class DockerTest(unittest.TestCase):
         self.assertTrue(docker_actions.add_container_to_network('pytest', 'nw_pytest'))
         self.assertFalse(docker_actions.add_container_to_network('pytest', 'nw_pytest'))
         self.assertTrue(docker_actions._container_in_network('pytest', 'nw_pytest'))
-        try:
-            self._exec_cmd(['docker', 'stop', 'pytest'])
-            self._exec_cmd(['docker', 'rm', 'pytest'])
-        except Exception:
-            pass
+        exec_cmd(['docker', 'stop', 'pytest'])
 
         if docker_actions.network_exists('nw_pytest'):
-            self._exec_cmd(['docker', 'network', 'rm', 'nw_pytest'])
+            exec_cmd(['docker', 'network', 'rm', 'nw_pytest'])
 
 
     def test_get_container_info_not_exists(self):
         self.assertIs(None, docker_actions._extract_container_info('not_exists', 'not_exists'))
 
 
-    def _exec_cmd(self, cmd: list):
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        p.communicate()
+    def test_guess_shell_sh(self):
+        try:
+            exec_cmd(['docker', 'stop', 'pytest'])
+        except:
+            pass
+
+        cmd = ['docker', 'run', '-d', '--rm', '--name', 'pytest', 'nginx:stable-alpine']
+        exec_cmd(cmd)
+
+        shell = docker_actions.guess_shell('pytest')
+        self.assertEqual('/bin/sh', shell)
+
+        exec_cmd(['docker', 'stop', 'pytest'])
+
+
+    def test_guess_shell_bash(self):
+        try:
+            exec_cmd(['docker', 'stop', 'pytest'])
+        except:
+            pass
+
+        cmd = ['docker', 'run', '-d', '--rm', '--name', 'pytest', 'nginx']
+        exec_cmd(cmd)
+
+        shell = docker_actions.guess_shell('pytest')
+        self.assertEqual('/bin/bash', shell)
+
+        exec_cmd(['docker', 'stop', 'pytest'])
+
+
+def exec_cmd(cmd: list):
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p.communicate()
 
 
 if __name__ == "__main__":
