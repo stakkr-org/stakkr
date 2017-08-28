@@ -56,7 +56,7 @@ def _get_subfolders(directory: str):
 def _remove_plugins():
     cmd = ['pip', 'freeze']
     res = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    regex = re.compile('.+=stakkr([0-9a-z]+).*$', re.IGNORECASE)
+    regex = re.compile('.*stakkr([0-9a-z]+).*$', re.IGNORECASE)
 
     for line in res.stdout:
         plugin = re.search(regex, line.decode())

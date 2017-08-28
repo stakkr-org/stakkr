@@ -148,6 +148,8 @@ def my_test(ctx):
         # Now it should remove
         cmd = self.cmd_base + ['refresh-plugins']
         res = exec_cmd(cmd)
+        print(res['stdout'])
+        exit(0)
         self.assertRegex(res['stdout'], '.*Adding plugins from plugins.*')
         self.assertRegex(res['stdout'], '.*Cleaning "StakkrTestPlugin".*')
         self.assertRegex(res['stdout'], '.*Plugin "test_plugin" added.*')
