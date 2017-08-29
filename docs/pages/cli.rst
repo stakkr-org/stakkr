@@ -39,3 +39,4 @@ CLI Reference
 
    cli/docker.rst
    cli/stakkr.rst
+   cli/stakkr-init.rst
