@@ -10,6 +10,6 @@ Stakkr works with a few modules / classes:
    code/actions.rst
    code/command.rst
    code/configreader.rst
-   code/docker.rst
+   code/docker_actions.rst
    code/package_utils.rst
    code/plugins.rst
