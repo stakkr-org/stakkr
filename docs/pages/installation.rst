@@ -138,7 +138,7 @@ To develop, use the 2nd way to install Stakkr then :
 
 .. code:: shell
 
-    $ pip install -r requirements.txt
+    $ pip install -r requirements-dev.txt
 
 
 To generate that doc :
