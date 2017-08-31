@@ -29,14 +29,13 @@ You need to create two files in a `sayhello` directory.
 
 
     setup(
-    name='StakkrSayHello',
-    version='1.0',
-    packages=['sayhello'],
-    entry_points='''
-    [stakkr.plugins]
-    sayhello=sayhello.core:hi
-    '''
-    )
+        name='StakkrSayHello',
+        version='1.0',
+        packages=['sayhello'],
+        entry_points='''
+            [stakkr.plugins]
+            sayhello=sayhello.core:hi
+        ''')
 
 
 * And `plugins/sayhello/sayhello/core.py`
@@ -51,18 +50,12 @@ You need to create two files in a `sayhello` directory.
         print('Hi!')
 
 
-Once your plugin has been written you need to re-run
+Once your plugin has been installed you need to run:
 
 .. code-block:: bash
 
     $ stakkr refresh-plugins
     $ stakkr hi
-
-
-.. WARNING::
-    Even when you change some code in your plugins, you have to re-run
-    `stakkr refresh-plugins`
-
 
 
 Install a plugin
@@ -90,9 +83,25 @@ You can, for example install composer plugin:
 Define services in your plugins
 -----------------------------------
 By creating a `services/` directory you can either override or create new services with your plugins.
-Example: `plugins/myplugin/services/mysql.yml` will override the default mysql service while `plugins/myplugin/services/nginx.yml` will define a new service.
+Example: `plugins/myplugin/services/mysql.yml` will override the default mysql service while
+`plugins/myplugin/services/nginx.yml` will define a new service.
 
 Each service added by a plugin must be added in `compose.ini` to be started.
+
+
+Example of a service:
+
+.. code-block:: yaml
+
+    version: '2.2'
+
+    services:
+        nginx:
+            image: nginx
+            container_name: ${COMPOSE_PROJECT_NAME}_nginx
+            hostname: ${COMPOSE_PROJECT_NAME}_nginx
+            networks: [stakkr]
+
 
 
 List of existing plugins

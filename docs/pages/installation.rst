@@ -10,8 +10,8 @@ You must have Docker installed on your computer. Pick the right version for your
 Prerequisites
 ----------------
 .. WARNING::
-	You need to first install OS packages for Python3: ``pip``, ``setuptools``, ``virtualenv`` and (optionally) `autoenv <https://github.com/kennethreitz/autoenv>`_ on your OS. 
-	
+	You need to first install OS packages for Python3: ``pip``, ``setuptools``, ``virtualenv`` and (optionally) `autoenv <https://github.com/kennethreitz/autoenv>`_ on your OS.
+
 	Also, to use docker for Linux as a normal user, you need to add your user to the ``docker`` group (see the documentation)
 
 
@@ -46,7 +46,7 @@ For Ubuntu, you can download Docker from : https://docs.docker.com/engine/instal
     $ cd mydev
     $ virtualenv -p /usr/bin/python3 mydev_stakkr
     $ source mydev_stakkr/bin/activate
-    $ pip install stakkr
+    $ pip --no-cache-dir install stakkr
 
 It'll run a ``post_install`` script that copy some templates / create base directories to work.
 

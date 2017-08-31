@@ -1,6 +1,6 @@
 """Docker functions to get info about containers"""
 
-from docker.errors import NotFound
+from docker.errors import NotFound, NullResource
 __st__ = {'cts_info': dict(), 'running_cts': 0}
 
 
@@ -21,7 +21,7 @@ def block_ct_ports(service: str, ports: list, project_name: str) -> tuple:
 
     try:
         container = get_client().containers.get(get_ct_item(service, 'id'))
-    except LookupError:
+    except (LookupError, NullResource):
         return (False, '{} is not started, no port to block'.format(service))
 
     iptables = container.exec_run(['which', 'iptables']).decode().strip()

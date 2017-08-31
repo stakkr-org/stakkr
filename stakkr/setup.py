@@ -5,6 +5,7 @@ Setup post actions, used in the main setup.py
 import os
 import shutil
 import sys
+from distutils.command.clean import clean
 from setuptools.command.install import install
 from stakkr import package_utils
 
@@ -109,3 +110,9 @@ class StakkrPostInstall(install):
             msg = 'You must run setup.py from a virtualenv if you want to have '
             msg += 'the templates installed'
             print(msg)
+
+        # To be able to install again and get the templates, clean the build dir (cache)
+        clr = clean(self.distribution)
+        clr.all = True
+        clr.finalize_options()
+        clr.run()
