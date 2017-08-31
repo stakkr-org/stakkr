@@ -5,7 +5,6 @@ Setup post actions, used in the main setup.py
 import os
 import shutil
 import sys
-from distutils.command.clean import clean
 from setuptools.command.install import install
 from stakkr import package_utils
 
@@ -100,8 +99,8 @@ def _copy_file(venv_dir: str, source_file: str, force: bool):
 class StakkrPostInstall(install):
     """Class called by the main setup.py"""
 
-    def run(self):
-        install.run(self)
+    def __init__(self, *args, **kwargs):
+        super(StakkrPostInstall, self).__init__(*args, **kwargs)
 
         try:
             package_utils.get_venv_basedir()
@@ -111,8 +110,3 @@ class StakkrPostInstall(install):
             msg += 'the templates installed'
             print(msg)
 
-        # To be able to install again and get the templates, clean the build dir (cache)
-        clr = clean(self.distribution)
-        clr.all = True
-        clr.finalize_options()
-        clr.run()
