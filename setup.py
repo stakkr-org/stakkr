@@ -35,7 +35,7 @@ stakkr-compose=stakkr.stakkr_compose:cli''',
     install_requires=[
         'clint',
         'click', 'click-plugins',
-        'docker', 'docker-compose<1.16',
+        'docker', 'docker-compose<=1.15',
         'configobj',
         'requests>=2.11.0,<2.12'
         ] + extra_packages,
