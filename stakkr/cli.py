@@ -98,17 +98,18 @@ located in the mysql service.
 You can run any mysql command as root, such as :\n
 - ``stakkr mysql -e "CREATE DATABASE mydb"`` to create a DB from outside\n
 - ``stakkr mysql`` to enter the mysql console\n
-- ``cat myfile.sql | stakkr mysql mydb`` to import a file from outside to mysql\n
+- ``cat myfile.sql | stakkr mysql --no-tty mydb`` to import a file from outside to mysql\n
 
 For scripts, you must use the relative path.
 """, context_settings=dict(ignore_unknown_options=True))
 @click.pass_context
+@click.option('--tty/--no-tty', '-t/ ', is_flag=True, default=True, help="Use a TTY")
 @click.argument('command', nargs=-1, type=click.UNPROCESSED)
-def mysql(ctx, command: tuple):
+def mysql(ctx, tty: bool, command: tuple):
     """See command Help"""
 
     command = ('mysql', '-p$MYSQL_ROOT_PASSWORD') + command
-    ctx.invoke(exec_cmd, user='root', container='mysql', command=command)
+    ctx.invoke(exec_cmd, user='root', container='mysql', command=command, tty=tty)
 
 
 @stakkr.command(help='Required to be launched if you install a new plugin', name="refresh-plugins")
