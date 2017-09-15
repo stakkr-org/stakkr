@@ -1,6 +1,6 @@
 [main]
-# Comma separated, valid values: apache / elasticsearch / elasticsearch-old / mailcatcher / maildev /
-#                                mongo / mysql / php / phpmyadmin / phyton / redis / xhgui
+# Comma separated, valid values: adminer / apache / elasticsearch / elasticsearch-old / mailcatcher
+#                                maildev / mongo / mysql / php / phpmyadmin / phyton / redis / xhgui
 # by default: nothing
 # services=apache,php,mysql
 
