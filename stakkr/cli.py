@@ -77,7 +77,7 @@ Examples:\n
 - ``stakkr -v exec mysql mysqldump -p'$MYSQL_ROOT_PASSWORD' mydb > /tmp/backup.sql``\n
 - ``stakkr exec php php -v`` : Execute the php binary in the php container with option -v\n
 - ``stakkr exec apache service apache2 restart``\n
-""", name='exec', context_settings=dict(ignore_unknown_options=True))
+""", name='exec', context_settings=dict(ignore_unknown_options=True, allow_interspersed_args=False))
 @click.pass_context
 @click.option('--user', '-u', help="User's name. Be careful, each container have its own users.")
 @click.option('--tty/--no-tty', '-t/ ', is_flag=True, default=True, help="Use a TTY")
@@ -101,7 +101,7 @@ You can run any mysql command as root, such as :\n
 - ``cat myfile.sql | stakkr mysql --no-tty mydb`` to import a file from outside to mysql\n
 
 For scripts, you must use the relative path.
-""", context_settings=dict(ignore_unknown_options=True))
+""", context_settings=dict(ignore_unknown_options=True, allow_interspersed_args=False))
 @click.pass_context
 @click.option('--tty/--no-tty', '-t/ ', is_flag=True, default=True, help="Use a TTY")
 @click.argument('command', nargs=-1, type=click.UNPROCESSED)
