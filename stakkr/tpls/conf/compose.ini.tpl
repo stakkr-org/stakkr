@@ -17,7 +17,7 @@
 # Set your network
 # subnet = 192.168.90.0/24
 
-# Set your PHP version from 5.3 to 7.0 (5.6 by default)
+# Set your PHP version from 5.3 to 7.2 (5.6 by default)
 # php.version=7.0
 # php.ram=512M
 
@@ -32,7 +32,7 @@
 # Set the max upload size for PMA
 # pma.upload_max_filesize=128M
 
-# Set your apache version to 2.2
+# Set your apache version (2.2 / 2.4 / 2.4-slim)
 # apache.version=2.2
 # apache.ram=512M
 
