@@ -1,0 +1,14 @@
+[Unit]
+Description=stakkr Service
+After=multi-user.target
+
+[Service]
+Type=simple
+RemainAfterExit=yes
+
+ExecStart=/home/rbindels/Projects/stakkr/stakkr.sh -c start
+ExecStop=/home/rbindels/Projects/stakkr/stakkr.sh -c stop
+ExecReload=/home/rbindels/Projects/stakkr/stakkr.sh -c restart
+
+[Install]
+WantedBy=multi-user.target
