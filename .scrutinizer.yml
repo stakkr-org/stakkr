@@ -1,27 +1,14 @@
 # language: python
-
 checks:
     python:
         code_rating: true
         duplicate_code: true
-        variables_used_before_assignment: true
-        variables_unused_wildcard_import: true
-        variables_unused_variable: true
-        variables_unused_import: true
-        variables_unused_argument: true
-        variables_unpacking_non_sequence: true
-        variables_undefined_variable: true
-        variables_undefined_all_variable: true
-        variables_undefined_loop_variable: true
-        variables_unbalanced_tuple_unpacking: true
-        variables_redefined_outer_name: true
-
 filter:
     excluded_paths:
         - "tests/"
-
 build:
     environment:
+        python: 3.5.1
         mysql: false
         postgresql: false
         mongodb: false
@@ -32,7 +19,6 @@ build:
         rabbitmq: false
         docker:
             remote_engine: true
-
     tests:
         before:
             - "virtualenv -p /usr/bin/python3 venv"
@@ -46,3 +32,11 @@ build:
                 coverage:
                     file: '.coverage'
                     format: 'py-cc'
+    nodes:
+        tests: true
+        analysis:
+            tests:
+                override:
+                    -
+                        command: pylint-run
+                        use_website_config: true

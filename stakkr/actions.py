@@ -15,6 +15,7 @@ class StakkrActions():
     """Main class that does actions asked in the cli"""
 
     _services_to_display = {
+        'adminer': {'name': 'Adminer', 'url': 'http://{}'},
         'apache': {'name': 'Web Server', 'url': 'http://{}'},
         'mailcatcher': {'name': 'Mailcatcher (fake SMTP)', 'url': 'http://{}', 'extra_port': 25},
         'maildev': {'name': 'Maildev (Fake SMTP)', 'url': 'http://{}', 'extra_port': 25},

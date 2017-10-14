@@ -42,8 +42,8 @@ mysql use ``stakkr_mysql``. The service names also works
 .. code:: cfg
 
     # Comma separated list of services to start
-    # Valid values: apache / elasticsearch / elasticsearch-old / mailcatcher / maildev / mongo /
-    # mysql / php / phpmyadmin / python / redis / xhgui
+    # Valid values: adminer / apache / elasticsearch / elasticsearch-old / mailcatcher / maildev
+    # mongo / mysql / php / phpmyadmin / postgres / python / redis / xhgui
     services=apache,php,mysql
 
 A service can launch a post-start script that has the same name with an

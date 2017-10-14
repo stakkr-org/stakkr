@@ -9,7 +9,7 @@ if os.name == 'nt':
     extra_packages.append('pypiwin32')
 
 
-__version__ = '3.5.1'
+__version__ = '3.5.4'
 
 # Get the long description from the README file
 with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
@@ -34,8 +34,8 @@ stakkr-compose=stakkr.stakkr_compose:cli''',
     include_package_data=True,
     install_requires=[
         'clint',
-        'click', 'click-plugins',
-        'docker', 'docker-compose',
+        'click-plugins',
+        'docker-compose',
         'configobj',
         'requests>=2.11.0,<2.12'
         ] + extra_packages,

@@ -17,7 +17,7 @@ a stack of services, for example for web development.
 
 Read the configuration file and setup the required services by
 linking and managing everything for you.""")
-@click.version_option('3.5.1')
+@click.version_option('3.5.4')
 @click.option('--config', '-c', help='Change the configuration file')
 @click.option('--debug/--no-debug', '-d', default=False)
 @click.option('--verbose', '-v', is_flag=True)
@@ -77,7 +77,7 @@ Examples:\n
 - ``stakkr -v exec mysql mysqldump -p'$MYSQL_ROOT_PASSWORD' mydb > /tmp/backup.sql``\n
 - ``stakkr exec php php -v`` : Execute the php binary in the php container with option -v\n
 - ``stakkr exec apache service apache2 restart``\n
-""", name='exec', context_settings=dict(ignore_unknown_options=True))
+""", name='exec', context_settings=dict(ignore_unknown_options=True, allow_interspersed_args=False))
 @click.pass_context
 @click.option('--user', '-u', help="User's name. Be careful, each container have its own users.")
 @click.option('--tty/--no-tty', '-t/ ', is_flag=True, default=True, help="Use a TTY")
@@ -98,17 +98,18 @@ located in the mysql service.
 You can run any mysql command as root, such as :\n
 - ``stakkr mysql -e "CREATE DATABASE mydb"`` to create a DB from outside\n
 - ``stakkr mysql`` to enter the mysql console\n
-- ``cat myfile.sql | stakkr mysql mydb`` to import a file from outside to mysql\n
+- ``cat myfile.sql | stakkr mysql --no-tty mydb`` to import a file from outside to mysql\n
 
 For scripts, you must use the relative path.
-""", context_settings=dict(ignore_unknown_options=True))
+""", context_settings=dict(ignore_unknown_options=True, allow_interspersed_args=False))
 @click.pass_context
+@click.option('--tty/--no-tty', '-t/ ', is_flag=True, default=True, help="Use a TTY")
 @click.argument('command', nargs=-1, type=click.UNPROCESSED)
-def mysql(ctx, command: tuple):
+def mysql(ctx, tty: bool, command: tuple):
     """See command Help"""
 
     command = ('mysql', '-p$MYSQL_ROOT_PASSWORD') + command
-    ctx.invoke(exec_cmd, user='root', container='mysql', command=command)
+    ctx.invoke(exec_cmd, user='root', container='mysql', command=command, tty=tty)
 
 
 @stakkr.command(help='Required to be launched if you install a new plugin', name="refresh-plugins")

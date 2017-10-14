@@ -1,0 +1,13 @@
+version: '2.2'
+
+services:
+    postgres:
+        image: postgres:${DOCKER_POSTGRES_VERSION}
+        mem_limit: ${DOCKER_POSTGRES_RAM}
+        container_name: ${COMPOSE_PROJECT_NAME}_postgres
+        hostname: ${COMPOSE_PROJECT_NAME}_postgres
+        networks: [stakkr]
+        environment:
+            POSTGRES_PASSWORD: ${DOCKER_POSTGRES_PASSWORD}
+        volumes:
+            - ${COMPOSE_BASE_DIR}/data/postgres:/var/lib/postgresql/data
