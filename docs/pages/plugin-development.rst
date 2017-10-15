@@ -109,3 +109,5 @@ List of existing plugins
 * `stakkr-composer <https://github.com/edyan/stakkr-composer>`_ : Download and run composer
 * `stakkr-sugarcli <https://github.com/inetprocess/stakkr-sugarcli>`_ : Download and run sugarcli
 * `stakkr-phing <https://github.com/edyan/stakkr-phing>`_ : Download and run Phing
+* `stakkr-nginx-proxy <https://github.com/inetprocess/stakkr-nginx-proxy>`_ : Nginx proxy
+* `stakkr-phpcron <https://github.com/inetprocess/stakkr-phpcron>`_ : PHP + Cron Service
