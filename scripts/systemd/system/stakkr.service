@@ -1,0 +1,14 @@
+[Unit]
+Description=stakkr Service
+After=multi-user.target
+
+[Service]
+Type=simple
+RemainAfterExit=yes
+
+ExecStart=/usr/bin/stakkrd start
+ExecStop=/usr/bin/stakkrd stop
+ExecReload=/usr/bin/stakkrd restart
+
+[Install]
+WantedBy=multi-user.target
