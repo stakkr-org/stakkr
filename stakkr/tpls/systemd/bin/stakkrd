@@ -1,15 +1,12 @@
 #!/bin/bash
-# This is a stakkr wrapper to run stakkr with abash shell from outside the 
-# virtualenv.
-# run this as the stakkr user!
-# 
+# This is a stakkr wrapper to run stakkr with a bash shell from outside the
+# virtualenv. Run this as the stakkr user!
+#
 
-exec_command_in_stakkr(){
-    CMD=$1
-    source $VIRTUALENV_DIR/bin/activate
-    echo $WDIR
+exec_command_in_stakkr() {
     cd $WDIR
-    stakkr $CMD
+    source $VIRTUALENV_DIR/bin/activate
+    stakkr $1
     deactivate
 }
 
@@ -37,17 +34,17 @@ fi
 
 if [ -n "$COMMAND" ]; then
     if test -f ${sysconfdir}/stakkr/stakkr.conf; then
-        f=${sysconfdir}/stakkr/stakkr.conf
-        . $f
+        CONF_FILE=${sysconfdir}/stakkr/stakkr.conf
+        . $CONF_FILE
         # take action on each file. $f store current file name
         exec_command_in_stakkr $COMMAND
     fi
 
     if test -d ${sysconfdir}/stakkr.d; then
-        for f in ${sysconfdir}/stakkr.d/*.conf
+        for CONF_FILE in ${sysconfdir}/stakkr.d/*.conf
         do
-            if test -f $f ; then
-              . $f
+            if test -f $CONF_FILE ; then
+              . $CONF_FILE
                   # take action on each file. $f store current file name
                 exec_command_in_stakkr $COMMAND
             fi

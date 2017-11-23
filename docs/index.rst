@@ -59,6 +59,7 @@ You can combine services as you want to have :
    pages/cli.rst
    pages/plugin-development.rst
    pages/custom-services.rst
+   pages/systemd.rst
    pages/code.rst
 
 

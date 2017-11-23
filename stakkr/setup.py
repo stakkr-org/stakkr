@@ -24,8 +24,9 @@ templates and directory structure""")
             click.secho('Config file (conf/compose.ini) already present. Leaving.', fg='yellow')
             return
 
-        msg = 'Config file (conf/compose.ini) not present, do not forget to create it'
-        click.secho(msg, fg='yellow')
+        if os.path.isfile(config_file) is False:
+            click.secho('Do not forget to create the conf/compose.ini file', fg='yellow')
+
         _post_install(force)
 except ImportError:
     def init():
@@ -40,7 +41,7 @@ def _post_install(force: bool = False):
 
     venv_dir = package_utils.get_venv_basedir()
     # If already installed don't do anything
-    if os.path.isfile(venv_dir + '/conf/compose.ini'):
+    if os.path.isfile(venv_dir + '/conf/compose.ini') and force is False:
         return
 
     required_dirs = [
@@ -52,6 +53,9 @@ def _post_install(force: bool = False):
         'home/www-data/bin',
         'logs',
         'plugins',
+        'systemd/bin',
+        'systemd/conf',
+        'systemd/system',
         'services',
         'www'
     ]
@@ -66,7 +70,10 @@ def _post_install(force: bool = False):
         'conf/php-fpm-override/example.conf',
         'conf/php-fpm-override/README',
         'conf/xhgui-override/config.php',
-        'home/www-data/.bashrc'
+        'home/www-data/.bashrc',
+        'systemd/bin/stakkrd',
+        'systemd/conf/stakkr.conf',
+        'systemd/system/stakkr.service'
     ]
     for required_tpl in required_tpls:
         _copy_file(venv_dir, required_tpl, force)
@@ -109,4 +116,3 @@ class StakkrPostInstall(install):
             msg = 'You must run setup.py from a virtualenv if you want to have '
             msg += 'the templates installed'
             print(msg)
-
