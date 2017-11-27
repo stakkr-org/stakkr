@@ -10,8 +10,8 @@ def get_venv_basedir():
     """Returns the base directory of the virtualenv, useful to read configuration and plugins"""
 
     exec_prefix = get_config_vars()['exec_prefix']
-
-    if hasattr(sys, 'real_prefix') is False or exec_prefix.startswith(sys.real_prefix):
+    has_real_prefix = hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix)
+    if has_real_prefix is False or (hasattr(sys, 'real_prefix') and exec_prefix.startswith(sys.real_prefix)):
         raise EnvironmentError('You must be in a virtual environment')
 
     return os.path.abspath(get_config_vars()['exec_prefix'] + '/../')
