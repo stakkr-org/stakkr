@@ -4,7 +4,7 @@
 # by default: nothing
 # services=apache,php,mysql
 
-# Change Machines prefix
+# Change Machines prefix (A SINGLE WORD to avoid strange behaviors)
 # project_name=stakkr
 
 # Change your group id and user id only if needed (the defaults are the one from the current user)

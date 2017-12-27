@@ -218,21 +218,25 @@ def _extract_container_info(project_name: str, ct_id: str):
     except NotFound:
         return None
 
-    ports = []
-    if 'ExposedPorts' in ct_data['Config']:
-        ports = ct_data['Config']['ExposedPorts'].keys()
-
     cts_info = {
         'id': ct_id,
         'name': ct_data['Name'].lstrip('/'),
         'compose_name': ct_data['Config']['Labels']['com.docker.compose.service'],
-        'ports': ports,
+        'ports': _extract_host_ports(ct_data),
         'image': ct_data['Config']['Image'],
         'ip': _get_ip_from_networks(project_name, ct_data['NetworkSettings']['Networks']),
         'running': ct_data['State']['Running']
         }
 
     return cts_info
+
+
+def _extract_host_ports(config: list):
+    ports = []
+    for ct_port, host_ports in config['HostConfig']['PortBindings'].items():
+        ports = [host_port['HostPort'] for host_port in host_ports]
+
+    return ports
 
 
 def _get_ip_from_networks(project_name: str, networks: list):

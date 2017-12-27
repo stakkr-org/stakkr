@@ -78,7 +78,7 @@ docker from https://docs.docker.com/docker-for-windows/install/
 	There are known limitations under windows : First the DNS won't work and Second, `stakkr` has to create a route and change a few parameters inside MobyLinux.
 
 
-1.3 Installation under MacOSX
+1.3 Installation under MacOS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 First install python3 from https://www.python.org/downloads/mac-osx/ (3.6 is ok) and
@@ -89,13 +89,13 @@ docker from https://docs.docker.com/docker-for-mac/install/
 
     $ mkdir mydev
     $ cd mydev
-    $ pyvenv-3.6 mydev_stakkr
+    $ python3 -m venv lamp_stakkr
     $ source mydev_stakkr/bin/activate
-    $ pip install stakkr
+    $ pip3 --no-cache-dir install stakkr
 
 
 .. WARNING::
-	WIP : I am currently trying to test it on Mac .... but it's not done yet
+	You can't use containers IPs under MacOS. You need then to use exposed ports. 
 
 
 1.4 Development version

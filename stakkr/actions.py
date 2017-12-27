@@ -65,6 +65,7 @@ class StakkrActions():
         dns_started = docker_actions.container_running('docker_dns')
 
         cts = docker_actions.get_running_containers(self.project_name)[1]
+
         text = ''
         for ct_id, ct_info in cts.items():
             if ct_info['compose_name'] not in self._services_to_display:
@@ -74,10 +75,15 @@ class StakkrActions():
             name = colored.yellow(options['name'])
             text += '  - For {}'.format(name).ljust(55, ' ') + ' : ' + url + '\n'
 
+            if len(ct_info['ports']) > 0:
+                text += ' '*4 + 'If you are using a Mac, do not use the ip but '
+                text += '"http://localhost:PORT" where PORT is '
+                text += ' or '.join(ct_info['ports']) + '\n'
+
             if 'extra_port' in options:
                 port = str(options['extra_port'])
-                text += ' '*3 + ' ... in your containers use the port ' + port
-                text += '\n'
+                text += ' '*4 + 'In your containers use the host '
+                text += '"{}" and port {}\n'.format(ct_info['compose_name'], port)
 
         return text
 

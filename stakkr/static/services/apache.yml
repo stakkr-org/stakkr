@@ -11,6 +11,8 @@ services:
         environment:
             APACHE_UID: ${DOCKER_UID}
             APACHE_GID: ${DOCKER_GID}
+        ports:
+            - 8080:80
         volumes:
             - ${COMPOSE_BASE_DIR}/home/www-data:/home/www-data
             - ${COMPOSE_BASE_DIR}/logs/apache:/var/log/apache2
