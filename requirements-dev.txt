@@ -2,12 +2,11 @@ click
 click-plugins
 clint
 configobj
-docker
+docker-compose
 guzzle_sphinx_theme
 pytest
 pytest-coverage
 Pygments
-requests>=2.11.0,<2.12
 sphinx
 sphinx-autobuild
 sphinx-click
