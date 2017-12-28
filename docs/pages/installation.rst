@@ -95,7 +95,7 @@ docker from https://docs.docker.com/docker-for-mac/install/
 
 
 .. WARNING::
-	You can't use containers IPs under MacOS. You need then to use exposed ports. 
+	You can't use containers IPs under MacOS. You need then to use exposed ports.
 
 
 1.4 Development version
@@ -139,6 +139,7 @@ To develop, use the 2nd way to install Stakkr then :
 .. code:: shell
 
     $ pip install -r requirements-dev.txt
+    $ py.test -c pytest.ini
 
 
 To generate that doc :

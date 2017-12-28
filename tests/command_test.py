@@ -168,7 +168,8 @@ class CommandTest(unittest.TestCase):
 
         f = io.StringIO()
         with redirect_stdout(f):
-            launch_cmd_displays_output(['wget', '--debug', '--tries', '3', 'http://doesnotexist'], False, True)
+            cmd = ['cat', 'w', 'r', 'o', 'n', 'g', 'f', 'i', 'l', 'e']
+            launch_cmd_displays_output(cmd, False, True)
         res = f.getvalue()
         expected = re.compile('.*\.\.\. and more.*', re.MULTILINE)
         self.assertRegex(res, expected)
