@@ -1,8 +1,8 @@
-click
 click-plugins
 clint
 configobj
 docker-compose
+
 guzzle_sphinx_theme
 pytest
 pytest-coverage

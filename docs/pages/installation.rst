@@ -89,7 +89,7 @@ docker from https://docs.docker.com/docker-for-mac/install/
 
     $ mkdir mydev
     $ cd mydev
-    $ python3 -m venv lamp_stakkr
+    $ python3 -m venv mydev_stakkr
     $ source mydev_stakkr/bin/activate
     $ pip3 --no-cache-dir install stakkr
 
