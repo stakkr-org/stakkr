@@ -23,6 +23,10 @@ You can define your own network in compose.ini by setting a ``subnet``.
    If you change that, run ``docker-clean`` which
    removes orphans images, stopped container, etc ...
 
+   For MacOS and Windows, we recommend to expose ports as it's difficult
+   to access the network directly. Then, for each service you have a
+   xxxxx.expose parameter (example : ``apache.expose = 8080``)
+
    Also, if you change any parameter such as an environment variable
    run a ``stakkr restart --recreate`` to make sure that you start from
    a clean environment.

@@ -11,7 +11,7 @@ services:
             FPM_UID: ${DOCKER_UID}
             FPM_GID: ${DOCKER_GID}
         ports:
-            - 8086:80
+            - ${DOCKER_XHGUI_EXPOSE}:80
     php:
         volumes_from: [xhgui]
         # Local configuration to override the one which connects in local

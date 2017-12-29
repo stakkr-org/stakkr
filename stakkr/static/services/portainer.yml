@@ -12,4 +12,4 @@ services:
             - ${COMPOSE_BASE_DIR}/data/portainer:/data
         command: ['-p', ':80', '--no-analytics']
         ports:
-            - 8085:80
+            - ${DOCKER_PORTAINER_EXPOSE}:80
