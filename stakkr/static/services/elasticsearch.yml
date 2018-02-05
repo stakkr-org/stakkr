@@ -9,3 +9,6 @@ services:
         networks: [stakkr]
         volumes:
             - ${COMPOSE_BASE_DIR}/data/elasticsearch:/usr/share/elasticsearch/data
+        environment:
+            - cluster.name=${COMPOSE_PROJECT_NAME}
+            - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"
