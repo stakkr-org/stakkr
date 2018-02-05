@@ -54,6 +54,17 @@ A service can launch a post-start script that has the same name with an
 ``.sh`` extension (example: ``services/mysql.sh``).
 
 
+Special case of Elasticsearch
+------------------------------
+ElasticSearch needs a few manual commands to start from the version 5.x. Before starting stakkr, do the following : 
+
+.. code:: shell
+
+    $ mkdir data/elasticsearch
+    $ sudo chown -R 1000:1000 data/elasticsearch
+    $ sudo sysctl -w vm.max_map_count=262144
+
+
 Special case of xhgui service
 ----------------------------------
 To be able to profile your script, add the service xhgui and read the
