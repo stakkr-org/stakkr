@@ -50,20 +50,6 @@ example and chose your versions (PHP 5.3 or 5.6 or 7.1 or anything
 else).
 
 
-
-Versions
-=============
-
-.. IMPORTANT::
-   Stakkr has known 3 versions and 3 names :
-
-   - 1.x : it was called ``docker-lamp`` and was made to setup an Apache + PHP + MySQL Environment
-
-   - 2.x : it was called ``marina`` (nice name!) and was made to have a stack build around various services.
-
-   - 3.x : current version (and probably future ones) , now ``stakkr``. Why changing its name again ? Because marina is used by various people and therefore our tool could add more confusion.
-
-
 Examples
 ========
 
