@@ -81,8 +81,8 @@ docker from https://docs.docker.com/docker-for-windows/install/
 1.3 Installation under MacOS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-First install python3 from https://www.python.org/downloads/mac-osx/ (3.6 is ok) and
-docker from https://docs.docker.com/docker-for-mac/install/
+First install python3 from https://www.python.org/downloads/mac-osx/ (3.6 is ok) or with brew with `brew install python3 autoenv`.
+Then docker from https://docs.docker.com/docker-for-mac/install/.
 
 
 .. code:: shell

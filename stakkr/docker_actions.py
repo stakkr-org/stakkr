@@ -234,7 +234,7 @@ def _extract_container_info(project_name: str, ct_id: str):
 def _extract_host_ports(config: list):
     ports = []
     for ct_port, host_ports in config['HostConfig']['PortBindings'].items():
-        ports = [host_port['HostPort'] for host_port in host_ports]
+        ports += [host_port['HostPort'] for host_port in host_ports]
 
     return ports
 
