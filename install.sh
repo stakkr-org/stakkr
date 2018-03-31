@@ -2,7 +2,7 @@
 set -e
 
 echo "Cleaning the old virtualenv"
-rm -rf *.egg-info ${PWD##*/}_stakkr ${PWD##*/}_marina __pycache__
+rm -rf *.egg-info ${PWD##*/}_stakkr __pycache__
 echo ""
 
 echo "Installing various python packages"
