@@ -30,8 +30,8 @@
 
 
 # Check https://hub.docker.com/_/elasticsearch/
-# elasticsearch.version=2
-# elasticsearch.ram=512M
+# elasticsearch.version=6.2.3
+# elasticsearch.ram=2048M
 
 
 # Which port should we expose for mailcatcher ?
