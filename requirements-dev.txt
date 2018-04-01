@@ -1,7 +1,7 @@
 click-plugins
 clint
 configobj
-docker-compose
+docker-compose<1.20
 
 guzzle_sphinx_theme
 pytest
