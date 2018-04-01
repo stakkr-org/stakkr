@@ -2,7 +2,7 @@ version: '2.2'
 
 services:
     elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch-oss:${DOCKER_ELASTICSEARCH_VERSION}
+        image: docker.elastic.co/elasticsearch/elasticsearch:${DOCKER_ELASTICSEARCH_VERSION}
         mem_limit: ${DOCKER_ELASTICSEARCH_RAM}
         container_name: ${COMPOSE_PROJECT_NAME}_elasticsearch
         hostname: ${COMPOSE_PROJECT_NAME}_elasticsearch
@@ -11,4 +11,5 @@ services:
             - ${COMPOSE_BASE_DIR}/data/elasticsearch:/usr/share/elasticsearch/data
         environment:
             - cluster.name=${COMPOSE_PROJECT_NAME}
+            - xpack.security.enabled=false
             - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"

@@ -29,7 +29,7 @@
 # apache.expose = 8080
 
 
-# Check https://hub.docker.com/_/elasticsearch/
+# Check https://www.docker.elastic.co
 # elasticsearch.version=6.2.3
 # elasticsearch.ram=2048M
 
