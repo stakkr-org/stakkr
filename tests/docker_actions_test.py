@@ -41,13 +41,8 @@ class DockerActionsTest(unittest.TestCase):
         extract VM Info
 
         """
-        try:
-            exec_cmd(['docker', 'stop', 'test_php'])
-            exec_cmd(['docker', 'rm', 'test_php'])
-        except Exception:
-            pass
 
-        cmd = ['stakkr-compose', '-c', base_dir + '/static/config_valid.ini', 'up', '-d']
+        cmd = ['stakkr-compose', '-c', base_dir + '/static/config_valid.ini', 'up', '-d', '--force-recreate']
         exec_cmd(cmd)
         numcts, cts = docker_actions.get_running_containers('test')
         self.assertIs(len(cts), 3)
@@ -155,6 +150,14 @@ class DockerActionsTest(unittest.TestCase):
         self.assertEqual('/bin/bash', shell)
 
         exec_cmd(['docker', 'stop', 'pytest'])
+
+
+    def tearDownClass():
+        exec_cmd(['docker', 'rm', 'pytest'])
+        exec_cmd(['docker', 'rm', 'test_maildev'])
+        exec_cmd(['docker', 'rm', 'test_php'])
+        exec_cmd(['docker', 'rm', 'test_portainer'])
+        exec_cmd(['docker', 'network', 'rm', 'nw_pytest'])
 
 
 def exec_cmd(cmd: list):

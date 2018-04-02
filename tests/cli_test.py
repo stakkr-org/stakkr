@@ -41,7 +41,7 @@ class CliTest(unittest.TestCase):
 
 
     def test_debug_mode(self):
-        exec_cmd(self.cmd_base + ['start'])
+        exec_cmd(self.cmd_base + ['start', '-r'])
 
         cmd = self.cmd_base + ['--debug', 'console', 'portainer']
         res = exec_cmd(cmd)
@@ -242,8 +242,13 @@ class CliTest(unittest.TestCase):
 
     def tearDownClass():
         cli = CliTest()
+
         exec_cmd(cli.cmd_base + ['stop'])
         exec_cmd(cli.cmd_base + ['dns', 'stop'])
+
+        exec_cmd(['docker', 'rm', 'test_maildev'])
+        exec_cmd(['docker', 'rm', 'test_php'])
+        exec_cmd(['docker', 'rm', 'test_portainer'])
 
 
 def exec_cmd(cmd: list):
