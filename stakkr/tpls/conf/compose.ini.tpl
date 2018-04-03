@@ -1,6 +1,6 @@
 [main]
 # Comma separated, valid values: adminer / apache / elasticsearch / elasticsearch-old / mailcatcher
-#                                maildev / mongo / mysql / php / phpmyadmin / phyton / redis / xhgui
+#                                maildev / mongo / mysql / php / phpmyadmin / portainer / redis / xhgui
 # by default: nothing
 # services=apache,php,mysql
 
@@ -72,11 +72,6 @@
 # postgres.ram = 1024M
 # postgres.password = postgres
 # postgres.version = 9-alpine
-
-
-# Set your Python version from https://hub.docker.com/_/python/
-# python.ram=512M
-# python.version=latest
 
 
 # Set your Redis Version from https://hub.docker.com/_/redis/

@@ -30,7 +30,7 @@ Let's make an nginx service. The file will be located into ``services/`` as
 
 .. code:: yaml
 
-    version: '2'
+    version: '2.2'
 
     services:
         nginx:
@@ -65,3 +65,43 @@ To run a command, use the standard ``exec`` wrapper:
 .. code:: bash
 
     $ stakkr exec nginx cat /etc/nginx/nginx.conf
+
+
+
+Build your service instead of using an existing image
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+When you need to build your own image and use it in stakkr, you just need to add a ``Dockerfile``,
+like below, then run ``stakkr-compose build`` each time you need to build it. Once built, a simple
+``stakkr start`` is enough to start it.
+
+
+* ``services/memcached.yml`` file :
+
+.. code:: yaml
+
+version: '2.2'
+
+    services:
+        memcached:
+            build: ${COMPOSE_BASE_DIR}/services/memcached
+            mem_limit: 1024M
+            container_name: ${COMPOSE_PROJECT_NAME}_memcached
+            hostname: ${COMPOSE_PROJECT_NAME}_memcached
+            networks: [stakkr]
+
+
+
+* ``services/memcached/Dockerfile`` file :
+
+.. code:: bash
+
+    FROM memcached:1.5-alpine
+
+    # RUN ... your own logic
+
+
+
+* In ``conf/compose.ini`` file, add :
+.. code:: cfg
+
+    services=....,memcached

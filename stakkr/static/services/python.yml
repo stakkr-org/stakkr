@@ -1,9 +1,0 @@
-version: '2.2'
-
-services:
-    python:
-        image: python:${DOCKER_PYTHON_VERSION}
-        container_name: ${COMPOSE_PROJECT_NAME}_python
-        hostname: ${COMPOSE_PROJECT_NAME}_python
-        networks: [stakkr]
-        mem_limit: ${DOCKER_PYTHON_RAM}
