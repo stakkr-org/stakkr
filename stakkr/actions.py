@@ -19,6 +19,7 @@ class StakkrActions():
         'apache': {'name': 'Web Server', 'url': 'http://{}'},
         'mailcatcher': {'name': 'Mailcatcher (fake SMTP)', 'url': 'http://{}', 'extra_port': 25},
         'maildev': {'name': 'Maildev (Fake SMTP)', 'url': 'http://{}', 'extra_port': 25},
+        'nginx': {'name': 'Web Server', 'url': 'http://{}'},
         'portainer': {'name': 'Portainer (Docker GUI)', 'url': 'http://{}'},
         'phpmyadmin': {'name': 'PhpMyAdmin', 'url': 'http://{}'},
         'xhgui': {'name': 'XHGui (PHP Profiling)', 'url': 'http://{}'}
@@ -46,7 +47,7 @@ class StakkrActions():
 
 
     def console(self, container: str, user: str, tty: bool):
-        """Enter a container (stakkr allows only apache / php and mysql)"""
+        """Enter a container. Stakkr will try to guess the right shell"""
 
         docker_actions.check_cts_are_running(self.project_name)
 

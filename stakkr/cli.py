@@ -175,7 +175,7 @@ def stop(ctx):
 
 
 def _get_cmd_user(user: str, container: str):
-    users = {'apache': 'www-data', 'php': 'www-data'}
+    users = {'apache': 'www-data', 'nginx': 'www-data', 'php': 'www-data'}
 
     cmd_user = 'root' if user is None else user
     if container in users and user is None:

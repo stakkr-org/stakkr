@@ -42,6 +42,12 @@
 # maildev.expose = 8083
 
 
+# How much RAM for Nginx ?
+# nginx.ram = 512M
+# Which port should we expose for Nginx ?
+# nginx.expose = 8087
+
+
 # Check https://hub.docker.com/_/mongo/ (latest by default)
 # mongo.version=latest
 

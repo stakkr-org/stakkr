@@ -1,0 +1,19 @@
+version: '2.2'
+
+services:
+    nginx:
+        image: edyan/nginx
+        mem_limit: ${DOCKER_NGINX_RAM}
+        container_name: ${COMPOSE_PROJECT_NAME}_nginx
+        hostname: ${COMPOSE_PROJECT_NAME}_nginx
+        networks: [stakkr]
+        links: [php]
+        environment:
+            NGINX_UID: ${DOCKER_UID}
+            NGINX_GID: ${DOCKER_GID}
+        ports:
+            - ${DOCKER_NGINX_EXPOSE}:80
+        volumes:
+            - ${COMPOSE_BASE_DIR}/home/www-data:/home/www-data
+            - ${COMPOSE_BASE_DIR}/logs/nginx:/var/log/nginx
+            - ${COMPOSE_BASE_DIR}/www:/var/www
