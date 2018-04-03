@@ -79,7 +79,7 @@ like below, then run ``stakkr-compose build`` each time you need to build it. On
 
 .. code:: yaml
 
-version: '2.2'
+    version: '2.2'
 
     services:
         memcached:
@@ -102,6 +102,7 @@ version: '2.2'
 
 
 * In ``conf/compose.ini`` file, add :
+
 .. code:: cfg
 
     services=....,memcached
