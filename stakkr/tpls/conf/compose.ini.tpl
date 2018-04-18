@@ -1,6 +1,6 @@
 [main]
 # Comma separated, valid values: adminer / apache / elasticsearch / elasticsearch-old / mailcatcher
-#                                maildev / mongo / mysql / php / phpmyadmin / portainer / redis / xhgui
+#                                maildev / mongo / mysql / nginx / php / phpmyadmin / portainer / redis / xhgui
 # by default: nothing
 # services=apache,php,mysql
 
@@ -89,6 +89,8 @@
 # xhgui.ram=512M
 # Which port should we expose for xhgui ?
 # xhgui.expose = 8085
+# Versions available : php5.6 and php7.2 (latest). Use the right version for your main PHP container
+# xhgui.version=latest
 
 
 # [network-block]
