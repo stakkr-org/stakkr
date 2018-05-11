@@ -1,6 +1,7 @@
 [main]
-# Comma separated, valid values: adminer / apache / elasticsearch / elasticsearch-old / mailcatcher
-#                                maildev / mongo / mysql / php / phpmyadmin / portainer / redis / xhgui
+# Comma separated, valid values: adminer / apache / elasticsearch / elasticsearch-old
+#                                mailcatcher / maildev / mongo / mysql / nginx / php
+#                                phpmyadmin / portainer / redis / sqlserver / xhgui
 # by default: nothing
 # services=apache,php,mysql
 
@@ -78,6 +79,13 @@
 # postgres.ram = 1024M
 # postgres.password = postgres
 # postgres.version = 9-alpine
+
+
+# Set your sqlserver version + password (default superuser is "sa")
+# Be careful that does not work for MacOS (no data persistence)
+# sqlserver.ram = 1024M
+# sqlserver.password = Sa2017Sqlserver
+# sqlserver.version = 2017-latest
 
 
 # Set your Redis Version from https://hub.docker.com/_/redis/

@@ -1,0 +1,15 @@
+version: '2.2'
+
+services:
+    sqlserver:
+        image: microsoft/mssql-server-linux:${DOCKER_SQLSERVER_VERSION}
+        mem_limit: ${DOCKER_SQLSERVER_RAM}
+        container_name: ${COMPOSE_PROJECT_NAME}_sqlserver
+        hostname: ${COMPOSE_PROJECT_NAME}_sqlserver
+        networks: [stakkr]
+        environment:
+            ACCEPT_EULA: Y
+            SA_PASSWORD: ${DOCKER_SQLSERVER_PASSWORD}
+        volumes:
+            - ${COMPOSE_BASE_DIR}/data/sqlserver:/var/opt/mssql/data
+            - ${COMPOSE_BASE_DIR}/logs/sqlserver:/var/opt/mssql/log
