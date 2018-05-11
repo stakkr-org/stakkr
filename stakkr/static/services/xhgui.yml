@@ -2,7 +2,7 @@ version: '2.2'
 
 services:
     xhgui:
-        image: edyan/xhgui
+        image: edyan/xhgui:${DOCKER_XHGUI_VERSION}
         container_name: ${COMPOSE_PROJECT_NAME}_xhgui
         hostname: ${COMPOSE_PROJECT_NAME}_xhgui
         networks: [stakkr]

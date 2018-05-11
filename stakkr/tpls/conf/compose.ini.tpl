@@ -43,12 +43,6 @@
 # maildev.expose = 8083
 
 
-# How much RAM for Nginx ?
-# nginx.ram = 512M
-# Which port should we expose for Nginx ?
-# nginx.expose = 8087
-
-
 # Check https://hub.docker.com/_/mongo/ (latest by default)
 # mongo.version=latest
 
@@ -58,6 +52,12 @@
 # mysql.version=5.7
 # Password set on first start. Once the data exist won't be changed
 # mysql.root_password=changeme
+
+
+# How much RAM for Nginx ?
+# nginx.ram = 512M
+# Which port should we expose for Nginx ?
+# nginx.expose = 8087
 
 
 # Set your PHP version from 5.3 to 7.2 (5.6 by default)
@@ -97,6 +97,8 @@
 # xhgui.ram=512M
 # Which port should we expose for xhgui ?
 # xhgui.expose = 8085
+# Versions available : php5.6 and php7.2 (latest). Use the right version for your main PHP container
+# xhgui.version=latest
 
 
 # [network-block]
