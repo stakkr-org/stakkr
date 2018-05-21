@@ -9,7 +9,7 @@ if os.name == 'nt':
     extra_packages.append('pypiwin32')
 
 
-__version__ = '3.6.3'
+__version__ = '3.6.4'
 
 # Get the long description from the README file
 with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
