@@ -63,8 +63,6 @@ class StakkrActions():
     def get_services_ports(self):
         """Once started, stakkr displays a message with the list of launched containers."""
 
-        dns_started = docker_actions.container_running('docker_dns')
-
         cts = docker_actions.get_running_containers(self.project_name)[1]
 
         text = ''
@@ -72,7 +70,7 @@ class StakkrActions():
             if ct_info['compose_name'] not in self._services_to_display:
                 continue
             options = self._services_to_display[ct_info['compose_name']]
-            url = get_url(options['url'], ct_info['compose_name'], dns_started)
+            url = get_url(options['url'], ct_info['compose_name'])
             name = colored.yellow(options['name'])
             text += '  - For {}'.format(name).ljust(55, ' ') + ' : ' + url + '\n'
 
@@ -144,10 +142,8 @@ class StakkrActions():
             puts(colored.yellow('[INFO]') + ' stakkr is currently stopped')
             sys.exit(0)
 
-        dns_started = docker_actions.container_running('docker_dns')
-
-        self._print_status_headers(dns_started)
-        self._print_status_body(dns_started)
+        self._print_status_headers()
+        self._print_status_body()
 
 
     def stop(self):
@@ -197,23 +193,21 @@ class StakkrActions():
         return ''
 
 
-    def _print_status_headers(self, dns_started: bool):
-        host_ip = (colored.green('HostName' if dns_started else 'IP'))
-
+    def _print_status_headers(self):
         puts(columns(
-            [(colored.green('Container')), 16], [host_ip, 25], [(colored.green('Ports')), 25],
-            [(colored.green('Image')), 32],
+            [(colored.green('Container')), 16], [colored.green('IP'), 25],
+            [(colored.green('Ports')), 25], [(colored.green('Image')), 32],
             [(colored.green('Docker ID')), 15], [(colored.green('Docker Name')), 25]
             ))
 
         puts(columns(
-            ['-'*16, 16], ['-'*25, 25], ['-'*25, 25],
-            ['-'*32, 32],
+            ['-'*16, 16], ['-'*25, 25],
+            ['-'*25, 25], ['-'*32, 32],
             ['-'*15, 15], ['-'*25, 25]
             ))
 
 
-    def _print_status_body(self, dns_started: bool):
+    def _print_status_body(self):
         self.running_cts, self.cts = docker_actions.get_running_containers(self.project_name)
 
         for container in sorted(self.cts.keys()):
@@ -221,11 +215,9 @@ class StakkrActions():
             if ct_data['ip'] == '':
                 continue
 
-            host_ip = ct_data['name'] if dns_started else ct_data['ip']
-
             puts(columns(
-                [ct_data['compose_name'], 16], [host_ip, 25], [', '.join(ct_data['ports']), 25],
-                [ct_data['image'], 32],
+                [ct_data['compose_name'], 16], [ct_data['ip'], 25],
+                [', '.join(ct_data['ports']), 25], [ct_data['image'], 32],
                 [ct_data['id'][:12], 15], [ct_data['name'], 25]
                 ))
 
@@ -257,10 +249,7 @@ class StakkrActions():
             self._call_service_post_script(service)
 
 
-def get_url(service_url: str, service: str, dns_started: bool):
+def get_url(service_url: str, service: str):
     """Build URL to be displayed"""
 
-    service_name = docker_actions.get_ct_name(service)
-    service_ip = docker_actions.get_ct_item(service, 'ip')
-
-    return service_url.format(service_name if dns_started else service_ip)
+    return service_url.format(docker_actions.get_ct_item(service, 'ip'))

@@ -76,7 +76,6 @@ class DockerActionsTest(unittest.TestCase):
             docker_actions._container_in_network('test_php', 'bridge')
 
         exec_cmd(['stakkr', 'stop'])
-        exec_cmd(['stakkr', 'dns', 'stop'])
         exec_cmd(['docker', 'network', 'rm', 'test_stakkr'])
         self.assertFalse(docker_actions.network_exists('test_stakkr'))
 

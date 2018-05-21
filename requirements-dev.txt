@@ -1,9 +1,8 @@
-click-plugins
-clint
-configobj
+click-plugins==1.0.3
+clint==0.5.1
+configobj==5.0.6
 docker-compose<1.20
 
-guzzle_sphinx_theme
 pytest
 pytest-coverage
 Pygments

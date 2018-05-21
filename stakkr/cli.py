@@ -7,7 +7,7 @@ import sys
 import click
 from click_plugins import with_plugins
 from pkg_resources import iter_entry_points
-from stakkr import dns as dns_manager, package_utils
+from stakkr import package_utils
 from stakkr.docker_actions import get_running_containers_name
 
 
@@ -52,23 +52,6 @@ def console(ctx, container: str, user: str, tty: bool):
         ct_choice.convert(container, None, ctx)
 
     ctx.obj['STAKKR'].console(container, _get_cmd_user(user, container), tty)
-
-
-@stakkr.command(help="""Start or Stop the DNS forwarder.
-Useful to access your containers directly by their names.
-Does not work under Windows as we can't mount /etc/resolv.conf.
-
-Valid values for ACTION : 'start' or 'stop'""", name="dns")
-@click.argument('action', required=True, type=click.Choice(['start', 'stop']))
-@click.pass_context
-def dns(ctx, action: str):
-    """See command Help"""
-
-    dns_manager.manage_dns(ctx.obj['STAKKR'].project_name, action)
-    action = click.style('[{}]'.format(action.upper()), fg='green')
-    click.echo(action + ' DNS forwarder ...', nl=False)
-    click.echo('Wait a little before calling services by their DNS')
-    _show_status(ctx)
 
 
 @stakkr.command(help="""Execute a command into a container.
@@ -145,7 +128,7 @@ def restart(ctx, pull: bool, recreate: bool):
     ctx.invoke(start, pull=pull, recreate=recreate)
 
 
-@stakkr.command(help="List available to use in compose.ini with an info if the service is enabled")
+@stakkr.command(help="List available services available for compose.ini (with info if the service is enabled)")
 @click.pass_context
 def services(ctx):
     """See command Help"""

@@ -89,7 +89,6 @@ class CliTest(unittest.TestCase):
 
 
     def test_exec_php(self):
-        exec_cmd(self.cmd_base + ['dns', 'stop'])
         exec_cmd(self.cmd_base + ['start'])
 
         # Check for PHP Version
@@ -121,7 +120,6 @@ class CliTest(unittest.TestCase):
 
     def test_restart_stopped(self):
         exec_cmd(self.cmd_base + ['stop'])
-        exec_cmd(self.cmd_base + ['dns', 'stop'])
         cmd = self.cmd_base + ['restart']
 
         # Restart
@@ -143,7 +141,6 @@ class CliTest(unittest.TestCase):
 
     def test_restart_started(self):
         exec_cmd(self.cmd_base + ['start'])
-        exec_cmd(self.cmd_base + ['dns', 'stop'])
 
         cmd = self.cmd_base + ['restart']
 
@@ -166,7 +163,6 @@ class CliTest(unittest.TestCase):
 
     def test_start(self):
         exec_cmd(self.cmd_base + ['stop'])
-        exec_cmd(self.cmd_base + ['dns', 'stop'])
 
         cmd = self.cmd_base + ['start']
 
@@ -187,7 +183,6 @@ class CliTest(unittest.TestCase):
 
 
     def test_status(self):
-        exec_cmd(self.cmd_base + ['dns', 'stop'])
         exec_cmd(self.cmd_base + ['start'])
         cmd = self.cmd_base + ['status']
 
@@ -199,20 +194,6 @@ class CliTest(unittest.TestCase):
         self.assertRegex(res['stdout'], '.*test_maildev.*')
         self.assertRegex(res['stdout'], '.*test_php.*')
         self.assertIs(res['status'], 0)
-
-        # With DNS
-        if os.name not in ['nt']:
-            res = exec_cmd(self.cmd_base + ['dns', 'start'])
-            self.assertEqual(res['stderr'], '')
-            self.assertRegex(res['stdout'], r'.*\[START\].*DNS forwarder.*')
-
-            res = exec_cmd(cmd)
-            self.assertEqual(res['stderr'], '')
-            self.assertRegex(res['stdout'], r'.*Container\s*HostName\s*Ports\s*Image.*')
-            self.assertNotRegex(res['stdout'], '.*192.168.*')
-            self.assertRegex(res['stdout'], '.*test_maildev.*')
-            self.assertRegex(res['stdout'], '.*test_php.*')
-            self.assertIs(res['status'], 0)
 
         exec_cmd(self.cmd_base + ['stop'])
 
@@ -244,7 +225,6 @@ class CliTest(unittest.TestCase):
         cli = CliTest()
 
         exec_cmd(cli.cmd_base + ['stop'])
-        exec_cmd(cli.cmd_base + ['dns', 'stop'])
 
         exec_cmd(['docker', 'rm', 'test_maildev'])
         exec_cmd(['docker', 'rm', 'test_php'])
