@@ -1,7 +1,5 @@
 [main]
-# Comma separated, valid values: adminer / apache / elasticsearch / elasticsearch-old
-#                                mailcatcher / maildev / mongo / mysql / nginx / php
-#                                phpmyadmin / portainer / redis / sqlserver / xhgui
+# Comma separated, valid values are available via the command `stakkr services`
 # by default: nothing
 # services=apache,php,mysql
 
