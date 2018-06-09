@@ -7,7 +7,7 @@ import subprocess
 import sys
 import click
 from clint.textui import colored, puts, columns
-from stakkr import command, docker_actions, os_patch, package_utils
+from stakkr import command, docker_actions, package_utils
 from stakkr.configreader import Config
 
 
@@ -72,17 +72,17 @@ class StakkrActions():
             options = self._services_to_display[ct_info['compose_name']]
             url = get_url(options['url'], ct_info['compose_name'])
             name = colored.yellow(options['name'])
-            text += '  - For {}'.format(name).ljust(55, ' ') + ' : ' + url + '\n'
 
-            if len(ct_info['ports']) > 0:
-                text += ' '*4 + 'If you are using a Mac, do not use the ip but '
-                text += '"http://localhost:PORT" where PORT is '
-                text += ' or '.join(ct_info['ports']) + '\n'
+            if len(ct_info['ports']) > 0 and os.name in ['nt', 'darwin']:
+                url = '"http://localhost:PORT" where PORT is '
+                url += ' or '.join(ct_info['ports']) + '\n'
+
+            text += '  - For {}'.format(name).ljust(55, ' ') + ' : ' + url + '\n'
 
             if 'extra_port' in options:
                 port = str(options['extra_port'])
-                text += ' '*4 + 'In your containers use the host '
-                text += '"{}" and port {}\n'.format(ct_info['compose_name'], port)
+                text += ' '*4 + '(In your containers use the host '
+                text += '"{}" and port {})\n'.format(ct_info['compose_name'], port)
 
         return text
 
@@ -128,7 +128,6 @@ class StakkrActions():
         if self.running_cts is 0:
             raise SystemError("Couldn't start the containers, run the start with '-v' and '-d'")
 
-        os_patch.start(self.project_name)
         self._run_iptables_rules()
         self._run_services_post_scripts()
 
@@ -154,7 +153,6 @@ class StakkrActions():
 
         docker_actions.check_cts_are_running(self.project_name)
         command.launch_cmd_displays_output(self.compose_base_cmd + ['stop'], verb, debug, True)
-        os_patch.stop(self.project_name)
 
         self.running_cts, self.cts = docker_actions.get_running_containers(self.project_name)
         if self.running_cts is not 0:
