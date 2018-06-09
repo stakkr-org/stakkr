@@ -3,6 +3,7 @@ Stakkr main controller. Used by the CLI to do all its actions
 """
 
 import os
+from platform import system as os_name
 import subprocess
 import sys
 import click
@@ -59,10 +60,8 @@ class StakkrActions():
 
         command.verbose(self.context['VERBOSE'], 'Command : "' + ' '.join(cmd) + '"')
 
-
     def get_services_ports(self):
         """Once started, stakkr displays a message with the list of launched containers."""
-
         cts = docker_actions.get_running_containers(self.project_name)[1]
 
         text = ''
@@ -70,13 +69,8 @@ class StakkrActions():
             if ct_info['compose_name'] not in self._services_to_display:
                 continue
             options = self._services_to_display[ct_info['compose_name']]
-            url = get_url(options['url'], ct_info['compose_name'])
+            url = get_url(ct_info['ports'], options['url'], ct_info['compose_name'])
             name = colored.yellow(options['name'])
-
-            if len(ct_info['ports']) > 0 and os.name in ['nt', 'darwin']:
-                url = '"http://localhost:PORT" where PORT is '
-                url += ' or '.join(ct_info['ports']) + '\n'
-
             text += '  - For {}'.format(name).ljust(55, ' ') + ' : ' + url + '\n'
 
             if 'extra_port' in options:
@@ -247,7 +241,13 @@ class StakkrActions():
             self._call_service_post_script(service)
 
 
-def get_url(service_url: str, service: str):
+def get_url(ports: list, service_url: str, service: str):
     """Build URL to be displayed"""
+
+    # If not linux, I can't use IPs so display only exposed ports
+    if ports and os_name() in ['Windows', 'Darwin']:
+        main_port = ports[0]
+        ports.remove(main_port)
+        return 'http://localhost:{}'.format(main_port) + ' or '.join(ports)
 
     return service_url.format(docker_actions.get_ct_item(service, 'ip'))
