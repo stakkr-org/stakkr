@@ -24,7 +24,8 @@ def block_ct_ports(service: str, ports: list, project_name: str) -> tuple:
     except (LookupError, NullResource):
         return (False, '{} is not started, no port to block'.format(service))
 
-    iptables = container.exec_run(['which', 'iptables']).decode().strip()
+    status, iptables = container.exec_run(['which', 'iptables'])
+    iptables = iptables.decode().strip()
     if iptables == '':
         return (True, "Can't block ports on {}, is iptables installed ?".format(service))
 
@@ -178,7 +179,8 @@ def guess_shell(container: str) -> str:
     container = get_client().containers.get(container)
 
     cmd = 'which -a bash sh'
-    shells = container.exec_run(cmd, stdout=True, stderr=False).splitlines()
+    status, shells = container.exec_run(cmd, stdout=True, stderr=False)
+    shells = shells.splitlines()
     if b'/bin/bash' in shells:
         return '/bin/bash'
     elif b'/bin/sh' in shells:
@@ -198,7 +200,8 @@ def network_exists(network: str):
 
 
 def _allow_contact_subnet(project_name: str, container: str) -> None:
-    iptables = container.exec_run(['which', 'iptables']).decode().strip()
+    status, iptables = container.exec_run(['which', 'iptables'])
+    iptables = iptables.decode().strip()
     if iptables == '':
         return False
 
