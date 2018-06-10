@@ -248,7 +248,9 @@ class CliTest(unittest.TestCase):
 
 
     def test_status(self):
+        exec_cmd(self.cmd_base + ['stop'])
         exec_cmd(self.cmd_base + ['start'])
+
         cmd = self.cmd_base + ['status']
 
         # Status OK

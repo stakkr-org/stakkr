@@ -135,9 +135,11 @@ def services(ctx):
     """See command Help"""
 
     from stakkr.stakkr_compose import get_available_services
-    enabled_services = ctx.obj['STAKKR']._get_config()['main']['services']
+
     print('Available services usable in compose.ini ', end='')
     print('({} = currently in use) : '.format(click.style('✔', fg='green')))
+
+    enabled_services = ctx.obj['STAKKR']._get_config()['main']['services']
     for available_service in sorted(list(get_available_services().keys())):
         sign = click.style('✘', fg='red')
         if available_service in enabled_services:
