@@ -97,24 +97,21 @@ class StakkrActions():
         subprocess.call(cmd, stdin=sys.stdin)
 
 
-    def start(self, pull: bool, recreate: bool):
+    def start(self, container: str, pull: bool, recreate: bool):
         """If not started, start the containers defined in config"""
 
         verb = self.context['VERBOSE']
         debug = self.context['DEBUG']
 
-        try:
-            docker_actions.check_cts_are_running(self.project_name)
-            puts(colored.yellow('[INFO]') + ' stakkr is already started ...')
-            sys.exit(0)
-        except SystemError:
-            pass
+        self._is_containers_running(container)
 
         if pull is True:
             command.launch_cmd_displays_output(self.compose_base_cmd + ['pull'], verb, debug, True)
 
         recreate_param = '--force-recreate' if recreate is True else '--no-recreate'
         cmd = self.compose_base_cmd + ['up', '-d', recreate_param, '--remove-orphans']
+        cmd += self._get_single_container_option(container)
+
         command.verbose(self.context['VERBOSE'], 'Command: ' + ' '.join(cmd))
         command.launch_cmd_displays_output(cmd, verb, debug, True)
 
@@ -139,17 +136,19 @@ class StakkrActions():
         self._print_status_body()
 
 
-    def stop(self):
+    def stop(self, container: str):
         """If started, stop the containers defined in config. Else throw an error"""
 
         verb = self.context['VERBOSE']
         debug = self.context['DEBUG']
 
         docker_actions.check_cts_are_running(self.project_name)
-        command.launch_cmd_displays_output(self.compose_base_cmd + ['stop'], verb, debug, True)
+
+        cmd = self.compose_base_cmd + ['stop'] + self._get_single_container_option(container)
+        command.launch_cmd_displays_output(cmd, verb, debug, True)
 
         self.running_cts, self.cts = docker_actions.get_running_containers(self.project_name)
-        if self.running_cts is not 0:
+        if self.running_cts is not 0 and container is None:
             raise SystemError("Couldn't stop services ...")
 
 
@@ -178,11 +177,36 @@ class StakkrActions():
         return main_config
 
 
+    def _get_single_container_option(self, container: str):
+        if container is None:
+            return []
+
+        return [container]
+
+
     def _get_relative_dir(self):
         if self.cwd_abs.startswith(self.stakkr_base_dir):
             return self.cwd_abs[len(self.stakkr_base_dir):].lstrip('/')
 
         return ''
+
+
+    def _is_containers_running(self, container: str):
+
+        try:
+            docker_actions.check_cts_are_running(self.project_name)
+        except SystemError:
+            return
+
+        if container is None:
+            puts(colored.yellow('[INFO]') + ' stakkr is already started ...')
+            sys.exit(0)
+
+        # If single container : check if that specific one is running
+        ct_name = docker_actions.get_ct_item(container, 'name')
+        if docker_actions.container_running(ct_name):
+            puts(colored.yellow('[INFO]') + ' service {} is already started ...'.format(container))
+            sys.exit(0)
 
 
     def _print_status_headers(self):

@@ -40,9 +40,9 @@ def stakkr(ctx, config, debug, verbose):
 
 @stakkr.command(help="""Enter a container to perform direct actions such as
 install packages, run commands, etc.""")
+@click.argument('container', required=True)
 @click.option('--user', '-u', help="User's name. Valid choices : www-data or root")
 @click.option('--tty/--no-tty', '-t/ ', is_flag=True, default=True, help="Use a TTY")
-@click.argument('container', required=True)
 @click.pass_context
 def console(ctx, container: str, user: str, tty: bool):
     """See command Help"""
@@ -112,20 +112,21 @@ def refresh_plugins(ctx):
     print(click.style('Plugins refreshed', fg='green'))
 
 
-@stakkr.command(help="Restart all containers")
+@stakkr.command(help="Restart all (or a single) container(s)")
+@click.argument('container', required=False)
 @click.option('--pull', '-p', help="Force a pull of the latest images versions", is_flag=True)
 @click.option('--recreate', '-r', help="Recreate all containers", is_flag=True)
 @click.pass_context
-def restart(ctx, pull: bool, recreate: bool):
+def restart(ctx, container: str, pull: bool, recreate: bool):
     """See command Help"""
 
     print(click.style('[RESTARTING]', fg='green') + ' your stakkr services')
     try:
-        ctx.invoke(stop)
+        ctx.invoke(stop, container=container)
     except Exception:
         print()
 
-    ctx.invoke(start, pull=pull, recreate=recreate)
+    ctx.invoke(start, container=container, pull=pull, recreate=recreate)
 
 
 @stakkr.command(help="List available services available for compose.ini (with info if the service is enabled)")
@@ -145,15 +146,17 @@ def services(ctx):
         print('  - {} ({})'.format(available_service, sign))
 
 
-@stakkr.command(help="Start containers defined in compose.ini")
+@stakkr.command(help="Start all (or a single) container(s) defined in compose.ini")
+@click.argument('container', required=False)
 @click.option('--pull', '-p', help="Force a pull of the latest images versions", is_flag=True)
 @click.option('--recreate', '-r', help="Recreate all containers", is_flag=True)
 @click.pass_context
-def start(ctx, pull: bool, recreate: bool):
+def start(ctx, container: str, pull: bool, recreate: bool):
     """See command Help"""
 
     print(click.style('[STARTING]', fg='green') + ' your stakkr services')
-    ctx.obj['STAKKR'].start(pull, recreate)
+
+    ctx.obj['STAKKR'].start(container, pull, recreate)
     _show_status(ctx)
 
 
@@ -165,13 +168,14 @@ def status(ctx):
     ctx.obj['STAKKR'].status()
 
 
-@stakkr.command(help="Stop the services")
+@stakkr.command(help="Stop all (or a single) container(s)")
+@click.argument('container', required=False)
 @click.pass_context
-def stop(ctx):
+def stop(ctx, container: str):
     """See command Help"""
 
     print(click.style('[STOPPING]', fg='yellow') + ' your stakkr services')
-    ctx.obj['STAKKR'].stop()
+    ctx.obj['STAKKR'].stop(container)
 
 
 def _get_cmd_user(user: str, container: str):

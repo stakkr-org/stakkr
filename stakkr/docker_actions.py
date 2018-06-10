@@ -55,7 +55,7 @@ def container_running(container: str):
 
     try:
         return get_api_client().inspect_container(container)['State']['Running']
-    except NotFound:
+    except (NotFound, NullResource):
         return False
 
 

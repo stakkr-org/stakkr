@@ -182,6 +182,71 @@ class CliTest(unittest.TestCase):
         self.assertIs(res['status'], 0)
 
 
+    def test_start_single(self):
+        exec_cmd(self.cmd_base + ['stop'])
+
+        cmd = self.cmd_base + ['start', 'php']
+
+        # Start
+        res = exec_cmd(cmd)
+        self.assertEqual(res['stderr'], '')
+        self.assertRegex(res['stdout'], r'\[STARTING\].*your stakkr services.*edyan/php.*')
+        self.assertNotRegex(res['stdout'], r'\[STARTING\].*your stakkr services.*For Maildev.*')
+        # Problem with scrutinizer : can't get a correct status
+        # TODO check and fix it later
+        if 'SCRUTINIZER_API_ENDPOINT' not in os.environ:
+            self.assertIs(res['status'], 0)
+
+        # Again ....
+        res = exec_cmd(cmd)
+        self.assertEqual(res['stderr'], '')
+        self.assertRegex(res['stdout'], r'\[STARTING\].*your stakkr services.*\[INFO\] service php is already started.*')
+        self.assertIs(res['status'], 0)
+
+
+    def test_stop_single(self):
+        exec_cmd(self.cmd_base + ['stop'])
+
+        cmd = self.cmd_base + ['start', 'php']
+
+        # Start
+        res = exec_cmd(cmd)
+        self.assertEqual(res['stderr'], '')
+        self.assertRegex(res['stdout'], r'\[STARTING\].*your stakkr services.*edyan/php.*')
+        self.assertNotRegex(res['stdout'], r'\[STARTING\].*your stakkr services.*For Maildev.*')
+        # Problem with scrutinizer : can't get a correct status
+        # TODO check and fix it later
+        if 'SCRUTINIZER_API_ENDPOINT' not in os.environ:
+            self.assertIs(res['status'], 0)
+
+        # Stop the wrong one
+        cmd = self.cmd_base + ['stop', 'maildev']
+        res = exec_cmd(cmd)
+        self.assertEqual(res['stderr'], '')
+        self.assertRegex(res['stdout'], r'\[STOPPING\].*your stakkr services.*')
+        self.assertIs(res['status'], 0)
+
+        cmd = self.cmd_base + ['status']
+        res = exec_cmd(cmd)
+        self.assertEqual(res['stderr'], '')
+        self.assertRegex(res['stdout'], r'.*edyan/php.*')
+        self.assertIs(res['status'], 0)
+
+        # Stop the right one
+        cmd = self.cmd_base + ['stop', 'php']
+        res = exec_cmd(cmd)
+        self.assertEqual(res['stderr'], '')
+        self.assertRegex(res['stdout'], r'\[STOPPING\].*your stakkr services.*')
+        self.assertIs(res['status'], 0)
+
+        cmd = self.cmd_base + ['status']
+        res = exec_cmd(cmd)
+        self.assertEqual(res['stderr'], '')
+        self.assertEqual(res['stdout'], r'[INFO] stakkr is currently stopped')
+        self.assertNotRegex(res['stdout'], r'.*edyan/php.*')
+        self.assertIs(res['status'], 0)
+
+
     def test_status(self):
         exec_cmd(self.cmd_base + ['start'])
         cmd = self.cmd_base + ['status']
