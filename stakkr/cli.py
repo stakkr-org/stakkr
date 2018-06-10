@@ -17,7 +17,7 @@ a stack of services, for example for web development.
 
 Read the configuration file and setup the required services by
 linking and managing everything for you.""")
-@click.version_option('3.7')
+@click.version_option('3.7.1.1')
 @click.option('--config', '-c', help='Change the configuration file')
 @click.option('--debug/--no-debug', '-d', default=False)
 @click.option('--verbose', '-v', is_flag=True)
