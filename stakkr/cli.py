@@ -112,7 +112,7 @@ def refresh_plugins(ctx):
     print(click.style('Plugins refreshed', fg='green'))
 
 
-@stakkr.command(help="Restart all (or a single) container(s)")
+@stakkr.command(help="Restart all (or a single as CONTAINER) container(s)")
 @click.argument('container', required=False)
 @click.option('--pull', '-p', help="Force a pull of the latest images versions", is_flag=True)
 @click.option('--recreate', '-r', help="Recreate all containers", is_flag=True)
@@ -146,7 +146,7 @@ def services(ctx):
         print('  - {} ({})'.format(available_service, sign))
 
 
-@stakkr.command(help="Start all (or a single) container(s) defined in compose.ini")
+@stakkr.command(help="Start all (or a single as CONTAINER) container(s) defined in compose.ini")
 @click.argument('container', required=False)
 @click.option('--pull', '-p', help="Force a pull of the latest images versions", is_flag=True)
 @click.option('--recreate', '-r', help="Recreate all containers", is_flag=True)
@@ -168,7 +168,7 @@ def status(ctx):
     ctx.obj['STAKKR'].status()
 
 
-@stakkr.command(help="Stop all (or a single) container(s)")
+@stakkr.command(help="Stop all (or a single as CONTAINER) container(s)")
 @click.argument('container', required=False)
 @click.pass_context
 def stop(ctx, container: str):
