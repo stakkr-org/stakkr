@@ -9,6 +9,6 @@ services:
         volumes:
             - ${COMPOSE_BASE_DIR}/data/logstash:/usr/share/logstash/pipeline
         environment:
-            server_name: kibana
+            server_name: logstash
             elasticsearch_url: ${COMPOSE_PROJECT_NAME}_elasticsearch
         
