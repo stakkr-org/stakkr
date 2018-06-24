@@ -1,0 +1,11 @@
+version: '2.2'
+
+services:
+    kibana:
+        image: docker.elastic.co/kibana/kibana:${DOCKER_KIBANA_VERSION}
+        container_name: ${COMPOSE_PROJECT_NAME}_kibana
+        hostname: ${COMPOSE_PROJECT_NAME}_kibana
+        networks: [stakkr]
+        environment:
+            server_name: kibana
+            elasticsearch_url: ${COMPOSE_PROJECT_NAME}_elasticsearch
