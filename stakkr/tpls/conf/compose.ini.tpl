@@ -103,7 +103,7 @@
 # php=25,465,587
 
 # Check https://www.docker.elastic.co for kibana
-# kibana.version=5.4.3
+# kibana.version=6.3.0
 
 # Check https://www.docker.elastic.co for logstash
-# logstash.version=5.4.3
+# logstash.version=6.3.0
