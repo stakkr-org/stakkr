@@ -69,7 +69,7 @@ class StakkrActions():
             if ct_info['compose_name'] not in self._services_to_display:
                 continue
             options = self._services_to_display[ct_info['compose_name']]
-            url = get_url(ct_info['ports'], options['url'], ct_info['compose_name'])
+            url = self.get_url(ct_info['ports'], options['url'], ct_info['compose_name'])
             name = colored.yellow(options['name'])
             text += '  - For {}'.format(name).ljust(55, ' ') + ' : ' + url + '\n'
 
@@ -265,13 +265,16 @@ class StakkrActions():
             self._call_service_post_script(service)
 
 
-def get_url(ports: list, service_url: str, service: str):
-    """Build URL to be displayed"""
+    def get_url(self, ports: list, service_url: str, service: str):
+        """Build URL to be displayed"""
 
-    # If not linux, I can't use IPs so display only exposed ports
-    if ports and os_name() in ['Windows', 'Darwin']:
-        main_port = ports[0]
-        ports.remove(main_port)
-        return 'http://localhost:{}'.format(main_port) + ' or '.join(ports)
+        proxy_conf = self.config['proxy']
+        # By default our URL is the IP
+        url = docker_actions.get_ct_item(service, 'ip')
+        # If proxy enabled, display nice urls
+        if int(proxy_conf['enabled']) is 1:
+            url = docker_actions.get_ct_item(service, 'traefik_host')
+        elif os_name() in ['Windows', 'Darwin']:
+            puts(colored.yellow('[WARNING]') + ' Under Win and Mac, you need the proxy enabled')
 
-    return service_url.format(docker_actions.get_ct_item(service, 'ip'))
+        return service_url.format(url)

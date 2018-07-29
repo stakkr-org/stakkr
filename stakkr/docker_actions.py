@@ -227,6 +227,7 @@ def _extract_container_info(project_name: str, ct_id: str):
         'compose_name': ct_data['Config']['Labels']['com.docker.compose.service'],
         'ports': _extract_host_ports(ct_data),
         'image': ct_data['Config']['Image'],
+        'traefik_host': _get_traefik_host(ct_data['Config']['Labels']),
         'ip': _get_ip_from_networks(project_name, ct_data['NetworkSettings']['Networks']),
         'running': ct_data['State']['Running']
         }
@@ -266,3 +267,12 @@ def _container_in_network(container: str, expected_network: str):
             return True
 
     return False
+
+
+def _get_traefik_host(labels: list):
+    if 'traefik.frontend.rule' not in labels:
+        return 'MISSING_TRAEFIK_FRONTEND_RULE'
+
+    rules = labels['traefik.frontend.rule'].split(':')
+
+    return rules[1]
