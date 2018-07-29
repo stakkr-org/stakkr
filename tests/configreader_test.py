@@ -73,7 +73,7 @@ class ConfigReaderTest(unittest.TestCase):
         self.assertEqual('test', config['main']['project_name'])
 
         self.assertTrue('php.version' in config['main'])
-        self.assertEqual('7.0', config['main']['php.version'])
+        self.assertEqual('7.2', config['main']['php.version'])
 
 
 if __name__ == "__main__":

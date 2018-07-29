@@ -18,12 +18,28 @@ class Proxy():
         self.proxy_name = proxy_name
         self.docker_client = docker_actions.get_client()
 
-    def start(self, stakkr_network: str):
+    def start(self, stakkr_network: str = None):
         """Start stakkr proxy if stopped"""
 
-        if docker_actions.container_running(self.proxy_name) is True:
+        if docker_actions.container_running(self.proxy_name) is False:
+            self._start_container()
+
+        # Connect it to network if asked
+        if stakkr_network is not None:
+            docker_actions.add_container_to_network(self.proxy_name, stakkr_network)
+
+
+    def stop(self):
+        """Stop stakkr proxy"""
+
+        if docker_actions.container_running(self.proxy_name) is False:
             return
 
+        proxy_ct = self.docker_client.containers.get(self.proxy_name)
+        proxy_ct.stop()
+
+
+    def _start_container(self):
         api_client = docker_actions.get_api_client()
         # Start the CT
         try:
@@ -34,15 +50,3 @@ class Proxy():
                 ports={80: self.port, 8080: 8080})
         except DockerException as error:
             raise RuntimeError("Can't start proxy ...")
-
-        # Connect it to the main network
-        docker_actions.add_container_to_network(self.proxy_name, stakkr_network)
-
-
-    def stop(self):
-        """Stop stakkr proxy"""
-
-        if docker_actions.container_running(self.proxy_name) is False:
-            return
-
-        self.docker_client.containers.get(self.proxy_name).stop()

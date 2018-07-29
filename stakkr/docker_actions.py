@@ -284,7 +284,7 @@ def _container_in_network(container: str, expected_network: str):
 
 def _get_traefik_host(labels: list):
     if 'traefik.frontend.rule' not in labels:
-        return 'MISSING_TRAEFIK_FRONTEND_RULE'
+        return 'No traefik rule'
 
     rules = labels['traefik.frontend.rule'].split(':')
 

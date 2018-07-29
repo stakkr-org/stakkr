@@ -116,7 +116,7 @@ def refresh_plugins(ctx):
 @click.argument('container', required=False)
 @click.option('--pull', '-p', help="Force a pull of the latest images versions", is_flag=True)
 @click.option('--recreate', '-r', help="Recreate all containers", is_flag=True)
-@click.option('--proxy/--no-proxy', '-P', help="Restart the proxy", default=False)
+@click.option('--proxy/--no-proxy', '-P', help="Restart the proxy", default=True)
 @click.pass_context
 def restart(ctx, container: str, pull: bool, recreate: bool, proxy: bool):
     """See command Help"""
@@ -173,7 +173,7 @@ def status(ctx):
 
 @stakkr.command(help="Stop all (or a single as CONTAINER) container(s)")
 @click.argument('container', required=False)
-@click.option('--proxy/--no-proxy', '-P', help="Stop the proxy", default=False)
+@click.option('--proxy/--no-proxy', '-P', help="Stop the proxy", default=True)
 @click.pass_context
 def stop(ctx, container: str, proxy: bool):
     """See command Help"""

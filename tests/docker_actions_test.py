@@ -42,6 +42,11 @@ class DockerActionsTest(unittest.TestCase):
 
         """
 
+        # Clean
+        exec_cmd(['stakkr-compose', '-c', base_dir + '/static/config_valid.ini', 'stop'])
+        exec_cmd(['docker', 'network', 'rm', 'test_stakkr'])
+
+        # Start again
         cmd = ['stakkr-compose', '-c', base_dir + '/static/config_valid.ini', 'up', '-d', '--force-recreate']
         exec_cmd(cmd)
         numcts, cts = docker_actions.get_running_containers('test')
@@ -60,8 +65,8 @@ class DockerActionsTest(unittest.TestCase):
             self.assertEqual(ct_info['name'], 'test_php')
             self.assertEqual(ct_info['compose_name'], 'php')
             self.assertTrue(ct_info['running'])
-            self.assertEqual(ct_info['ip'][:8], '192.168.')
-            self.assertEqual(ct_info['image'], 'edyan/php:7.0')
+            self.assertNotEqual(ct_info['ip'][:10], '192.168.23')
+            self.assertEqual(ct_info['image'], 'edyan/php:7.2')
 
         self.assertTrue(docker_actions._container_in_network('test_php', 'test_stakkr'))
         self.assertTrue(docker_actions.network_exists('test_stakkr'))
@@ -78,6 +83,29 @@ class DockerActionsTest(unittest.TestCase):
         exec_cmd(['stakkr', 'stop'])
         exec_cmd(['docker', 'network', 'rm', 'test_stakkr'])
         self.assertFalse(docker_actions.network_exists('test_stakkr'))
+
+
+    def test_get_container_info_network_set(self):
+        """
+        Start docker compose with another configuration file,
+        definint a network, then extract VM Info
+
+        """
+
+        # Clean
+        exec_cmd(['stakkr-compose', '-c', base_dir + '/static/config_valid.ini', 'stop'])
+        exec_cmd(['docker', 'network', 'rm', 'test_stakkr'])
+
+        cmd = ['stakkr-compose', '-c', base_dir + '/static/config_valid_network.ini', 'up', '-d', '--force-recreate']
+        exec_cmd(cmd)
+        numcts, cts = docker_actions.get_running_containers('test')
+        self.assertIs(len(cts), 3)
+        for ct_id, ct_info in cts.items():
+            if ct_info['name'] in ('test_maildev', 'test_portainer'):
+                continue
+
+            self.assertEqual(ct_info['ip'][:10], '192.168.23')
+            self.assertEqual(ct_info['image'], 'edyan/php:7.2')
 
 
     def test_create_network(self):
@@ -157,6 +185,7 @@ class DockerActionsTest(unittest.TestCase):
         exec_cmd(['docker', 'rm', 'test_php'])
         exec_cmd(['docker', 'rm', 'test_portainer'])
         exec_cmd(['docker', 'network', 'rm', 'nw_pytest'])
+        exec_cmd(['docker', 'network', 'rm', 'test_stakkr'])
 
 
 def exec_cmd(cmd: list):

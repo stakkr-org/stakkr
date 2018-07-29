@@ -4,6 +4,7 @@ import sys
 import unittest
 
 from click.testing import CliRunner
+from stakkr import docker_actions
 from stakkr.cli import stakkr
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
@@ -119,49 +120,67 @@ class CliTest(unittest.TestCase):
 
 
     def test_restart_stopped(self):
+        self._proxy_start_check_not_in_network()
+
         exec_cmd(self.cmd_base + ['stop'])
-        cmd = self.cmd_base + ['restart']
 
         # Restart
-        res = exec_cmd(cmd)
+        res = exec_cmd(self.cmd_base + ['restart'])
         self.assertEqual(res['stderr'], '')
         self.assertRegex(res['stdout'], r'RESTARTING.*your stakkr services.*STOPPING.*STARTING.*your stakkr services.*For Maildev.*')
         self.assertIs(res['status'], 0)
 
+        # Proxy is in network now
+        self.assertIs(
+            True,
+            docker_actions._container_in_network('proxy_stakkr', 'test_stakkr'))
+
         # Check it's fine
-        cmd = self.cmd_base + ['status']
-        res = exec_cmd(cmd)
+        res = exec_cmd(self.cmd_base + ['status'])
         self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], r'Container\s*IP\s*Ports\s*Image.*')
-        self.assertRegex(res['stdout'], '.*192.168.*')
+        self.assertRegex(res['stdout'], r'Container\s*IP\s*Url\s*Image.*')
+        self.assertRegex(res['stdout'], '.*maildev.test.localhost.*')
         self.assertRegex(res['stdout'], '.*test_maildev.*')
         self.assertRegex(res['stdout'], '.*test_php.*')
+        self.assertRegex(res['stdout'], '.*No traefik rule.*php.*')
         self.assertIs(res['status'], 0)
 
 
     def test_restart_started(self):
-        exec_cmd(self.cmd_base + ['start'])
+        exec_cmd(self.cmd_base + ['stop'])
+        self._proxy_start_check_not_in_network()
 
-        cmd = self.cmd_base + ['restart']
+        exec_cmd(self.cmd_base + ['start'])
+        # Proxy is in network now
+        self.assertIs(
+            True,
+            docker_actions._container_in_network('proxy_stakkr', 'test_stakkr'))
 
         # Restart
-        res = exec_cmd(cmd)
+        res = exec_cmd(self.cmd_base + ['restart'])
         self.assertEqual(res['stderr'], '')
         self.assertRegex(res['stdout'], r'RESTARTING.*your stakkr services.*STOPPING.*your stakkr services.*STARTING.*your stakkr services.*For Maildev.*')
         self.assertIs(res['status'], 0)
 
         # Check it's fine
-        cmd = self.cmd_base + ['status']
-        res = exec_cmd(cmd)
+        res = exec_cmd(self.cmd_base + ['status'])
         self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], r'Container\s*IP\s*Ports\s*Image.*')
-        self.assertRegex(res['stdout'], '.*192.168.*')
+        self.assertRegex(res['stdout'], r'Container\s*IP\s*Url\s*Image.*')
+        self.assertRegex(res['stdout'], '.*maildev.test.localhost.*')
         self.assertRegex(res['stdout'], '.*test_maildev.*')
         self.assertRegex(res['stdout'], '.*test_php.*')
+        self.assertRegex(res['stdout'], '.*No traefik rule.*php.*')
         self.assertIs(res['status'], 0)
+
+        # Proxy is in network
+        self.assertIs(
+            True,
+            docker_actions._container_in_network('proxy_stakkr', 'test_stakkr'))
 
 
     def test_start(self):
+        self._proxy_start_check_not_in_network()
+
         exec_cmd(self.cmd_base + ['stop'])
 
         cmd = self.cmd_base + ['start']
@@ -174,6 +193,11 @@ class CliTest(unittest.TestCase):
         # TODO check and fix it later
         if 'SCRUTINIZER_API_ENDPOINT' not in os.environ:
             self.assertIs(res['status'], 0)
+
+        # Proxy is in network now
+        self.assertIs(
+            True,
+            docker_actions._container_in_network('proxy_stakkr', 'test_stakkr'))
 
         # Again ....
         res = exec_cmd(cmd)
@@ -256,10 +280,11 @@ class CliTest(unittest.TestCase):
         # Status OK
         res = exec_cmd(cmd)
         self.assertEqual(res['stderr'], '')
-        self.assertRegex(res['stdout'], r'Container\s*IP\s*Ports\s*Image.*')
-        self.assertRegex(res['stdout'], '.*192.168.*')
+        self.assertRegex(res['stdout'], r'Container\s*IP\s*Url\s*Image.*')
+        self.assertRegex(res['stdout'], '.*maildev.test.localhost.*')
         self.assertRegex(res['stdout'], '.*test_maildev.*')
         self.assertRegex(res['stdout'], '.*test_php.*')
+        self.assertRegex(res['stdout'], '.*No traefik rule.*php.*')
         self.assertIs(res['status'], 0)
 
         exec_cmd(self.cmd_base + ['stop'])
@@ -296,6 +321,17 @@ class CliTest(unittest.TestCase):
         exec_cmd(['docker', 'rm', 'test_maildev'])
         exec_cmd(['docker', 'rm', 'test_php'])
         exec_cmd(['docker', 'rm', 'test_portainer'])
+
+
+    def _proxy_start_check_not_in_network(self):
+        from stakkr.proxy import Proxy
+        # First start Proxy to verify it'll be added in the network
+        Proxy().stop()
+        Proxy().start()
+        # Proxy is not connected to network
+        self.assertIs(
+            False,
+            docker_actions._container_in_network('proxy_stakkr', 'test_stakkr'))
 
 
 def exec_cmd(cmd: list):
