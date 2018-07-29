@@ -18,14 +18,14 @@ requests.
 Network and changes in general
 ------------------------------------
 You can define your own network in compose.ini by setting a ``subnet``.
+It's optional, and it's probably better to let it like that.
 
 .. WARNING::
    If you change that, run ``docker-clean`` which
    removes orphans images, stopped container, etc ...
 
-   For MacOS and Windows, we recommend to expose ports as it's difficult
-   to access the network directly. Then, for each service you have a
-   xxxxx.expose parameter (example : ``apache.expose = 8080``)
+   As we use ``traefik`` as a reverse proxy, no need to expose any ports
+   or to access containers directly via their IP.
 
    Also, if you change any parameter such as an environment variable
    run a ``stakkr restart --recreate`` to make sure that you start from
@@ -34,29 +34,30 @@ You can define your own network in compose.ini by setting a ``subnet``.
 
 Services
 -----------------
-You can define the list of services you want to have. Each service
+You can define a list of services you want to have. Each service
 consists of a yml file in the ``services/`` directory of the
-source code. Each container ("Virtual Machine") will have a hostname
-composed of the project name and the service name. To reach, for example,
-the elasticsearch server from a web application, and if your
-``project_name = stakkr`` uses ``stakkr_elasticsearch`` or to connect to
-mysql use ``stakkr_mysql``. The service names also works
-(*elasticsearch* and *mysql*)
+source code. Each container ("Service") will have a hostname
+which is the ... service name. To reach, for example,
+the elasticsearch server from a web application use ``elasticsearch``.
+To connect to mysql it's ``mysql``.
 
 .. code:: cfg
 
-    # Comma separated list of services to start
-    # Valid values: adminer / apache / elasticsearch / elasticsearch-old / mailcatcher / maildev
-    # mongo / mysql / php / phpmyadmin / postgres / python / redis / xhgui
     services=apache,php,mysql
 
 A service can launch a post-start script that has the same name with an
 ``.sh`` extension (example: ``services/mysql.sh``).
 
+To have a complete list of services, launch :
+
+.. code:: shell
+
+    $ stakkr services
+
 
 Special case of Elasticsearch
 ------------------------------
-ElasticSearch needs a few manual commands to start from the version 5.x. Before starting stakkr, do the following : 
+ElasticSearch needs a few manual commands to start from the version 5.x. Before starting stakkr, do the following :
 
 .. code:: shell
 
@@ -132,6 +133,7 @@ Services Data
 -  Mongo data is into ``data/mongo``
 -  ElasticSearch data is into ``data/elasticsearch``
 -  Redis data is into ``data/redis``
+- ...
 
 Logs
 ~~~~~~

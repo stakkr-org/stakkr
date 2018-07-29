@@ -9,3 +9,5 @@ services:
         networks: [stakkr]
         volumes:
             - ${COMPOSE_BASE_DIR}/data/redis:/var/lib/redis
+        labels:
+            - traefik.enable=False

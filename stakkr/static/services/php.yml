@@ -22,3 +22,5 @@ services:
         cap_add:
           - NET_ADMIN
           - NET_RAW
+        labels:
+            - traefik.enable=False

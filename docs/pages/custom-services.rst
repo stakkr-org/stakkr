@@ -24,8 +24,8 @@ Some rules:
 
 Example
 ~~~~~~~~~
-Let's make an nginx service. The file will be located into ``services/`` as
-``nginx.yml``.
+Let's make a xyz service. The file will be located into ``services/`` as
+``xyz.yml``.
 
 
 .. code:: yaml
@@ -33,23 +33,24 @@ Let's make an nginx service. The file will be located into ``services/`` as
     version: '2.2'
 
     services:
-        nginx:
-            image: nginx:${DOCKER_NGINX_VERSION}
-            mem_limit: ${DOCKER_NGINX_RAM}
-            container_name: ${COMPOSE_PROJECT_NAME}_nginx
-            hostname: ${COMPOSE_PROJECT_NAME}_nginx
+        xyz:
+            image: myself/xyz:${DOCKER_XYZ_VERSION}
+            mem_limit: ${DOCKER_XYZ_RAM}
+            container_name: ${COMPOSE_PROJECT_NAME}_xyz
+            hostname: ${COMPOSE_PROJECT_NAME}_xyz
             networks: [stakkr]
-            ports:
-                - "8080:80"
+            labels:
+                - traefik.frontend.rule=Host:xyz.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}
+
 
 
 Now in ``conf/compose.ini``:
 
 .. code:: cfg
 
-    services=nginx
-    nginx.version=1.13-alpine
-    nginx.ram=256M
+    services=xyz
+    xyz.version=1.13-alpine # what's in DOCKER_XYZ_VERSION
+    xyz.ram=256M # what's in DOCKER_XYZ_RAM
 
 
 Restart:
@@ -64,7 +65,7 @@ To run a command, use the standard ``exec`` wrapper:
 
 .. code:: bash
 
-    $ stakkr exec nginx cat /etc/nginx/nginx.conf
+    $ stakkr exec xyz cat /etc/xyz/xyz.conf
 
 
 

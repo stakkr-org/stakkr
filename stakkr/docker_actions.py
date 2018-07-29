@@ -115,10 +115,23 @@ def get_ct_name(container: str):
     return ct_name
 
 
+def get_network_name(project_name: str):
+    """Find the full network name"""
+
+    try:
+        guessed_network_name = project_name.replace('-', '') + '_stakkr'
+        network = get_client().networks.get(guessed_network_name)
+    except NotFound:
+        raise RuntimeError("Couldn't identify network (check your project name)")
+
+    return network.name
+
+
 def get_subnet(project_name: str):
     """Find the subnet of the current project"""
 
-    network_info = get_client().networks.get(project_name.replace('-', '') + '_stakkr').attrs
+    network_name = get_network_name(project_name)
+    network_info = get_client().networks.get(network_name).attrs
 
     return network_info['IPAM']['Config'][0]['Subnet'].split('/')[0]
 

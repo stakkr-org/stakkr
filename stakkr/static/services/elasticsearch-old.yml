@@ -9,3 +9,5 @@ services:
         networks: [stakkr]
         volumes:
             - ${COMPOSE_BASE_DIR}/data/elasticsearch:/usr/share/elasticsearch/data
+        labels:
+            - traefik.enable=False

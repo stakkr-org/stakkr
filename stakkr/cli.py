@@ -116,17 +116,18 @@ def refresh_plugins(ctx):
 @click.argument('container', required=False)
 @click.option('--pull', '-p', help="Force a pull of the latest images versions", is_flag=True)
 @click.option('--recreate', '-r', help="Recreate all containers", is_flag=True)
+@click.option('--proxy/--no-proxy', '-P', help="Restart the proxy", default=False)
 @click.pass_context
-def restart(ctx, container: str, pull: bool, recreate: bool):
+def restart(ctx, container: str, pull: bool, recreate: bool, proxy: bool):
     """See command Help"""
 
     print(click.style('[RESTARTING]', fg='green') + ' your stakkr services')
     try:
-        ctx.invoke(stop, container=container)
+        ctx.invoke(stop, container=container, proxy=proxy)
     except Exception:
         print()
 
-    ctx.invoke(start, container=container, pull=pull, recreate=recreate)
+    ctx.invoke(start, container=container, pull=pull, recreate=recreate, proxy=proxy)
 
 
 @stakkr.command(help="List available services available for compose.ini (with info if the service is enabled)")
@@ -152,13 +153,13 @@ def services(ctx):
 @click.argument('container', required=False)
 @click.option('--pull', '-p', help="Force a pull of the latest images versions", is_flag=True)
 @click.option('--recreate', '-r', help="Recreate all containers", is_flag=True)
+@click.option('--proxy/--no-proxy', '-P', help="Start the proxy", default=True)
 @click.pass_context
-def start(ctx, container: str, pull: bool, recreate: bool):
+def start(ctx, container: str, pull: bool, recreate: bool, proxy: bool):
     """See command Help"""
-
     print(click.style('[STARTING]', fg='green') + ' your stakkr services')
 
-    ctx.obj['STAKKR'].start(container, pull, recreate)
+    ctx.obj['STAKKR'].start(container, pull, recreate, proxy)
     _show_status(ctx)
 
 
@@ -172,12 +173,13 @@ def status(ctx):
 
 @stakkr.command(help="Stop all (or a single as CONTAINER) container(s)")
 @click.argument('container', required=False)
+@click.option('--proxy/--no-proxy', '-P', help="Stop the proxy", default=False)
 @click.pass_context
-def stop(ctx, container: str):
+def stop(ctx, container: str, proxy: bool):
     """See command Help"""
 
     print(click.style('[STOPPING]', fg='yellow') + ' your stakkr services')
-    ctx.obj['STAKKR'].stop(container)
+    ctx.obj['STAKKR'].stop(container, proxy)
 
 
 def _get_cmd_user(user: str, container: str):
@@ -191,7 +193,7 @@ def _get_cmd_user(user: str, container: str):
 
 
 def _show_status(ctx):
-    services_ports = ctx.obj['STAKKR'].get_services_ports()
+    services_ports = ctx.obj['STAKKR'].get_services_urls()
     if services_ports == '':
         print('\nServices Status:')
         ctx.invoke(status)

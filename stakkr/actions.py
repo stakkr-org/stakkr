@@ -10,6 +10,7 @@ import click
 from clint.textui import colored, puts, columns
 from stakkr import command, docker_actions, package_utils
 from stakkr.configreader import Config
+from stakkr.proxy import Proxy
 
 
 class StakkrActions():
@@ -18,6 +19,7 @@ class StakkrActions():
     _services_to_display = {
         'adminer': {'name': 'Adminer', 'url': 'http://{}'},
         'apache': {'name': 'Web Server', 'url': 'http://{}'},
+        'elasticsearch': {'name': 'ElastiscSearch', 'url': 'http://{}'},
         'mailcatcher': {'name': 'Mailcatcher (fake SMTP)', 'url': 'http://{}', 'extra_port': 25},
         'maildev': {'name': 'Maildev (Fake SMTP)', 'url': 'http://{}', 'extra_port': 25},
         'nginx': {'name': 'Web Server', 'url': 'http://{}'},
@@ -60,7 +62,7 @@ class StakkrActions():
 
         command.verbose(self.context['VERBOSE'], 'Command : "' + ' '.join(cmd) + '"')
 
-    def get_services_ports(self):
+    def get_services_urls(self):
         """Once started, stakkr displays a message with the list of launched containers."""
         cts = docker_actions.get_running_containers(self.project_name)[1]
 
@@ -68,6 +70,7 @@ class StakkrActions():
         for ct_id, ct_info in cts.items():
             if ct_info['compose_name'] not in self._services_to_display:
                 continue
+
             options = self._services_to_display[ct_info['compose_name']]
             url = self.get_url(ct_info['ports'], options['url'], ct_info['compose_name'])
             name = colored.yellow(options['name'])
@@ -97,9 +100,8 @@ class StakkrActions():
         subprocess.call(cmd, stdin=sys.stdin)
 
 
-    def start(self, container: str, pull: bool, recreate: bool):
+    def start(self, container: str, pull: bool, recreate: bool, proxy: bool):
         """If not started, start the containers defined in config"""
-
         verb = self.context['VERBOSE']
         debug = self.context['DEBUG']
 
@@ -121,6 +123,9 @@ class StakkrActions():
 
         self._run_iptables_rules()
         self._run_services_post_scripts()
+        if proxy is True:
+            network_name = docker_actions.get_network_name(self.project_name)
+            Proxy(self.config['proxy'].get('port')).start(network_name)
 
 
     def status(self):
@@ -136,7 +141,7 @@ class StakkrActions():
         self._print_status_body()
 
 
-    def stop(self, container: str):
+    def stop(self, container: str, proxy: bool):
         """If started, stop the containers defined in config. Else throw an error"""
 
         verb = self.context['VERBOSE']
@@ -150,6 +155,10 @@ class StakkrActions():
         self.running_cts, self.cts = docker_actions.get_running_containers(self.project_name)
         if self.running_cts is not 0 and container is None:
             raise SystemError("Couldn't stop services ...")
+
+        if proxy is True:
+            network_name = docker_actions.get_network_name(self.project_name)
+            Proxy(self.config['proxy'].get('port')).stop()
 
 
     def _call_service_post_script(self, service: str):
@@ -211,14 +220,14 @@ class StakkrActions():
 
     def _print_status_headers(self):
         puts(columns(
-            [(colored.green('Container')), 16], [colored.green('IP'), 25],
-            [(colored.green('Ports')), 25], [(colored.green('Image')), 32],
+            [(colored.green('Container')), 16], [colored.green('IP'), 15],
+            [(colored.green('Url')), 32], [(colored.green('Image')), 32],
             [(colored.green('Docker ID')), 15], [(colored.green('Docker Name')), 25]
             ))
 
         puts(columns(
-            ['-'*16, 16], ['-'*25, 25],
-            ['-'*25, 25], ['-'*32, 32],
+            ['-'*16, 16], ['-'*15, 15],
+            ['-'*32, 32], ['-'*32, 32],
             ['-'*15, 15], ['-'*25, 25]
             ))
 
@@ -232,8 +241,8 @@ class StakkrActions():
                 continue
 
             puts(columns(
-                [ct_data['compose_name'], 16], [ct_data['ip'], 25],
-                [', '.join(ct_data['ports']), 25], [ct_data['image'], 32],
+                [ct_data['compose_name'], 16], [ct_data['ip'], 15],
+                [ct_data['traefik_host'], 32], [ct_data['image'], 32],
                 [ct_data['id'][:12], 15], [ct_data['name'], 25]
                 ))
 
@@ -274,6 +283,7 @@ class StakkrActions():
         # If proxy enabled, display nice urls
         if int(proxy_conf['enabled']) is 1:
             url = docker_actions.get_ct_item(service, 'traefik_host')
+            url += '' if int(proxy_conf['port']) is 80 else ':{}'.format(proxy_conf['port'])
         elif os_name() in ['Windows', 'Darwin']:
             puts(colored.yellow('[WARNING]') + ' Under Win and Mac, you need the proxy enabled')
 

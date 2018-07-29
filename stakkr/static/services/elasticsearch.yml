@@ -13,3 +13,6 @@ services:
             - cluster.name=${COMPOSE_PROJECT_NAME}
             - xpack.security.enabled=false
             - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"
+        labels:
+            - traefik.frontend.rule=Host:elasticsearch.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}
+            - traefik.port=9200

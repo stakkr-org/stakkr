@@ -13,3 +13,5 @@ services:
         volumes:
             - ${COMPOSE_BASE_DIR}/data/sqlserver:/var/opt/mssql/data
             - ${COMPOSE_BASE_DIR}/logs/sqlserver:/var/opt/mssql/log
+        labels:
+            - traefik.enable=False

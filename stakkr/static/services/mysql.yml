@@ -12,3 +12,5 @@ services:
         volumes:
             - ${COMPOSE_BASE_DIR}/data/mysql:/var/lib/mysql
             - ${COMPOSE_BASE_DIR}/conf/mysql-override:/etc/mysql/conf.d
+        labels:
+            - traefik.enable=False

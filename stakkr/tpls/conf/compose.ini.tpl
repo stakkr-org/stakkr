@@ -13,7 +13,7 @@
 # define the environement (if not dev, a few php modules will be deactivated)
 # environment = dev
 
-# Set your network
+# Set your network (optional, if empty, it'll be automatically set)
 # subnet = 192.168.90.0/24
 
 
@@ -77,12 +77,12 @@
 
 # Enable Proxy with traefik to have nice hostnames
 # Default parameters below :
-# [proxy]
+[proxy]
 # enabled = 1
-# domain = stakkr.org
+# domain = localhost # you can also use stakkr.org but you need internet for the DNS resolution
 # port = 80
 
 
 
-# [network-block]
+[network-block]
 # php=25,465,587

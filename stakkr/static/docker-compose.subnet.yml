@@ -1,0 +1,10 @@
+# Override stakkr network with the one defined in config
+
+version: '2.2'
+
+networks:
+    stakkr:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: ${DOCKER_SUBNET}

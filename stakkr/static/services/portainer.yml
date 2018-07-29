@@ -10,6 +10,7 @@ services:
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
             - ${COMPOSE_BASE_DIR}/data/portainer:/data
-        command: ['-p', ':80', '--no-analytics']
+        command: ['--no-analytics']
         labels:
             - traefik.frontend.rule=Host:portainer.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}
+            - traefik.port=9000

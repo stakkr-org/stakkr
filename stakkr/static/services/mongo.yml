@@ -8,3 +8,5 @@ services:
         networks: [stakkr]
         volumes:
             - ${COMPOSE_BASE_DIR}/data/mongo:/data/db
+        labels:
+            - traefik.enable=False

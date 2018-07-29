@@ -33,7 +33,7 @@ There are 2 ways to intall Stakkr.
 ~~~~~~~~~~~~~~~~~~
 Stakkr is usable as a library, it's clean, you have a very beautiful tree
 once installed, and it's **recommended**. You can install as many stakkrs that you need.
-Just be careful to set different names and networks in `conf/compose.ini`
+Just be careful to set different names (and networks if you need) in `conf/compose.ini`
 
 1.1 Installation under Linux
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -74,9 +74,6 @@ docker from https://docs.docker.com/docker-for-windows/install/
     > pip install stakkr
 
 
-.. WARNING::
-	There are known limitations under windows : First the DNS won't work and Second, `stakkr` has to create a route and change a few parameters inside MobyLinux.
-
 
 1.3 Installation under MacOS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -92,10 +89,6 @@ Then docker from https://docs.docker.com/docker-for-mac/install/.
     $ python3 -m venv mydev_stakkr
     $ source mydev_stakkr/bin/activate
     $ pip3 --no-cache-dir install stakkr
-
-
-.. WARNING::
-	You can't use containers IPs under MacOS. You need then to use exposed ports.
 
 
 1.4 Development version

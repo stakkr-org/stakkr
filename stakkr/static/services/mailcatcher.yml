@@ -8,3 +8,4 @@ services:
         networks: [stakkr]
         labels:
             - traefik.frontend.rule=Host:mailcatcher.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}
+            - traefik.port=80 # because mailcatcher exposes more than one port

@@ -20,23 +20,15 @@ def cli(config: str, command):
     config_params = get_config(config)
     set_env_from_main_config(config_params['main'])
 
-    project_name = config_params['main'].get('project_name')
-    os.putenv('COMPOSE_PROJECT_NAME', project_name)
-
-    # What to load
-    compose_file = package_utils.get_file('static', 'docker-compose.yml')
-    activated_services = get_enabled_services(config_params['main'].get('services'))
-
     # Register proxy env parameters
     set_env_for_proxy(config_params['proxy'])
 
-    # Create the command
-    services = []
-    for service in activated_services:
-        services.append('-f')
-        services.append(service)
+    # Get info for the project
+    project_name = config_params['main'].get('project_name')
+    os.putenv('COMPOSE_PROJECT_NAME', project_name)
 
-    base_cmd = ['docker-compose', '-f', compose_file] + services + ['-p', project_name]
+    # set the base command
+    base_cmd = get_base_command(project_name, config_params['main'])
 
     msg = click.style('[VERBOSE] ', fg='green')
     msg += 'Compose command: ' + ' '.join(base_cmd + list(command))
@@ -84,6 +76,26 @@ def get_available_services():
         services[conf_file[:-4]] = services_dir + conf_file
 
     return services
+
+
+def get_base_command(project_name: str, config: dict):
+    """Build the docker-compose file to be run as a command"""
+
+    main_file = 'docker-compose.yml'
+    # Set the network subnet ?
+    if config.get('subnet') != '':
+        main_file = 'docker-compose.subnet.yml'
+    cmd = ['docker-compose', '-f', package_utils.get_file('static', main_file)]
+
+    # What to load
+    activated_services = get_enabled_services(config.get('services'))
+    # Create the command
+    services = []
+    for service in activated_services:
+        services.append('-f')
+        services.append(service)
+
+    return cmd + services + ['-p', project_name]
 
 
 def get_enabled_services(configured_services: list):
