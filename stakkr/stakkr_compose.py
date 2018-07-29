@@ -107,7 +107,7 @@ def get_enabled_services(configured_services: list):
 def get_configured_services(config_file: str = None):
     """Get services set in compose.ini"""
 
-    configured_services = get_config(config_file).get('services')
+    configured_services = get_config(config_file)['main'].get('services')
     return configured_services
 
 

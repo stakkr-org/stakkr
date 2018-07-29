@@ -16,4 +16,4 @@ services:
             - ${COMPOSE_BASE_DIR}/logs/nginx:/var/log/nginx
             - ${COMPOSE_BASE_DIR}/www:/var/www
         labels:
-          - traefik.frontend.rule=Host:nginx.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}
+            - traefik.frontend.rule=Host:nginx.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}

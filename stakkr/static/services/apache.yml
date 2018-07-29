@@ -15,3 +15,5 @@ services:
             - ${COMPOSE_BASE_DIR}/home/www-data:/home/www-data
             - ${COMPOSE_BASE_DIR}/logs/apache:/var/log/apache2
             - ${COMPOSE_BASE_DIR}/www:/var/www
+        labels:
+            - traefik.frontend.rule=Host:apache.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}

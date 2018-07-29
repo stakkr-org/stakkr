@@ -13,4 +13,4 @@ services:
         hostname: ${COMPOSE_PROJECT_NAME}_phpmyadmin
         networks: [stakkr]
         labels:
-          - traefik.frontend.rule=Host:phpmyadmin.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}
+            - traefik.frontend.rule=Host:phpmyadmin.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}
