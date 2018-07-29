@@ -17,15 +17,18 @@ from stakkr.configreader import Config
 def cli(config: str, command):
     """Command line entry point"""
 
-    main_config = get_main_config(config)
-    set_env_values_from_conf(main_config)
+    config_params = get_config(config)
+    set_env_from_main_config(config_params['main'])
 
-    project_name = main_config.get('project_name')
+    project_name = config_params['main'].get('project_name')
     os.putenv('COMPOSE_PROJECT_NAME', project_name)
 
     # What to load
     compose_file = package_utils.get_file('static', 'docker-compose.yml')
-    activated_services = get_enabled_services(main_config.get('services'))
+    activated_services = get_enabled_services(config_params['main'].get('services'))
+
+    # Register proxy env parameters
+    set_env_for_proxy(config_params['proxy'])
 
     # Create the command
     services = []
@@ -104,24 +107,23 @@ def get_enabled_services(configured_services: list):
 def get_configured_services(config_file: str = None):
     """Get services set in compose.ini"""
 
-    configured_services = get_main_config(config_file).get('services')
+    configured_services = get_config(config_file).get('services')
     return configured_services
 
 
-def get_main_config(config: str):
+def get_config(config: str):
     """Read main compose.ini file"""
 
-    config = Config(config)
-    main_config = config.read()
+    config = Config(config).read()
 
-    if main_config is False:
+    if config is False:
         config.display_errors()
         sys.exit(1)
 
-    return main_config['main']
+    return config
 
 
-def set_env_values_from_conf(config: list):
+def set_env_from_main_config(config: list):
     """Define environment variables to be used in services yaml"""
 
     os.environ['DOCKER_UID'] = _get_uid(config.pop('uid'))
@@ -131,6 +133,14 @@ def set_env_values_from_conf(config: list):
     for parameter, value in config.items():
         parameter = 'DOCKER_{}'.format(parameter.replace('.', '_').upper())
         os.environ[parameter] = str(value)
+
+
+def set_env_for_proxy(config: list):
+    """Define environment variables to be used in services yaml"""
+
+    os.environ['PROXY_ENABLED'] = str(config.pop('enabled'))
+    os.environ['PROXY_DOMAIN'] = str(config.pop('domain'))
+    os.environ['PROXY_PORT'] = str(config.pop('port'))
 
 
 def _get_services_from_dir(services_dir: str):

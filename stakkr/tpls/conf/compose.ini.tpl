@@ -17,28 +17,14 @@
 # subnet = 192.168.90.0/24
 
 
-# Which port should we expose ?
-# adminer.expose = 8081
-
-
 # Set your apache version (2.2 / 2.4 / 2.4-slim)
 # apache.version=2.2
 # apache.ram=512M
-# Which port should we expose for apache ?
-# apache.expose = 8080
 
 
 # Check https://www.docker.elastic.co
 # elasticsearch.version=6.2.3
 # elasticsearch.ram=2048M
-
-
-# Which port should we expose for mailcatcher ?
-# mailcatcher.expose = 8082
-
-
-# Which port should we expose for maildev ?
-# maildev.expose = 8083
 
 
 # Check https://hub.docker.com/_/mongo/ (latest by default)
@@ -54,8 +40,6 @@
 
 # How much RAM for Nginx ?
 # nginx.ram = 512M
-# Which port should we expose for Nginx ?
-# nginx.expose = 8087
 
 
 # Set your PHP version from 5.3 to 7.2 (5.6 by default)
@@ -65,12 +49,6 @@
 
 # Set the max upload size for phpMyAdmin
 # pma.upload_max_filesize=128M
-# Which port should we expose for PMA ?
-# pma.expose = 8084
-
-
-# Which port should we expose for portainer ?
-# portainer.expose = 8085
 
 
 # Set your postgresql version + password (default superuser is "postgres")
@@ -93,10 +71,17 @@
 
 # xhgui max RAM
 # xhgui.ram=512M
-# Which port should we expose for xhgui ?
-# xhgui.expose = 8085
 # Versions available : php5.6 and php7.2 (latest). Use the right version for your main PHP container
 # xhgui.version=latest
+
+
+# Enable Proxy with traefik to have nice hostnames
+# Default parameters below :
+# [proxy]
+# enabled = 1
+# domain = stakkr.org
+# port = 80
+
 
 
 # [network-block]

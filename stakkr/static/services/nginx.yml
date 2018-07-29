@@ -11,9 +11,9 @@ services:
         environment:
             NGINX_UID: ${DOCKER_UID}
             NGINX_GID: ${DOCKER_GID}
-        ports:
-            - ${DOCKER_NGINX_EXPOSE}:80
         volumes:
             - ${COMPOSE_BASE_DIR}/home/www-data:/home/www-data
             - ${COMPOSE_BASE_DIR}/logs/nginx:/var/log/nginx
             - ${COMPOSE_BASE_DIR}/www:/var/www
+        labels:
+          - traefik.frontend.rule=Host:nginx.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}

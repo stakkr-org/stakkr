@@ -6,5 +6,5 @@ services:
         container_name: ${COMPOSE_PROJECT_NAME}_adminer
         hostname: ${COMPOSE_PROJECT_NAME}_adminer
         networks: [stakkr]
-        ports:
-            - ${DOCKER_ADMINER_EXPOSE}:80
+        labels:
+          - traefik.frontend.rule=Host:adminer.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}

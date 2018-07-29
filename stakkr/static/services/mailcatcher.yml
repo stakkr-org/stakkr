@@ -6,5 +6,5 @@ services:
         container_name: ${COMPOSE_PROJECT_NAME}_mailcatcher
         hostname: ${COMPOSE_PROJECT_NAME}_mailcatcher
         networks: [stakkr]
-        ports:
-            - ${DOCKER_MAILCATCHER_EXPOSE}:80
+        labels:
+          - traefik.frontend.rule=Host:mailcatcher.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}

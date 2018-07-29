@@ -10,8 +10,8 @@ services:
         environment:
             FPM_UID: ${DOCKER_UID}
             FPM_GID: ${DOCKER_GID}
-        ports:
-            - ${DOCKER_XHGUI_EXPOSE}:80
+        labels:
+          - traefik.frontend.rule=Host:xhgui.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}
     php:
         volumes_from: [xhgui]
         # Local configuration to override the one which connects in local
