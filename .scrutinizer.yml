@@ -29,6 +29,7 @@ build:
         override:
             -
                 command: "py.test --cov-report html --cov-report term --cov=stakkr tests/"
+                idle_timeout: 1200
                 coverage:
                     file: '.coverage'
                     format: 'py-cc'
@@ -43,6 +44,6 @@ build:
                         use_website_config: true
 filter:
     excluded_paths:
-        - "tests/"
+        - tests/
     dependency_paths:
-        - "venv/"
+        - venv/
