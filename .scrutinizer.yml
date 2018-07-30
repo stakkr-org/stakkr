@@ -41,3 +41,8 @@ build:
                     -
                         command: pylint-run
                         use_website_config: true
+filter:
+    excluded_paths:
+        - "tests/"
+    dependency_paths:
+        - "venv/"
