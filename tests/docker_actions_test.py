@@ -94,6 +94,12 @@ class DockerActionsTest(unittest.TestCase):
 
         # Clean
         exec_cmd(['stakkr-compose', '-c', base_dir + '/static/config_valid_network.ini', 'stop'])
+        exec_cmd(['docker', 'rm', 'test_maildev'])
+        exec_cmd(['docker', 'rm', 'test_php'])
+        exec_cmd(['docker', 'rm', 'test_portainer'])
+        exec_cmd(['docker', 'stop', 'test_maildev'])
+        exec_cmd(['docker', 'stop', 'test_php'])
+        exec_cmd(['docker', 'stop', 'test_portainer'])
         exec_cmd(['docker', 'network', 'rm', 'test_stakkr'])
 
         cmd = ['stakkr-compose', '-c', base_dir + '/static/config_valid_network.ini', 'up', '-d', '--force-recreate']

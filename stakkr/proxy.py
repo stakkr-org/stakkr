@@ -3,6 +3,7 @@ Manage public proxy to expose containers
 """
 
 import os
+import click
 from docker.errors import DockerException
 from stakkr import docker_actions
 from stakkr.configreader import Config
@@ -22,6 +23,7 @@ class Proxy():
         """Start stakkr proxy if stopped"""
 
         if docker_actions.container_running(self.proxy_name) is False:
+            print(click.style('[STARTING]', fg='green') + ' traefik')
             self._start_container()
 
         # Connect it to network if asked
@@ -35,6 +37,7 @@ class Proxy():
         if docker_actions.container_running(self.proxy_name) is False:
             return
 
+        print(click.style('[STOPPING]', fg='green') + ' traefik')
         proxy_ct = self.docker_client.containers.get(self.proxy_name)
         proxy_ct.stop()
 

@@ -11,5 +11,6 @@ services:
             POSTGRES_PASSWORD: ${DOCKER_POSTGRES_PASSWORD}
         volumes:
             - ${COMPOSE_BASE_DIR}/data/postgres:/var/lib/postgresql/data
+            - ${COMPOSE_BASE_DIR}/logs/postgres:/var/lib/postgresql/data/pg_log
         labels:
             - traefik.enable=False
