@@ -43,13 +43,13 @@ class Proxy():
 
 
     def _start_container(self):
-        api_client = docker_actions.get_api_client()
-        # Start the CT
+        """Start The container"""
         try:
+            self.docker_client.images.pull('traefik:latest')
             self.docker_client.containers.run(
-                'traefik', remove=True, detach=True, hostname=self.proxy_name,
-                name=self.proxy_name, command='--api --docker',
+                'traefik:latest', remove=True, detach=True,
+                hostname=self.proxy_name, name=self.proxy_name,
                 volumes=['/var/run/docker.sock:/var/run/docker.sock'],
-                ports={80: self.port, 8080: 8080})
+                ports={80: self.port, 8080: 8080}, command='--api --docker')
         except DockerException as error:
             raise RuntimeError("Can't start proxy ...({})".format(error))
