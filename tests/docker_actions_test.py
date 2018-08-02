@@ -97,7 +97,6 @@ class DockerActionsTest(unittest.TestCase):
 
         """
         stop_remove_container('pytest')
-        remove_networks_all()
 
         docker_actions.get_client().containers.run(
             'nginx:stable-alpine', detach=True, name='pytest')
