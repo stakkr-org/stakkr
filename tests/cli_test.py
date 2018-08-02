@@ -318,9 +318,9 @@ class CliTest(unittest.TestCase):
 
         exec_cmd(cli.cmd_base + ['stop'])
 
-        exec_cmd(['docker', 'rm', 'test_maildev'])
-        exec_cmd(['docker', 'rm', 'test_php'])
-        exec_cmd(['docker', 'rm', 'test_portainer'])
+        stop_remove_container('test_maildev')
+        stop_remove_container('test_php')
+        stop_remove_container('test_portainer')
 
 
     def _proxy_start_check_not_in_network(self):
@@ -342,6 +342,16 @@ def exec_cmd(cmd: list):
     stderr = stderr.decode().strip().replace('\n', '')
 
     return {'stdout': stdout, 'stderr': stderr, 'status': status}
+
+
+def stop_remove_container(ct_name: str):
+    from docker.errors import NotFound
+    try:
+        ct = docker_actions.get_client().containers.get(ct_name)
+        ct.stop()
+        ct.remove()
+    except NotFound:
+        pass
 
 
 if __name__ == "__main__":

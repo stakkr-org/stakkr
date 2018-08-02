@@ -1,8 +1,10 @@
 import os
 import subprocess
 import sys
+from docker.errors import NotFound
 import unittest
 from stakkr import docker_actions
+
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, base_dir + '/../')
@@ -12,25 +14,16 @@ sys.path.insert(0, base_dir + '/../')
 class DockerActionsTest(unittest.TestCase):
     def test_container_running(self):
         """Make sure, even in another directory, the venv base dir is correct"""
-        try:
-            subprocess.call(['docker', 'stop', 'pytest'])
-            subprocess.call(['docker', 'rm', 'pytest'])
-        except Exception:
-            pass
-
-        cmd = ['docker', 'run', '-d', '--rm', '--name', 'pytest', 'nginx:stable-alpine']
-        subprocess.call(cmd)
+        stop_remove_container('pytest')
+        docker_actions.get_client().containers.run(
+            'nginx:stable-alpine', detach=True, name='pytest')
 
         self.assertTrue(docker_actions.container_running('pytest'))
 
 
     def test_container_not_running(self):
         """Make sure, even in another directory, the venv base dir is correct"""
-        try:
-            subprocess.call(['docker', 'stop', 'pytest'])
-            subprocess.call(['docker', 'rm', 'pytest'])
-        except Exception:
-            pass
+        stop_remove_container('pytest')
 
         self.assertFalse(docker_actions.container_running('pytest'))
 
@@ -39,12 +32,11 @@ class DockerActionsTest(unittest.TestCase):
         """
         Start docker compose with another configuration file, then
         extract VM Info
-
         """
 
         # Clean
         exec_cmd(['stakkr-compose', '-c', base_dir + '/static/config_valid.ini', 'stop'])
-        exec_cmd(['docker', 'network', 'rm', 'test_stakkr'])
+        remove_network('test_stakkr')
 
         # Start again
         cmd = ['stakkr-compose', '-c', base_dir + '/static/config_valid.ini', 'up', '-d', '--force-recreate']
@@ -72,16 +64,14 @@ class DockerActionsTest(unittest.TestCase):
         self.assertTrue(docker_actions.network_exists('test_stakkr'))
         self.assertFalse(docker_actions._container_in_network('test_php', 'bridge'))
 
-        cmd = ['stakkr-compose', '-c', base_dir + '/static/config_valid.ini', 'stop']
-        exec_cmd(cmd)
-        exec_cmd(['docker', 'stop', 'test_php'])
-        exec_cmd(['docker', 'rm', 'test_php'])
+        exec_cmd(['stakkr-compose', '-c', base_dir + '/static/config_valid.ini', 'stop'])
+        stop_remove_container('test_php')
 
         with self.assertRaisesRegex(LookupError, 'Container test_php does not seem to exist'):
             docker_actions._container_in_network('test_php', 'bridge')
 
         exec_cmd(['stakkr', 'stop'])
-        exec_cmd(['docker', 'network', 'rm', 'test_stakkr'])
+        remove_network('test_stakkr')
         self.assertFalse(docker_actions.network_exists('test_stakkr'))
 
 
@@ -91,17 +81,11 @@ class DockerActionsTest(unittest.TestCase):
         definint a network, then extract VM Info
 
         """
-
         # Clean
         exec_cmd(['stakkr-compose', '-c', base_dir + '/static/config_valid_network.ini', 'stop'])
-        exec_cmd(['docker', 'rm', 'test_maildev'])
-        exec_cmd(['docker', 'rm', 'test_php'])
-        exec_cmd(['docker', 'rm', 'test_portainer'])
-        exec_cmd(['docker', 'stop', 'test_maildev'])
-        exec_cmd(['docker', 'stop', 'test_php'])
-        exec_cmd(['docker', 'stop', 'test_portainer'])
-        exec_cmd(['docker', 'network', 'rm', 'test_stakkr'])
+        remove_network('test_stakkr')
 
+        # Start Again
         cmd = ['stakkr-compose', '-c', base_dir + '/static/config_valid_network.ini', 'up', '-d', '--force-recreate']
         exec_cmd(cmd)
         numcts, cts = docker_actions.get_running_containers('test')
@@ -120,18 +104,11 @@ class DockerActionsTest(unittest.TestCase):
         And verify everything is OK
 
         """
-        try:
-            exec_cmd(['docker', 'stop', 'pytest'])
-            exec_cmd(['docker', 'rm', 'pytest'])
-            exec_cmd(['docker', 'network', 'prune', '-f'])
-        except Exception:
-            pass
+        stop_remove_container('pytest')
+        remove_networks_all()
 
-        if docker_actions.network_exists('nw_pytest'):
-            exec_cmd(['docker', 'network', 'rm', 'nw_pytest'])
-
-        cmd = ['docker', 'run', '-d', '--rm', '--name', 'pytest', 'nginx:stable-alpine']
-        subprocess.call(cmd)
+        docker_actions.get_client().containers.run(
+            'nginx:stable-alpine', detach=True, name='pytest')
 
         self.assertTrue(docker_actions.container_running('pytest'))
         self.assertFalse(docker_actions._container_in_network('pytest', 'pytest'))
@@ -145,10 +122,9 @@ class DockerActionsTest(unittest.TestCase):
         self.assertTrue(docker_actions.add_container_to_network('pytest', 'nw_pytest'))
         self.assertFalse(docker_actions.add_container_to_network('pytest', 'nw_pytest'))
         self.assertTrue(docker_actions._container_in_network('pytest', 'nw_pytest'))
-        exec_cmd(['docker', 'stop', 'pytest'])
 
-        if docker_actions.network_exists('nw_pytest'):
-            exec_cmd(['docker', 'network', 'rm', 'nw_pytest'])
+        stop_remove_container('pytest')
+        remove_network('nw_pytest')
 
 
     def test_get_container_info_not_exists(self):
@@ -156,47 +132,62 @@ class DockerActionsTest(unittest.TestCase):
 
 
     def test_guess_shell_sh(self):
-        try:
-            exec_cmd(['docker', 'stop', 'pytest'])
-        except:
-            pass
+        stop_remove_container('pytest')
 
-        cmd = ['docker', 'run', '-d', '--rm', '--name', 'pytest', 'nginx:stable-alpine']
-        exec_cmd(cmd)
+        docker_actions.get_client().containers.run(
+            'nginx:stable-alpine', detach=True, name='pytest')
 
         shell = docker_actions.guess_shell('pytest')
         self.assertEqual('/bin/sh', shell)
 
-        exec_cmd(['docker', 'stop', 'pytest'])
+        stop_remove_container('pytest')
 
 
     def test_guess_shell_bash(self):
-        try:
-            exec_cmd(['docker', 'stop', 'pytest'])
-        except:
-            pass
+        stop_remove_container('pytest')
 
-        cmd = ['docker', 'run', '-d', '--rm', '--name', 'pytest', 'nginx']
-        exec_cmd(cmd)
+        docker_actions.get_client().containers.run(
+            'nginx', detach=True, name='pytest')
 
         shell = docker_actions.guess_shell('pytest')
         self.assertEqual('/bin/bash', shell)
 
-        exec_cmd(['docker', 'stop', 'pytest'])
+        stop_remove_container('pytest')
 
 
     def tearDownClass():
-        exec_cmd(['docker', 'rm', 'pytest'])
-        exec_cmd(['docker', 'rm', 'test_maildev'])
-        exec_cmd(['docker', 'rm', 'test_php'])
-        exec_cmd(['docker', 'rm', 'test_portainer'])
-        exec_cmd(['docker', 'network', 'rm', 'nw_pytest'])
-        exec_cmd(['docker', 'network', 'rm', 'test_stakkr'])
+        stop_remove_container('pytest')
+        stop_remove_container('test_maildev')
+        stop_remove_container('test_php')
+        stop_remove_container('test_portainer')
+        remove_network('nw_pytest')
+        remove_network('test_stakkr')
 
 
 def exec_cmd(cmd: list):
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     p.communicate()
+
+
+def stop_remove_container(ct_name: str):
+    try:
+        ct = docker_actions.get_client().containers.get(ct_name)
+        ct.stop()
+        ct.remove()
+    except NotFound:
+        pass
+
+
+def remove_network(network_name: str):
+    try:
+        network = docker_actions.get_client().networks.get(network_name)
+        network.remove()
+    except NotFound:
+        pass
+
+
+def remove_networks_all():
+    docker_actions.get_client().networks.prune()
 
 
 if __name__ == "__main__":

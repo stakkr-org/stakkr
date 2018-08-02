@@ -52,4 +52,4 @@ class Proxy():
                 volumes=['/var/run/docker.sock:/var/run/docker.sock'],
                 ports={80: self.port, 8080: 8080})
         except DockerException as error:
-            raise RuntimeError("Can't start proxy ...")
+            raise RuntimeError("Can't start proxy ...({})".format(error))
