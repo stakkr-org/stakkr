@@ -83,7 +83,7 @@ class DockerActionsTest(unittest.TestCase):
         """
         # Clean
         exec_cmd(['stakkr-compose', '-c', base_dir + '/static/config_valid_network.ini', 'stop'])
-        remove_network('test_stakkr')
+        remove_networks_all()
 
         # Start Again
         cmd = ['stakkr-compose', '-c', base_dir + '/static/config_valid_network.ini', 'up', '-d', '--force-recreate']
