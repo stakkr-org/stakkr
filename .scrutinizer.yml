@@ -1,8 +1,11 @@
 # language: python
 checks:
-  python:
-    code_rating: true
-    duplicate_code: true
+    python:
+        code_rating: true
+        duplicate_code: true
+        typecheck_maybe_no_member: true
+        classes_valid_slots: true
+        basic_missing_reversed_argument: true
 
 build:
   environment:
@@ -17,7 +20,6 @@ build:
     rabbitmq: false
     docker:
       remote_engine: true
-
   nodes:
     tests-and-coverage:
       tests:
@@ -35,13 +37,13 @@ build:
               file: '.coverage'
               config_file: '.coveragerc'
               format: 'py-cc'
-
     analysis:
+      project_setup:
+        override: true
       tests:
         override:
           - py-scrutinizer-run
-          -
-            command: pylint-run
+          - command: pylint-run
             use_website_config: true
 
 filter:

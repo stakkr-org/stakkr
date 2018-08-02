@@ -81,19 +81,11 @@ class DockerActionsTest(unittest.TestCase):
         definint a network, then extract VM Info
 
         """
-        # Clean
-        exec_cmd(['stakkr-compose', '-c', base_dir + '/static/config_valid_network.ini', 'stop'])
-        remove_networks_all()
-
-        # Start Again
         cmd = ['stakkr-compose', '-c', base_dir + '/static/config_valid_network.ini', 'up', '-d', '--force-recreate']
         exec_cmd(cmd)
-        numcts, cts = docker_actions.get_running_containers('test')
-        self.assertIs(len(cts), 3)
+        numcts, cts = docker_actions.get_running_containers('testnet')
+        self.assertIs(len(cts), 1)
         for ct_id, ct_info in cts.items():
-            if ct_info['name'] in ('test_maildev', 'test_portainer'):
-                continue
-
             self.assertEqual(ct_info['ip'][:10], '192.168.23')
             self.assertEqual(ct_info['image'], 'edyan/php:7.2')
 
