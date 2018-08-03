@@ -81,9 +81,13 @@ class DockerActionsTest(unittest.TestCase):
         definint a network, then extract VM Info
 
         """
-        cmd = ['stakkr-compose', '-c', base_dir + '/static/config_valid_network.ini', 'up', '-d', '--force-recreate']
-        exec_cmd(cmd)
+        exec_cmd(['stakkr-compose', '-c', base_dir + '/static/config_valid_network.ini', 'stop'])
+        exec_cmd([
+            'stakkr-compose', '-c', base_dir + '/static/config_valid_network.ini',
+            'up', '-d', '--force-recreate', '--remove-orphans'])
         numcts, cts = docker_actions.get_running_containers('testnet')
+
+        self.assertIs(numcts, 1)
         self.assertIs(len(cts), 1)
         for ct_id, ct_info in cts.items():
             self.assertEqual(ct_info['ip'][:10], '192.168.23')
@@ -175,10 +179,6 @@ def remove_network(network_name: str):
         network.remove()
     except NotFound:
         pass
-
-
-def remove_networks_all():
-    docker_actions.get_client().networks.prune()
 
 
 if __name__ == "__main__":

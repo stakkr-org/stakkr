@@ -169,6 +169,7 @@ def get_running_containers(project_name: str) -> tuple:
     except ConnectionError:
         raise ConnectionError('Make sure docker is installed and running')
 
+    __st__['cts_info'] = dict()
     for container in cts:
         container_info = _extract_container_info(project_name, container.id)
         __st__['cts_info'][container_info['name']] = container_info
