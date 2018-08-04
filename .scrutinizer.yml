@@ -44,12 +44,11 @@ checks:
         code_rating: true
         duplicate_code: true
         classes_valid_slots: true
-        typecheck_maybe_no_member: true
-        basic_missing_reversed_argument: true
 
 filter:
     excluded_paths:
-        - docs/*
-        - tests/*
-    dependency_paths:
-        - venv/*
+        - '*/docs/*'
+        - '*/tests/*'
+        - '*/venv/*'
+        - '*/lib/*'
+        - '*/lib/python*/*'

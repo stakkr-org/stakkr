@@ -106,7 +106,7 @@ class DockerCleanTest(unittest.TestCase):
 
         # Stop adminer and clean again
         result = CliRunner().invoke(clean, ['--force', '--verbose'])
-        self.assertEqual(0, result.exit_code)
+        self.assertEqual(0, result.exit_code, 'Error: {}'.format(result.output))
         regex = r'.*Cleaning Docker stopped containers.*'
         self.assertRegex(result.output, regex)
         regex = r'.*Removed 1 exited container\(s\), saved 0 bytes.*'
