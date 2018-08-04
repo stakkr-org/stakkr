@@ -94,7 +94,7 @@ def remove_volumes(force: bool, verbose: bool):
         return
 
     res = get_docker_client().volumes.prune()
-    if res['VolumesDeleted'] is None:
+    if len(res['VolumesDeleted']) is 0:
         print('  No volume to remove')
         return
 

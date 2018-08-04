@@ -117,7 +117,7 @@ class DockerCleanTest(unittest.TestCase):
         self.assertRegex(result.output, regex)
         regex = r'.*Cleaning Docker unused volumes.*'
         self.assertRegex(result.output, regex)
-        regex = r'.*Removed 0 volume\(s\), saved 0 bytes.*'
+        regex = r'.*No volume to remove*'
         self.assertRegex(result.output, regex)
         regex = r'.*Cleaning Docker unused networks.*'
         self.assertRegex(result.output, regex)
