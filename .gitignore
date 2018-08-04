@@ -6,9 +6,11 @@
 *.egg-info
 __pycache__
 *_stakkr
+venv
 
 # Tests
 .coverage*
+!.coveragerc
 htmlcov
 
 

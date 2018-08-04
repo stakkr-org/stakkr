@@ -1,53 +1,55 @@
 # language: python
+build:
+    environment:
+        python: 3.6.0
+        mysql: false
+        postgresql: false
+        mongodb: false
+        elasticsearch: false
+        redis: false
+        memcached: false
+        neo4j: false
+        rabbitmq: false
+        docker:
+            remote_engine: true
+    nodes:
+        tests-and-coverage:
+            tests:
+                before:
+                    - "sudo apt-get install -y python3-dev"
+                    - "virtualenv -p /usr/bin/python3 venv"
+                    - "source venv/bin/activate"
+                    - "pip install --upgrade pip"
+                    - "pip install ."
+                    - "stakkr-init"
+                    - "pip install -r requirements-dev.txt"
+                override:
+                    - command: "py.test --cov-config=.coveragerc"
+                      idle_timeout: 1200
+                      coverage:
+                          file: '.coverage'
+                          config_file: '.coveragerc'
+                          format: 'py-cc'
+        analysis:
+            project_setup:
+                override: true
+            tests:
+                override:
+                    - py-scrutinizer-run
+                    - command: pylint-run
+                      use_website_config: true
+
 checks:
     python:
         code_rating: true
         duplicate_code: true
-        typecheck_maybe_no_member: true
         classes_valid_slots: true
+        typecheck_maybe_no_member: true
         basic_missing_reversed_argument: true
 
-build:
-  environment:
-    python: 3.6.0
-    mysql: false
-    postgresql: false
-    mongodb: false
-    elasticsearch: false
-    redis: false
-    memcached: false
-    neo4j: false
-    rabbitmq: false
-    docker:
-      remote_engine: true
-  nodes:
-    tests-and-coverage:
-      tests:
-        before:
-          - "sudo apt-get install -y python3-dev"
-          - "virtualenv -p /usr/bin/python3 venv"
-          - "source venv/bin/activate"
-          - "pip install ."
-          - "stakkr-init"
-          - "pip install -r requirements-dev.txt"
-        override:
-          - command: "py.test --cov-report html --cov-report term --cov=stakkr tests/"
-            idle_timeout: 1200
-            coverage:
-              file: '.coverage'
-              config_file: '.coveragerc'
-              format: 'py-cc'
-    analysis:
-      project_setup:
-        override: true
-      tests:
-        override:
-          - py-scrutinizer-run
-          - command: pylint-run
-            use_website_config: true
-
 filter:
-  excluded_paths:
-    - tests/
-  dependency_paths:
-    - venv/
+    excluded_paths:
+        - docs/*
+        - tests/*
+    dependency_paths:
+        - venv/*

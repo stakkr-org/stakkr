@@ -13,4 +13,4 @@ install:
     - pip install -r requirements-dev.txt
 
 # command to run tests
-script: py.test --cov-report html --cov-report term --cov=stakkr tests/
+script: py.test -vvv --cov-config .coveragerc --cov-report term --cov=stakkr tests/
