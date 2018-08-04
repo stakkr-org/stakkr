@@ -13,4 +13,4 @@ install:
     - pip install -r requirements-dev.txt
 
 # command to run tests
-script: py.test --cov-config=.coveragerc
+script: py.test --cov-config=.coveragerc tests/

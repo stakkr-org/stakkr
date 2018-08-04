@@ -13,25 +13,23 @@ sys.path.insert(0, base_dir + '/../')
 # https://docs.python.org/3/library/unittest.html#assert-methods
 class DockerActionsTest(unittest.TestCase):
     def test_container_running(self):
-        """Make sure, even in another directory, the venv base dir is correct"""
+        """Make sure, even in another directory, the venv base dir is correct."""
         stop_remove_container('pytest')
         docker_actions.get_client().containers.run(
             'nginx:stable-alpine', detach=True, name='pytest')
 
         self.assertTrue(docker_actions.container_running('pytest'))
 
-
     def test_container_not_running(self):
-        """Make sure, even in another directory, the venv base dir is correct"""
+        """Make sure, even in another directory, the venv base dir is correct."""
         stop_remove_container('pytest')
 
         self.assertFalse(docker_actions.container_running('pytest'))
 
-
     def test_get_container_info(self):
         """
-        Start docker compose with another configuration file, then
-        extract VM Info
+        Start docker compose with another configuration fileself.
+        Then extract VM Info.
         """
 
         # Clean
@@ -142,7 +140,7 @@ class DockerActionsTest(unittest.TestCase):
         stop_remove_container('pytest')
 
         docker_actions.get_client().containers.run(
-            'nginx', detach=True, name='pytest')
+            'edyan/php:7.2', detach=True, name='pytest')
 
         shell = docker_actions.guess_shell('pytest')
         self.assertEqual('/bin/bash', shell)
