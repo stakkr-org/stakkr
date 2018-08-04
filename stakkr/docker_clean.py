@@ -1,7 +1,10 @@
 #!/usr/bin/env python
+# coding: utf-8
 """
-Clean unused containers, images, volumes and networks
-That saves a lot of space ... should be removed later by "docker ***** prune
+Docker Clean command.
+
+Clean unused containers, images, volumes and networks.
+That saves a lot of space ...
 """
 
 import sys
@@ -15,8 +18,7 @@ that are not in use""", name="docker-clean")
 @click.option('--verbose', '-v', help="Display more information about what is removed",
               is_flag=True)
 def clean(force: bool, verbose: bool):
-    """See command help"""
-
+    """See command help."""
     click.secho('Clean Docker stopped containers, images, volumes and networks', fg='green')
 
     remove_containers(force, verbose)
@@ -29,8 +31,7 @@ def clean(force: bool, verbose: bool):
 
 
 def remove_containers(force: bool, verbose: bool):
-    """Remove exited containers"""
-
+    """Remove exited containers."""
     res = _exec_cmd(['docker', 'ps', '--no-trunc', '-a', '-q', '-f', 'status=exited'])
     containers = res.splitlines()
     if len(containers) is 0:
@@ -45,8 +46,7 @@ def remove_containers(force: bool, verbose: bool):
 
 
 def remove_images(force: bool):
-    """Prune all images"""
-
+    """Prune all images."""
     res = _exec_cmd(['docker', 'image', 'ls'])
     images = res.splitlines()
     if len(images) is 1:
@@ -59,8 +59,7 @@ def remove_images(force: bool):
 
 
 def remove_networks(force: bool, verbose: bool):
-    """Remove custom networks (not systems)"""
-
+    """Remove custom networks (not systems)."""
     res = _exec_cmd(['docker', 'network', 'ls', '--no-trunc', '-q', '--filter', 'type=custom'])
     networks = res.splitlines()
     if len(networks) is 0:
@@ -75,8 +74,7 @@ def remove_networks(force: bool, verbose: bool):
 
 
 def remove_volumes(force: bool, verbose: bool):
-    """Remove dangling volumes"""
-
+    """Remove dangling volumes."""
     res = _exec_cmd(['docker', 'volume', 'ls', '-q', '-f', 'dangling=true'])
     volumes = res.splitlines()
     if len(volumes) is 0:
@@ -122,8 +120,7 @@ def _remove_entry(entry_type: str, entry: str, force: bool):
 
 
 def main():
-    """Main function when the CLI Script is called directly"""
-
+    """Generate the CLI."""
     try:
         clean()
     except Exception as error:

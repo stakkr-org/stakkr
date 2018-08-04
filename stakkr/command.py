@@ -1,4 +1,7 @@
+# coding: utf-8
 """
+Command Wrapper.
+
 A command wrapper to get a live output displayed.
 Useful when you need to write a plugin that outputs some progress or info.
 """
@@ -9,10 +12,9 @@ from io import BufferedReader
 from click import echo, style
 
 
-def launch_cmd_displays_output(cmd: list, print_msg: bool = True,
-                               print_err: bool = True, err_to_out: bool = False):
-    """Launch a command and displays conditionnaly messages and / or errors"""
-
+def launch_cmd_displays_output(cmd: list, print_msg: bool = True, print_err: bool = True,
+                               err_to_out: bool = False):
+    """Launch a command and displays conditionnaly messages and / or errors."""
     try:
         stderr = subprocess.PIPE if err_to_out is False else subprocess.STDOUT
         result = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=stderr)
@@ -27,14 +29,13 @@ def launch_cmd_displays_output(cmd: list, print_msg: bool = True,
 
 
 def verbose(display: bool, message: str):
-    """Display a message if verbose is On"""
+    """Display a message if verbose is On."""
     if display is True:
         echo(style('[VERBOSE]', fg='green') + ' {}'.format(message), file=sys.stderr)
 
 
 def _read_messages(result: BufferedReader, display: bool = False):
-    """Print messages sent to the STDOUT"""
-
+    """Print messages sent to the STDOUT."""
     for line in result.stdout:
         line = line.decode()
         line = line if display is True else '.'
@@ -45,8 +46,7 @@ def _read_messages(result: BufferedReader, display: bool = False):
 
 
 def _print_errors(result: BufferedReader):
-    """Print messages sent to the STDERR"""
-
+    """Print messages sent to the STDERR."""
     num = 0
     for line in result.stderr:
         err = line.decode()

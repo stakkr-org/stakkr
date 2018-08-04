@@ -1,6 +1,10 @@
+#!/usr/bin/env python
+# coding: utf-8
 """
-CLI Entry Point. From click, build stakkr and give all options to manage
-services to be launched, stopped, etc.
+CLI Entry Point.
+
+From click, build stakkr.
+Give all options to manage services to be launched, stopped, etc.
 """
 
 import sys
@@ -23,8 +27,7 @@ linking and managing everything for you.""")
 @click.option('--verbose', '-v', is_flag=True)
 @click.pass_context
 def stakkr(ctx, config, debug, verbose):
-    """click group, set context and main object"""
-
+    """Click group, set context and main object."""
     from stakkr.actions import StakkrActions
 
     # Add the virtual env in the path
@@ -45,8 +48,7 @@ install packages, run commands, etc.""")
 @click.option('--tty/--no-tty', '-t/ ', is_flag=True, default=True, help="Use a TTY")
 @click.pass_context
 def console(ctx, container: str, user: str, tty: bool):
-    """See command Help"""
-
+    """See command Help."""
     if len(ctx.obj['CTS']) is not 0:
         ct_choice = click.Choice(ctx.obj['CTS'])
         ct_choice.convert(container, None, ctx)
@@ -67,8 +69,7 @@ Examples:\n
 @click.argument('container', required=True)
 @click.argument('command', required=True, nargs=-1, type=click.UNPROCESSED)
 def exec_cmd(ctx, user: str, container: str, command: tuple, tty: bool):
-    """See command Help"""
-
+    """See command Help."""
     if len(ctx.obj['CTS']) is not 0:
         click.Choice(ctx.obj['CTS']).convert(container, None, ctx)
 
@@ -89,8 +90,7 @@ For scripts, you must use the relative path.
 @click.option('--tty/--no-tty', '-t/ ', is_flag=True, default=True, help="Use a TTY")
 @click.argument('command', nargs=-1, type=click.UNPROCESSED)
 def mysql(ctx, tty: bool, command: tuple):
-    """See command Help"""
-
+    """See command Help."""
     command = ('mysql', '-p$MYSQL_ROOT_PASSWORD') + command
     ctx.invoke(exec_cmd, user='root', container='mysql', command=command, tty=tty)
 
@@ -98,8 +98,7 @@ def mysql(ctx, tty: bool, command: tuple):
 @stakkr.command(help='Required to be launched if you install a new plugin', name="refresh-plugins")
 @click.pass_context
 def refresh_plugins(ctx):
-    """See command Help"""
-
+    """See command Help."""
     from stakkr.plugins import add_plugins
 
     print(click.style('Adding plugins from plugins/', fg='green'))
@@ -119,8 +118,7 @@ def refresh_plugins(ctx):
 @click.option('--proxy/--no-proxy', '-P', help="Restart the proxy", default=True)
 @click.pass_context
 def restart(ctx, container: str, pull: bool, recreate: bool, proxy: bool):
-    """See command Help"""
-
+    """See command Help."""
     print(click.style('[RESTARTING]', fg='green') + ' your stakkr services')
     try:
         ctx.invoke(stop, container=container, proxy=proxy)
@@ -133,8 +131,7 @@ def restart(ctx, container: str, pull: bool, recreate: bool, proxy: bool):
 @stakkr.command(help="List available services available for compose.ini (with info if the service is enabled)")
 @click.pass_context
 def services(ctx):
-    """See command Help"""
-
+    """See command Help."""
     from stakkr.stakkr_compose import get_available_services
 
     print('Available services usable in compose.ini ', end='')
@@ -156,7 +153,7 @@ def services(ctx):
 @click.option('--proxy/--no-proxy', '-P', help="Start the proxy", default=True)
 @click.pass_context
 def start(ctx, container: str, pull: bool, recreate: bool, proxy: bool):
-    """See command Help"""
+    """See command Help."""
     print(click.style('[STARTING]', fg='green') + ' your stakkr services')
 
     ctx.obj['STAKKR'].start(container, pull, recreate, proxy)
@@ -166,8 +163,7 @@ def start(ctx, container: str, pull: bool, recreate: bool, proxy: bool):
 @stakkr.command(help="Display a list of running containers")
 @click.pass_context
 def status(ctx):
-    """See command Help"""
-
+    """See command Help."""
     ctx.obj['STAKKR'].status()
 
 
@@ -176,8 +172,7 @@ def status(ctx):
 @click.option('--proxy/--no-proxy', '-P', help="Stop the proxy", default=True)
 @click.pass_context
 def stop(ctx, container: str, proxy: bool):
-    """See command Help"""
-
+    """See command Help."""
     print(click.style('[STOPPING]', fg='yellow') + ' your stakkr services')
     ctx.obj['STAKKR'].stop(container, proxy)
 
@@ -204,8 +199,7 @@ def _show_status(ctx):
 
 
 def debug_mode():
-    """Guess if we are in debug mode, useful to display runtime errors"""
-
+    """Guess if we are in debug mode, useful to display runtime errors."""
     if '--debug' in sys.argv or '-d' in sys.argv:
         return True
 
@@ -213,8 +207,7 @@ def debug_mode():
 
 
 def main():
-    """Main function when the CLI Script is called directly"""
-
+    """Call the CLI Script."""
     try:
         stakkr(obj={})
     except Exception as error:

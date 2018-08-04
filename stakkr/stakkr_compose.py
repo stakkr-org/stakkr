@@ -1,5 +1,9 @@
+#!/usr/bin/env python
+# coding: utf-8
 """
-CLI Tool that wrap docker-compose and build it from what has been taken from config
+CLI Main Entry Point.
+
+Wraps docker-compose and build it from what has been taken from config.
 """
 
 import os
@@ -15,8 +19,7 @@ from stakkr.configreader import Config
 @click.option('--config', '-c', help="Override the conf/compose.ini")
 @click.argument('command', nargs=-1, type=click.UNPROCESSED)
 def cli(config: str, command):
-    """Command line entry point"""
-
+    """Command line entry point."""
     config_params = get_config(config)
     set_env_from_main_config(config_params['main'])
 
@@ -37,8 +40,7 @@ def cli(config: str, command):
 
 
 def add_services_from_plugins(available_services: list):
-    """Read plugin path and extract services in subdirectories services/"""
-
+    """Read plugin path and extract services in subdirectories services/."""
     from pkg_resources import iter_entry_points
 
     # Override services with plugins
@@ -54,8 +56,7 @@ def add_services_from_plugins(available_services: list):
 
 
 def add_local_services(available_services: list):
-    """Get services in the virtualenv services/ directory, so specific to that stakkr"""
-
+    """Get services in the virtualenv services/ directory, so specific to that stakkr."""
     services_dir = package_utils.get_venv_basedir() + '/services'
 
     conf_files = _get_services_from_dir(services_dir)
@@ -66,8 +67,7 @@ def add_local_services(available_services: list):
 
 
 def get_available_services():
-    """Get standard services bundled with stakkr"""
-
+    """Get standard services bundled with stakkr."""
     services_dir = package_utils.get_dir('static') + '/services/'
     conf_files = _get_services_from_dir(services_dir)
 
@@ -79,8 +79,7 @@ def get_available_services():
 
 
 def get_base_command(project_name: str, config: dict):
-    """Build the docker-compose file to be run as a command"""
-
+    """Build the docker-compose file to be run as a command."""
     main_file = 'docker-compose.yml'
     # Set the network subnet ?
     if config.get('subnet') != '':
@@ -99,8 +98,7 @@ def get_base_command(project_name: str, config: dict):
 
 
 def get_enabled_services(configured_services: list):
-    """Compile all available services : standard, plugins, local install"""
-
+    """Compile all available services : standard, plugins, local install."""
     available_services = get_available_services()
     available_services = add_services_from_plugins(available_services)
     available_services = add_local_services(available_services)
@@ -116,16 +114,15 @@ def get_enabled_services(configured_services: list):
 
     return services_files
 
-def get_configured_services(config_file: str = None):
-    """Get services set in compose.ini"""
 
+def get_configured_services(config_file: str = None):
+    """Get services set in compose.ini."""
     configured_services = get_config(config_file)['main'].get('services')
     return configured_services
 
 
 def get_config(config: str):
-    """Read main compose.ini file"""
-
+    """Read main compose.ini file."""
     config = Config(config).read()
 
     if config is False:
@@ -136,8 +133,7 @@ def get_config(config: str):
 
 
 def set_env_from_main_config(config: list):
-    """Define environment variables to be used in services yaml"""
-
+    """Define environment variables to be used in services yaml."""
     os.environ['DOCKER_UID'] = _get_uid(config.pop('uid'))
     os.environ['DOCKER_GID'] = _get_gid(config.pop('gid'))
     os.environ['COMPOSE_BASE_DIR'] = package_utils.get_venv_basedir()
@@ -148,8 +144,7 @@ def set_env_from_main_config(config: list):
 
 
 def set_env_for_proxy(config: list):
-    """Define environment variables to be used in services yaml"""
-
+    """Define environment variables to be used in services yaml."""
     os.environ['PROXY_ENABLED'] = str(config.pop('enabled'))
     os.environ['PROXY_DOMAIN'] = str(config.pop('domain'))
     os.environ['PROXY_PORT'] = str(config.pop('port'))

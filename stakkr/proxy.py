@@ -1,49 +1,43 @@
-"""
-Manage public proxy to expose containers
-"""
+# coding: utf-8
+"""Manage public proxy to expose containers."""
 
 import os
 import click
 from docker.errors import DockerException
-from stakkr import docker_actions
+from stakkr import docker_actions as docker
 from stakkr.configreader import Config
 
 
 class Proxy():
-    """Main class that does actions asked in the cli"""
+    """Main class that does actions asked by the cli."""
 
     def __init__(self, port: int = 80, proxy_name: str = 'proxy_stakkr'):
-        """Set the right values to start the proxy"""
-
+        """Set the right values to start the proxy."""
         self.port = port
         self.proxy_name = proxy_name
-        self.docker_client = docker_actions.get_client()
+        self.docker_client = docker.get_client()
 
     def start(self, stakkr_network: str = None):
-        """Start stakkr proxy if stopped"""
-
-        if docker_actions.container_running(self.proxy_name) is False:
+        """Start stakkr proxy if stopped."""
+        if docker.container_running(self.proxy_name) is False:
             print(click.style('[STARTING]', fg='green') + ' traefik')
             self._start_container()
 
         # Connect it to network if asked
         if stakkr_network is not None:
-            docker_actions.add_container_to_network(self.proxy_name, stakkr_network)
-
+            docker.add_container_to_network(self.proxy_name, stakkr_network)
 
     def stop(self):
-        """Stop stakkr proxy"""
-
-        if docker_actions.container_running(self.proxy_name) is False:
+        """Stop stakkr proxy."""
+        if docker.container_running(self.proxy_name) is False:
             return
 
         print(click.style('[STOPPING]', fg='green') + ' traefik')
         proxy_ct = self.docker_client.containers.get(self.proxy_name)
         proxy_ct.stop()
 
-
     def _start_container(self):
-        """Start The container"""
+        """Start proxy."""
         try:
             self.docker_client.images.pull('traefik:latest')
             self.docker_client.containers.run(

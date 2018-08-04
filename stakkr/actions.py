@@ -1,6 +1,5 @@
-"""
-Stakkr main controller. Used by the CLI to do all its actions
-"""
+# coding: utf-8
+"""Stakkr main controller. Used by the CLI to do all its actions."""
 
 import os
 from platform import system as os_name
@@ -8,13 +7,13 @@ import subprocess
 import sys
 import click
 from clint.textui import colored, puts, columns
-from stakkr import command, docker_actions, package_utils
+from stakkr import command, docker_actions as docker, package_utils
 from stakkr.configreader import Config
 from stakkr.proxy import Proxy
 
 
 class StakkrActions():
-    """Main class that does actions asked in the cli"""
+    """Main class that does actions asked in the cli."""
 
     _services_to_display = {
         'adminer': {'name': 'Adminer', 'url': 'http://{}'},
@@ -28,8 +27,8 @@ class StakkrActions():
         'xhgui': {'name': 'XHGui (PHP Profiling)', 'url': 'http://{}'}
     }
 
-
     def __init__(self, base_dir: str, ctx: dict):
+        """Set all require properties."""
         # Work with directories and move to the right place
         self.stakkr_base_dir = base_dir
         self.context = ctx
@@ -48,23 +47,21 @@ class StakkrActions():
         self.main_config = self.config['main']
         self.project_name = self.main_config.get('project_name')
 
-
     def console(self, container: str, user: str, tty: bool):
-        """Enter a container. Stakkr will try to guess the right shell"""
-
-        docker_actions.check_cts_are_running(self.project_name)
+        """Enter a container. Stakkr will try to guess the right shell."""
+        docker.check_cts_are_running(self.project_name)
 
         tty = 't' if tty is True else ''
-        ct_name = docker_actions.get_ct_name(container)
+        ct_name = docker.get_ct_name(container)
         cmd = ['docker', 'exec', '-u', user, '-i' + tty]
-        cmd += [docker_actions.get_ct_name(container), docker_actions.guess_shell(ct_name)]
+        cmd += [docker.get_ct_name(container), docker.guess_shell(ct_name)]
         subprocess.call(cmd)
 
         command.verbose(self.context['VERBOSE'], 'Command : "' + ' '.join(cmd) + '"')
 
     def get_services_urls(self):
-        """Once started, stakkr displays a message with the list of launched containers."""
-        cts = docker_actions.get_running_containers(self.project_name)[1]
+        """Once started, displays a message with a list of running containers."""
+        cts = docker.get_running_containers(self.project_name)[1]
 
         text = ''
         for ct_id, ct_info in cts.items():
@@ -83,25 +80,22 @@ class StakkrActions():
 
         return text
 
-
     def exec_cmd(self, container: str, user: str, args: tuple, tty: bool):
-        """Run a command from outside to any container. Wrapped into /bin/sh"""
-
-        docker_actions.check_cts_are_running(self.project_name)
+        """Run a command from outside to any container. Wrapped into /bin/sh."""
+        docker.check_cts_are_running(self.project_name)
 
         # Protect args to avoid strange behavior in exec
         args = ['"{}"'.format(arg) for arg in args]
 
         tty = 't' if tty is True else ''
-        ct_name = docker_actions.get_ct_name(container)
+        ct_name = docker.get_ct_name(container)
         cmd = ['docker', 'exec', '-u', user, '-i' + tty, ct_name, 'sh', '-c']
         cmd += ["""test -d "/var/{0}" && cd "/var/{0}" ; exec {1}""".format(self.cwd_relative, ' '.join(args))]
         command.verbose(self.context['VERBOSE'], 'Command : "' + ' '.join(cmd) + '"')
         subprocess.call(cmd, stdin=sys.stdin)
 
-
     def start(self, container: str, pull: bool, recreate: bool, proxy: bool):
-        """If not started, start the containers defined in config"""
+        """If not started, start the containers defined in config."""
         verb = self.context['VERBOSE']
         debug = self.context['DEBUG']
 
@@ -117,22 +111,20 @@ class StakkrActions():
         command.verbose(self.context['VERBOSE'], 'Command: ' + ' '.join(cmd))
         command.launch_cmd_displays_output(cmd, verb, debug, True)
 
-        self.running_cts, self.cts = docker_actions.get_running_containers(self.project_name)
+        self.running_cts, self.cts = docker.get_running_containers(self.project_name)
         if self.running_cts is 0:
             raise SystemError("Couldn't start the containers, run the start with '-v' and '-d'")
 
         self._run_iptables_rules()
         self._run_services_post_scripts()
         if proxy is True:
-            network_name = docker_actions.get_network_name(self.project_name)
+            network_name = docker.get_network_name(self.project_name)
             Proxy(self.config['proxy'].get('port')).start(network_name)
 
-
     def status(self):
-        """Returns a nice table with the list of started containers"""
-
+        """Return a nice table with the list of started containers."""
         try:
-            docker_actions.check_cts_are_running(self.project_name)
+            docker.check_cts_are_running(self.project_name)
         except SystemError:
             puts(colored.yellow('[INFO]') + ' stakkr is currently stopped')
             sys.exit(0)
@@ -140,41 +132,36 @@ class StakkrActions():
         self._print_status_headers()
         self._print_status_body()
 
-
     def stop(self, container: str, proxy: bool):
-        """If started, stop the containers defined in config. Else throw an error"""
-
+        """If started, stop the containers defined in config. Else throw an error."""
         verb = self.context['VERBOSE']
         debug = self.context['DEBUG']
 
-        docker_actions.check_cts_are_running(self.project_name)
+        docker.check_cts_are_running(self.project_name)
 
         cmd = self.compose_base_cmd + ['stop'] + self._get_single_container_option(container)
         command.launch_cmd_displays_output(cmd, verb, debug, True)
 
-        self.running_cts, self.cts = docker_actions.get_running_containers(self.project_name)
+        self.running_cts, self.cts = docker.get_running_containers(self.project_name)
         if self.running_cts is not 0 and container is None:
             raise SystemError("Couldn't stop services ...")
 
         if proxy is True:
-            network_name = docker_actions.get_network_name(self.project_name)
+            network_name = docker.get_network_name(self.project_name)
             Proxy(self.config['proxy'].get('port')).stop()
-
 
     def _call_service_post_script(self, service: str):
         service_script = package_utils.get_file('static', 'services/{}.sh'.format(service))
         if os.path.isfile(service_script) is True:
-            cmd = ['bash', service_script, docker_actions.get_ct_item(service, 'name')]
+            cmd = ['bash', service_script, docker.get_ct_item(service, 'name')]
             subprocess.call(cmd)
             command.verbose(self.context['VERBOSE'], 'Service Script : ' + ' '.join(cmd))
-
 
     def _get_compose_base_cmd(self):
         if self.context['CONFIG'] is None:
             return ['stakkr-compose']
 
         return ['stakkr-compose', '-c', self.context['CONFIG']]
-
 
     def _get_config(self):
         config = Config(self.config_file)
@@ -185,13 +172,11 @@ class StakkrActions():
 
         return main_config
 
-
     def _get_single_container_option(self, container: str):
         if container is None:
             return []
 
         return [container]
-
 
     def _get_relative_dir(self):
         if self.cwd_abs.startswith(self.stakkr_base_dir):
@@ -199,11 +184,10 @@ class StakkrActions():
 
         return ''
 
-
     def _is_containers_running(self, container: str):
 
         try:
-            docker_actions.check_cts_are_running(self.project_name)
+            docker.check_cts_are_running(self.project_name)
         except SystemError:
             return
 
@@ -212,11 +196,10 @@ class StakkrActions():
             sys.exit(0)
 
         # If single container : check if that specific one is running
-        ct_name = docker_actions.get_ct_item(container, 'name')
-        if docker_actions.container_running(ct_name):
+        ct_name = docker.get_ct_item(container, 'name')
+        if docker.container_running(ct_name):
             puts(colored.yellow('[INFO]') + ' service {} is already started ...'.format(container))
             sys.exit(0)
-
 
     def _print_status_headers(self):
         puts(columns(
@@ -231,9 +214,8 @@ class StakkrActions():
             ['-'*15, 15], ['-'*25, 25]
             ))
 
-
     def _print_status_body(self):
-        self.running_cts, self.cts = docker_actions.get_running_containers(self.project_name)
+        self.running_cts, self.cts = docker.get_running_containers(self.project_name)
 
         for container in sorted(self.cts.keys()):
             ct_data = self.cts[container]
@@ -246,26 +228,24 @@ class StakkrActions():
                 [ct_data['id'][:12], 15], [ct_data['name'], 25]
                 ))
 
-
     def _run_iptables_rules(self):
-        """For some containers we need to add iptables rules added from the config"""
-
+        """For some containers we need to add iptables rules added from the config."""
         block_config = self.config['network-block']
         for service, ports in block_config.items():
-            error, msg = docker_actions.block_ct_ports(service, ports, self.project_name)
+            error, msg = docker.block_ct_ports(service, ports, self.project_name)
             if error is True:
                 click.secho(msg, fg='red')
                 continue
 
             command.verbose(self.context['VERBOSE'], msg)
 
-
     def _run_services_post_scripts(self):
-        """A service can have a .sh file that will be executed once it's started.
-        Useful to override some actions of the classical /run.sh
-
         """
+        Run services post scripts.
 
+        A service can have a .sh file that will be executed once it's started.
+        Useful to override some actions of the classical /run.sh.
+        """
         if os.name == 'nt':
             click.secho('Could not run service post scripts under Windows', fg='red')
             return
@@ -273,16 +253,14 @@ class StakkrActions():
         for service in self.main_config.get('services'):
             self._call_service_post_script(service)
 
-
     def get_url(self, ports: list, service_url: str, service: str):
-        """Build URL to be displayed"""
-
+        """Build URL to be displayed."""
         proxy_conf = self.config['proxy']
         # By default our URL is the IP
-        url = docker_actions.get_ct_item(service, 'ip')
+        url = docker.get_ct_item(service, 'ip')
         # If proxy enabled, display nice urls
         if int(proxy_conf['enabled']) is 1:
-            url = docker_actions.get_ct_item(service, 'traefik_host')
+            url = docker.get_ct_item(service, 'traefik_host')
             url += '' if int(proxy_conf['port']) is 80 else ':{}'.format(proxy_conf['port'])
         elif os_name() in ['Windows', 'Darwin']:
             puts(colored.yellow('[WARNING]') + ' Under Win and Mac, you need the proxy enabled')

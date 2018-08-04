@@ -1,6 +1,5 @@
-"""
-Setup post actions, used in the main setup.py
-"""
+# coding: utf-8
+"""Setup post actions, used in main setup.py."""
 
 import os
 import shutil
@@ -14,28 +13,27 @@ try:
 
     @click.command(help="""Initialize for the first time stakkr by copying
 templates and directory structure""")
-    @click.option('--force', '-f', help="Force recreate directories structure",
-                  is_flag=True)
+    @click.option('--force', '-f', help="Force recreate directories structure", is_flag=True)
     def init(force: bool):
-        """CLI Entry point, when initializing stakkr manually"""
-
+        """CLI Entry point, when initializing stakkr manually."""
         config_file = package_utils.get_venv_basedir() + '/conf/compose.ini'
         if os.path.isfile(config_file) and force is False:
             click.secho('Config file (conf/compose.ini) already present. Leaving.', fg='yellow')
             return
 
-        msg = 'Config file (conf/compose.ini) not present, do not forget to create it'
+        msg = "Config (conf/compose.ini) not present, don't forget to create it"
         click.secho(msg, fg='yellow')
         _post_install(force)
+
 except ImportError:
     def init():
-        """If click is not installed, display that message"""
-
+        """If click is not installed, display that message."""
         print('Stakkr has not been installed yet')
         sys.exit(1)
 
 
 def _post_install(force: bool = False):
+    """Create templates (directories and files)."""
     print('Post Installation : create templates')
 
     venv_dir = package_utils.get_venv_basedir()
@@ -97,16 +95,16 @@ def _copy_file(venv_dir: str, source_file: str, force: bool):
 
 
 class StakkrPostInstall(install):
-    """Class called by the main setup.py"""
+    """Class called by the main setup.py."""
 
     def __init__(self, *args, **kwargs):
+        """Inherit from setup install class and ensure we are in a venv."""
         super(StakkrPostInstall, self).__init__(*args, **kwargs)
 
         try:
             package_utils.get_venv_basedir()
             _post_install(False)
         except OSError:
-            msg = 'You must run setup.py from a virtualenv if you want to have '
-            msg += 'the templates installed'
+            msg = 'You must run setup.py from a virtualenv if you want to have'
+            msg += ' templates installed'
             print(msg)
-
