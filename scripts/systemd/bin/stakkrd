@@ -1,0 +1,56 @@
+#!/bin/bash
+# This is a stakkr wrapper to run stakkr with abash shell from outside the 
+# virtualenv.
+# run this as the stakkr user!
+# 
+
+exec_command_in_stakkr(){
+    CMD=$1
+    source $VIRTUALENV_DIR/bin/activate
+    echo $WDIR
+    cd $WDIR
+    stakkr $CMD
+    deactivate
+}
+
+sysconfdir="/etc"
+
+if [[ $# -gt 0 ]] ; then
+    key="$1"
+
+    case $key in
+        'start')
+            COMMAND=$key
+        ;;
+        'stop')
+            COMMAND=$key
+        ;;
+        'status')
+            COMMAND=$key
+        ;;
+        *)    # unknown option
+            COMMAND=""
+            echo "Wrong input. Only Start, Stop and Status are supported via wrapper script."
+        ;;
+    esac
+fi
+
+if [ -n "$COMMAND" ]; then
+    if test -f ${sysconfdir}/stakkr/stakkr.conf; then
+        f=${sysconfdir}/stakkr/stakkr.conf
+        . $f
+        # take action on each file. $f store current file name
+        exec_command_in_stakkr $COMMAND
+    fi
+
+    if test -d ${sysconfdir}/stakkr.d; then
+        for f in ${sysconfdir}/stakkr.d/*.conf
+        do
+            if test -f $f ; then
+              . $f
+                  # take action on each file. $f store current file name
+                exec_command_in_stakkr $COMMAND
+            fi
+        done
+    fi
+fi
