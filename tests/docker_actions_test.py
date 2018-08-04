@@ -32,12 +32,14 @@ class DockerActionsTest(unittest.TestCase):
         Then extract VM Info.
         """
 
+        config = base_dir + '/static/config_valid.ini'
+
         # Clean
-        exec_cmd(['stakkr-compose', '-c', base_dir + '/static/config_valid.ini', 'stop'])
+        exec_cmd(['stakkr-compose', '-c', config, 'stop'])
         remove_network('test_stakkr')
 
         # Start again
-        cmd = ['stakkr-compose', '-c', base_dir + '/static/config_valid.ini', 'up', '-d', '--force-recreate']
+        cmd = ['stakkr-compose', '-c', config, 'up', '-d', '--force-recreate']
         exec_cmd(cmd)
         numcts, cts = docker_actions.get_running_containers('test')
         self.assertIs(len(cts), 3)
@@ -62,7 +64,7 @@ class DockerActionsTest(unittest.TestCase):
         self.assertTrue(docker_actions.network_exists('test_stakkr'))
         self.assertFalse(docker_actions._container_in_network('test_php', 'bridge'))
 
-        exec_cmd(['stakkr-compose', '-c', base_dir + '/static/config_valid.ini', 'stop'])
+        exec_cmd(['stakkr-compose', '-c', config, 'stop'])
         stop_remove_container('test_php')
 
         with self.assertRaisesRegex(LookupError, 'Container test_php does not seem to exist'):
@@ -71,7 +73,6 @@ class DockerActionsTest(unittest.TestCase):
         exec_cmd(['stakkr', 'stop'])
         remove_network('test_stakkr')
         self.assertFalse(docker_actions.network_exists('test_stakkr'))
-
 
     def test_get_container_info_network_set(self):
         """
@@ -90,7 +91,6 @@ class DockerActionsTest(unittest.TestCase):
         for ct_id, ct_info in cts.items():
             self.assertEqual(ct_info['ip'][:10], '192.168.23')
             self.assertEqual(ct_info['image'], 'edyan/php:7.2')
-
 
     def test_create_network(self):
         """
@@ -119,10 +119,8 @@ class DockerActionsTest(unittest.TestCase):
         stop_remove_container('pytest')
         remove_network('nw_pytest')
 
-
     def test_get_container_info_not_exists(self):
         self.assertIs(None, docker_actions._extract_container_info('not_exists', 'not_exists'))
-
 
     def test_guess_shell_sh(self):
         stop_remove_container('pytest')
@@ -135,7 +133,6 @@ class DockerActionsTest(unittest.TestCase):
 
         stop_remove_container('pytest')
 
-
     def test_guess_shell_bash(self):
         stop_remove_container('pytest')
 
@@ -146,7 +143,6 @@ class DockerActionsTest(unittest.TestCase):
         self.assertEqual('/bin/bash', shell)
 
         stop_remove_container('pytest')
-
 
     def tearDownClass():
         stop_remove_container('pytest')

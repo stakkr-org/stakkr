@@ -39,7 +39,6 @@ class CommandTest(unittest.TestCase):
         res = f.getvalue()
         self.assertEqual('', res)
 
-
     def test_command_with_stdout_ok(self):
         # TODO make it work under windows
         if os.name == 'nt':
@@ -61,7 +60,6 @@ class CommandTest(unittest.TestCase):
             launch_cmd_displays_output(self.cmd_ok, True, False)
         res = f.getvalue()
         self.assertEqual('', res)
-
 
     def test_command_with_stderr_no_stdout_ok(self):
         # TODO make it work under windows
@@ -85,11 +83,9 @@ class CommandTest(unittest.TestCase):
         res = f.getvalue()
         self.assertEqual('', res)
 
-
     def test_command_exception(self):
-        with self.assertRaisesRegex(SystemError, "Cannot run the command: \[.*Err.*2\]"):
+        with self.assertRaisesRegex(SystemError, r"Cannot run the command: \[.*Err.*2\]"):
             launch_cmd_displays_output(self.cmd_err, True, True)
-
 
     def test_command_without_stderr_and_stdout_err(self):
         # TODO make it work under windows
@@ -113,7 +109,6 @@ class CommandTest(unittest.TestCase):
         res = f.getvalue()
         self.assertEqual('', res)
 
-
     def test_command_without_stderr_but_stdout_err(self):
         # TODO make it work under windows
         if os.name == 'nt':
@@ -135,7 +130,6 @@ class CommandTest(unittest.TestCase):
             launch_cmd_displays_output(self.cmd_nook, True, False)
         res = f.getvalue()
         self.assertEqual('', res)
-
 
     def test_command_with_stderr_no_stdout_err(self):
         # TODO make it work under windows
@@ -160,7 +154,6 @@ class CommandTest(unittest.TestCase):
         res = f.getvalue()
         self.assertEqual('', res)
 
-
     def test_command_with_stderr_no_stdout_err_loop(self):
         # TODO make it work under windows
         if os.name == 'nt':
@@ -171,7 +164,7 @@ class CommandTest(unittest.TestCase):
             cmd = ['cat', 'w', 'r', 'o', 'n', 'g', 'f', 'i', 'l', 'e']
             launch_cmd_displays_output(cmd, False, True)
         res = f.getvalue()
-        expected = re.compile('.*\.\.\. and more.*', re.MULTILINE)
+        expected = re.compile(r'.*\.\.\. and more.*', re.MULTILINE)
         self.assertRegex(res, expected)
 
         try:
@@ -184,7 +177,6 @@ class CommandTest(unittest.TestCase):
             launch_cmd_displays_output(self.cmd_nook, False, True)
         res = f.getvalue()
         self.assertEqual('', res)
-
 
 
 if __name__ == "__main__":

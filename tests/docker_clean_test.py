@@ -14,18 +14,18 @@ class DockerCleanTest(unittest.TestCase):
     def test_no_arg(self):
         result = CliRunner().invoke(clean)
         self.assertEqual(0, result.exit_code)
-        self.assertRegex(result.output, '.*Clean Docker stopped containers, images, volumes and networks.*')
-
+        regex = r'.*Clean Docker stopped containers, images, volumes and networks.*'
+        self.assertRegex(result.output, regex)
 
     def test_bad_arg(self):
         result = CliRunner().invoke(clean, ['hello-world'])
         self.assertEqual(2, result.exit_code)
-        self.assertRegex(result.output, 'Usage: docker-clean \[OPTIONS\].*')
-
+        self.assertRegex(result.output, r'Usage: docker-clean \[OPTIONS\].*')
 
     def test_full_clean(self):
         # Stop everything
-        Popen('docker stop $(docker ps -a -q)', shell=True, stdout=PIPE, stderr=DEVNULL).communicate()
+        cmd = ['docker', 'stop', '$(docker ps -a -q)']
+        Popen(cmd, shell=True, stdout=PIPE, stderr=DEVNULL).communicate()
         # We should have things stored
         Popen(['docker', 'volume', 'create', 'hello'], stdout=PIPE, stderr=DEVNULL).communicate()
         vols = Popen(['docker', 'volume', 'ls'], stdout=PIPE, stderr=DEVNULL).communicate()[0]
@@ -61,7 +61,8 @@ class DockerCleanTest(unittest.TestCase):
         # CLEAN
         result = CliRunner().invoke(clean, ['--force', '--verbose'])
         self.assertEqual(0, result.exit_code)
-        self.assertRegex(result.output, '.*Clean Docker stopped containers, images, volumes and networks.*')
+        regex = r'.*Clean Docker stopped containers, images, volumes and networks.*'
+        self.assertRegex(result.output, regex)
 
         # Make sure it has been cleaned
         nets = Popen(['docker', 'network', 'ls'], stdout=PIPE, stderr=DEVNULL).communicate()[0]

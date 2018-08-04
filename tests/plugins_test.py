@@ -31,7 +31,6 @@ class PluginsTest(unittest.TestCase):
 
         os.mkdir(__venv_dir__ + '/plugins')
 
-
     def test_no_plugin(self):
         """Make sure I have the right message when no plugin is present"""
 
@@ -43,7 +42,6 @@ class PluginsTest(unittest.TestCase):
         self.assertRegex(res['stdout'], '.*No plugin to add*')
         self.assertEqual(res['stderr'], '')
         self.assertIs(res['status'], 0)
-
 
     def test_plugin_empty(self):
         """Create a directory with nothing inside and see if I get the right message"""
@@ -62,7 +60,6 @@ class PluginsTest(unittest.TestCase):
         self.assertIs(res['status'], 0)
 
         os.rmdir(folder)
-
 
     def test_bad_plugin(self):
         """Install a bad plugin and check if it works (it shouldn't)"""
@@ -94,7 +91,6 @@ setup(
         self.assertIs(res['status'], 1)
 
         rmtree(folder)
-
 
     def test_plugin_ok(self):
         """Install a good plugin and test it"""
@@ -154,9 +150,7 @@ def my_test(ctx):
         self.assertEqual(res['stderr'], '')
         self.assertIs(res['status'], 0)
 
-
         rmtree(folder)
-
 
     def tearDownClass():
         clean_plugin_dir()

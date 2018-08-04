@@ -18,7 +18,6 @@ class ConfigReaderTest(unittest.TestCase):
         with self.assertRaisesRegex(IOError, "Config file /does/not/exists does not exist"):
             c.read()
 
-
     def test_default_config(self):
         """Test the default config (exit if it exists)"""
         if os.path.isfile(package_utils.get_venv_basedir() + '/conf/compose.ini'):
@@ -27,7 +26,6 @@ class ConfigReaderTest(unittest.TestCase):
         c = Config()
         with self.assertRaisesRegex(IOError, "Config file .*compose.ini does not exist"):
             c.read()
-
 
     def test_invalid_config(self):
         """Test an existing configuration file but invalid"""
@@ -55,7 +53,6 @@ class ConfigReaderTest(unittest.TestCase):
 
         regex = re.compile('the value ".*8.0.*" is unacceptable', re.MULTILINE)
         self.assertRegex(res, regex)
-
 
     def test_valid_config(self):
         """Test an existing and valid configuration file"""
