@@ -10,113 +10,97 @@ That saves a lot of space ...
 import sys
 from subprocess import check_output, CalledProcessError, STDOUT
 import click
+import humanfriendly
+from stakkr.docker_actions import get_client as get_docker_client
 
 
 @click.command(help="""Clean Docker containers, images, volumes and networks
 that are not in use""", name="docker-clean")
 @click.option('--force', '-f', help="Do it", is_flag=True)
+@click.option('--containers/--no-containers', '-c/', help="Remove containers", is_flag=True, default=True)
+@click.option('--images/--no-images', '-i/', help="Remove images", is_flag=True, default=True)
+@click.option('--volumes/--no-volumes', '-V/', help="Remove volumes", is_flag=True, default=True)
+@click.option('--networks/--no-networks', '-n/', help="Remove networks", is_flag=True, default=True)
 @click.option('--verbose', '-v', help="Display more information about what is removed",
               is_flag=True)
-def clean(force: bool, verbose: bool):
+def clean(force: bool, containers: bool, images: bool, volumes: bool, networks: bool, verbose: bool):
     """See command help."""
-    click.secho('Clean Docker stopped containers, images, volumes and networks', fg='green')
-
-    remove_containers(force, verbose)
-    remove_images(force)
-    remove_volumes(force, verbose)
-    remove_networks(force, verbose)
-
-    if force is False:
-        click.secho("\n--force is not set so I won't do anything", fg='red')
+    if containers is True:
+        click.secho('Cleaning Docker stopped containers:', fg='green')
+        remove_containers(force, verbose)
+    if images is True:
+        click.secho('Cleaning Docker unused images:', fg='green')
+        remove_images(force, verbose)
+    if volumes is True:
+        click.secho('Cleaning Docker unused volumes:', fg='green')
+        remove_volumes(force, verbose)
+    if networks is True:
+        click.secho('Cleaning Docker unused networks:', fg='green')
+        remove_networks(force, verbose)
 
 
 def remove_containers(force: bool, verbose: bool):
     """Remove exited containers."""
-    res = _exec_cmd(['docker', 'ps', '--no-trunc', '-a', '-q', '-f', 'status=exited'])
-    containers = res.splitlines()
-    if len(containers) is 0:
-        print('- No exited container to remove')
+    stopped_containers = get_docker_client().containers.list(filters={'status': 'exited'})
+    if len(stopped_containers) is 0:
+        print('  No exited container to remove')
         return
 
-    click.echo('- Removing {} exited container(s)'.format(len(containers)))
-
-    for container in containers:
-        _display_entry_info('container', container.decode(), verbose)
-        _remove_entry('container', container.decode(), force)
-
-
-def remove_images(force: bool):
-    """Prune all images."""
-    res = _exec_cmd(['docker', 'image', 'ls'])
-    images = res.splitlines()
-    if len(images) is 1:
-        click.echo('- No image to remove')
+    if force is False:
+        click.secho("  --force is not set so I won't do anything", fg='red')
         return
 
-    click.echo('- Removing {} image(s)'.format(len(images) - 1))
-    if force is True:
-        _prune_images()
+    res = get_docker_client().containers.prune()
+    cts = len(res['ContainersDeleted'])
+    space = humanfriendly.format_size(res['SpaceReclaimed'])
+    click.echo('  Removed {} exited container(s), saved {}'.format(cts, space))
+
+
+def remove_images(force: bool, verbose: bool):
+    """Remove unused images."""
+    if force is False:
+        click.secho("  --force is not set so I won't do anything", fg='red')
+        return
+
+    res = get_docker_client().images.prune(filters={'dangling': False})
+    if res['ImagesDeleted'] is None:
+        print('  No image to remove')
+        return
+
+    images = len(res['ImagesDeleted'])
+    space = humanfriendly.format_size(res['SpaceReclaimed'])
+    click.echo('  Removed {} images(s), saved {}'.format(images, space))
 
 
 def remove_networks(force: bool, verbose: bool):
-    """Remove custom networks (not systems)."""
-    res = _exec_cmd(['docker', 'network', 'ls', '--no-trunc', '-q', '--filter', 'type=custom'])
-    networks = res.splitlines()
-    if len(networks) is 0:
-        click.echo('- No network to remove')
+    """Remove unused networks."""
+    if force is False:
+        click.secho("  --force is not set so I won't do anything", fg='red')
         return
 
-    click.echo('- Removing {} exited networks(s)'.format(len(networks)))
+    res = get_docker_client().networks.prune()
+    if res['NetworksDeleted'] is None:
+        print('  No network to remove')
+        return
 
-    for network in networks:
-        _display_entry_info('network', network.decode(), verbose)
-        _remove_entry('network', network.decode(), force)
+    networks = len(res['NetworksDeleted'])
+    click.echo('  Removed {} network(s)'.format(networks))
 
 
 def remove_volumes(force: bool, verbose: bool):
-    """Remove dangling volumes."""
-    res = _exec_cmd(['docker', 'volume', 'ls', '-q', '-f', 'dangling=true'])
-    volumes = res.splitlines()
-    if len(volumes) is 0:
-        click.echo('- No volume to remove')
-        return
-
-    click.echo('- Removing {} exited volumes(s)'.format(len(volumes)))
-
-    for volume in volumes:
-        if verbose is True:
-            click.echo('  Removing volume {}'.format(volume.decode()))
-
-        _remove_entry('volume', volume.decode(), force)
-
-
-def _display_entry_info(entry_type: str, entry: str, verbose: bool):
-    if verbose is False:
-        return
-
-    base_cmd = ['docker'] if entry_type == 'container' else ['docker', entry_type]
-    res = _exec_cmd(base_cmd + ['inspect', '--format={{.Name}}', entry])
-    info = res.splitlines()[0]
-    click.echo('  Removing {} {}'.format(entry_type, info.decode()))
-
-
-def _exec_cmd(cmd: list):
-    try:
-        return check_output(cmd, stderr=STDOUT)
-    except CalledProcessError:
-        click.secho('  Error running command : "{}"'.format(' '.join(cmd)), fg='red')
-
-
-def _prune_images():
-    _exec_cmd(['docker', 'image', 'prune', '--all', '--force'])
-
-
-def _remove_entry(entry_type: str, entry: str, force: bool):
+    """Remove unused volumes."""
     if force is False:
+        click.secho("  --force is not set so I won't do anything", fg='red')
         return
 
-    base_cmd = ['docker'] if entry_type == 'container' else ['docker', entry_type]
-    _exec_cmd(base_cmd + ['rm', entry])
+    res = get_docker_client().volumes.prune()
+    if res['VolumesDeleted'] is None:
+        print('  No volume to remove')
+        return
+
+    volumes = len(res['VolumesDeleted'])
+    space = humanfriendly.format_size(res['SpaceReclaimed'])
+    click.echo('  Removed {} volume(s), saved {}'.format(volumes, space))
 
 
 def main():

@@ -4,7 +4,7 @@ import sys
 import unittest
 
 from click.testing import CliRunner
-from stakkr import docker_actions
+from stakkr.docker_actions import get_client as docker_client, _container_in_network as ct_in_network
 from stakkr.cli import stakkr
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
@@ -115,9 +115,7 @@ class CliTest(unittest.TestCase):
         self.assertIs(res['status'], 0)
 
         # Proxy is in network now
-        self.assertIs(
-            True,
-            docker_actions._container_in_network('proxy_stakkr', 'test_stakkr'))
+        self.assertIs(True, ct_in_network('proxy_stakkr', 'test_stakkr'))
 
         # Check it's fine
         res = exec_cmd(self.cmd_base + ['status'])
@@ -135,9 +133,7 @@ class CliTest(unittest.TestCase):
 
         exec_cmd(self.cmd_base + ['start'])
         # Proxy is in network now
-        self.assertIs(
-            True,
-            docker_actions._container_in_network('proxy_stakkr', 'test_stakkr'))
+        self.assertIs(True, ct_in_network('proxy_stakkr', 'test_stakkr'))
 
         # Restart
         res = exec_cmd(self.cmd_base + ['restart'])
@@ -157,9 +153,7 @@ class CliTest(unittest.TestCase):
         self.assertIs(res['status'], 0)
 
         # Proxy is in network
-        self.assertIs(
-            True,
-            docker_actions._container_in_network('proxy_stakkr', 'test_stakkr'))
+        self.assertIs(True, ct_in_network('proxy_stakkr', 'test_stakkr'))
 
     def test_start(self):
         self._proxy_start_check_not_in_network()
@@ -178,9 +172,7 @@ class CliTest(unittest.TestCase):
             self.assertIs(res['status'], 0)
 
         # Proxy is in network now
-        self.assertIs(
-            True,
-            docker_actions._container_in_network('proxy_stakkr', 'test_stakkr'))
+        self.assertIs(True, ct_in_network('proxy_stakkr', 'test_stakkr'))
 
         # Again ....
         res = exec_cmd(cmd)
@@ -304,7 +296,7 @@ class CliTest(unittest.TestCase):
         # Proxy is not connected to network
         self.assertIs(
             False,
-            docker_actions._container_in_network('proxy_stakkr', 'test_stakkr'))
+            ct_in_network('proxy_stakkr', 'test_stakkr'))
 
 
 def exec_cmd(cmd: list):
@@ -320,7 +312,7 @@ def exec_cmd(cmd: list):
 def stop_remove_container(ct_name: str):
     from docker.errors import NotFound
     try:
-        ct = docker_actions.get_client().containers.get(ct_name)
+        ct = docker_client().containers.get(ct_name)
         ct.stop()
         ct.remove()
     except NotFound:

@@ -16,7 +16,7 @@ class DockerActionsTest(unittest.TestCase):
         """Make sure, even in another directory, the venv base dir is correct."""
         stop_remove_container('pytest')
         docker_actions.get_client().containers.run(
-            'nginx:stable-alpine', detach=True, name='pytest')
+            'edyan/adminer:latest', detach=True, name='pytest')
 
         self.assertTrue(docker_actions.container_running('pytest'))
 
@@ -101,7 +101,7 @@ class DockerActionsTest(unittest.TestCase):
         stop_remove_container('pytest')
 
         docker_actions.get_client().containers.run(
-            'nginx:stable-alpine', detach=True, name='pytest')
+            'edyan/adminer:latest', detach=True, name='pytest')
 
         self.assertTrue(docker_actions.container_running('pytest'))
         self.assertFalse(docker_actions._container_in_network('pytest', 'pytest'))
@@ -126,7 +126,7 @@ class DockerActionsTest(unittest.TestCase):
         stop_remove_container('pytest')
 
         docker_actions.get_client().containers.run(
-            'nginx:stable-alpine', detach=True, name='pytest')
+            'edyan/adminer:latest', detach=True, name='pytest')
 
         shell = docker_actions.guess_shell('pytest')
         self.assertEqual('/bin/sh', shell)

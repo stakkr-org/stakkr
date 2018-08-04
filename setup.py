@@ -37,7 +37,8 @@ stakkr-compose=stakkr.stakkr_compose:cli''',
         'clint==0.5.1',
         'configobj==5.0.6',
         # Docker compose includes requests and docker
-        'docker-compose>1.20<1.3'
+        'docker-compose>1.20<1.3',
+        'humanfriendly'
         ] + extra_packages,
     cmdclass={'install': StakkrPostInstall},
     classifiers=[
