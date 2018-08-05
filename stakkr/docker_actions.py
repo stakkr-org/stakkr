@@ -242,7 +242,7 @@ def _extract_host_ports(config: list):
 
 
 def _get_ip_from_networks(project_name: str, networks: list):
-    """Get a list of IPs for a network."""
+    """Get the ip of a network."""
     project_name = project_name.replace('-', '')
     network_settings = {}
     if '{}_stakkr'.format(project_name) in networks:

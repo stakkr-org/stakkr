@@ -46,9 +46,5 @@ checks:
         classes_valid_slots: true
 
 filter:
-    excluded_paths:
-        - '*/docs/*'
-        - '*/tests/*'
-        - '*/venv/*'
-        - '*/lib/*'
-        - '*/lib/python*/*'
+    paths:
+        - stakkr/
