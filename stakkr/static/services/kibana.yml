@@ -9,3 +9,5 @@ services:
         environment:
             server_name: kibana
             elasticsearch_url: ${COMPOSE_PROJECT_NAME}_elasticsearch
+        labels:
+            - traefik.frontend.rule=Host:kibana.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}        
