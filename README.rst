@@ -63,7 +63,7 @@ You can combine services as you want to have :
 
 - Or only PHP5.4 + ElasticSearch
 
-etc...
+etc..
 
 
 Documentation
