@@ -39,7 +39,8 @@
 
 
 # How much RAM for Nginx ?
-# nginx.ram = 512M
+# nginx.version=latest 
+# nginx.ram=512M
 
 
 # Set your PHP version from 5.3 to 7.2 (5.6 by default)
