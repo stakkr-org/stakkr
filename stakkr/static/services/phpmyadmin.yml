@@ -2,7 +2,8 @@ version: '2.2'
 
 services:
     phpmyadmin:
-        image: phpmyadmin/phpmyadmin
+        image: phpmyadmin/phpmyadmin:${DOCKER_PMA_VERSION}
+        mem_limit: ${DOCKER_PMA_RAM}
         environment:
             PMA_USER: root
             PMA_HOSTS: mysql

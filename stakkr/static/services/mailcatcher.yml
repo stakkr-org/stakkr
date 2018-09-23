@@ -2,7 +2,8 @@ version: '2.2'
 
 services:
     mailcatcher:
-        image: tophfr/mailcatcher
+        image: tophfr/mailcatcher:${DOCKER_MAILCATCHER_VERSION}
+        mem_limit: ${DOCKER_MAILCATCHER_RAM}
         container_name: ${COMPOSE_PROJECT_NAME}_mailcatcher
         hostname: ${COMPOSE_PROJECT_NAME}_mailcatcher
         networks: [stakkr]

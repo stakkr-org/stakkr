@@ -3,7 +3,8 @@ version: '2.2'
 # See also https://github.com/francescou/docker-compose-ui
 services:
     portainer:
-        image: portainer/portainer
+        image: portainer/portainer:${DOCKER_PORTAINER_VERSION}
+        mem_limit: ${DOCKER_PORTAINER_RAM}
         container_name: ${COMPOSE_PROJECT_NAME}_portainer
         hostname: ${COMPOSE_PROJECT_NAME}_portainer
         networks: [stakkr]

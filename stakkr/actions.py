@@ -18,12 +18,14 @@ class StakkrActions():
     _services_to_display = {
         'adminer': {'name': 'Adminer', 'url': 'http://{}'},
         'apache': {'name': 'Web Server', 'url': 'http://{}'},
-        'elasticsearch': {'name': 'ElastiscSearch', 'url': 'http://{}'},
+        'elasticsearch': {'name': 'ElasticSearch', 'url': 'http://{}'},
+        'kibana': {'name': 'Kibana', 'url': 'http://{}'},
+        'logstash': {'name': 'Logstash', 'url': 'http://{}'},
         'mailcatcher': {'name': 'Mailcatcher (fake SMTP)', 'url': 'http://{}', 'extra_port': 25},
         'maildev': {'name': 'Maildev (Fake SMTP)', 'url': 'http://{}', 'extra_port': 25},
         'nginx': {'name': 'Web Server', 'url': 'http://{}'},
-        'portainer': {'name': 'Portainer (Docker GUI)', 'url': 'http://{}'},
         'phpmyadmin': {'name': 'PhpMyAdmin', 'url': 'http://{}'},
+        'portainer': {'name': 'Portainer (Docker GUI)', 'url': 'http://{}'},
         'xhgui': {'name': 'XHGui (PHP Profiling)', 'url': 'http://{}'}
     }
 

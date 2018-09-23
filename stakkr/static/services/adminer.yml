@@ -2,7 +2,8 @@ version: '2.2'
 
 services:
     adminer:
-        image: edyan/adminer
+        image: edyan/adminer:${DOCKER_ADMINER_VERSION}
+        mem_limit: ${DOCKER_ADMINER_RAM}
         container_name: ${COMPOSE_PROJECT_NAME}_adminer
         hostname: ${COMPOSE_PROJECT_NAME}_adminer
         networks: [stakkr]
