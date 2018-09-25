@@ -7,7 +7,6 @@ services:
         container_name: ${COMPOSE_PROJECT_NAME}_apache
         hostname: ${COMPOSE_PROJECT_NAME}_apache
         networks: [stakkr]
-        links: [php]
         environment:
             APACHE_UID: ${DOCKER_UID}
             APACHE_GID: ${DOCKER_GID}
