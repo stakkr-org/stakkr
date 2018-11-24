@@ -152,7 +152,7 @@ def my_test(ctx):
 
         rmtree(folder)
 
-    def tearDownClass():
+    def tearDownClass(self):
         clean_plugin_dir()
 
 

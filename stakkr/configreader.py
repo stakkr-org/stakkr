@@ -8,7 +8,7 @@ from validate import Validator
 from stakkr import package_utils
 
 
-class Config():
+class Config:
     """
     Parser of Stakkr.
 
@@ -31,7 +31,7 @@ class Config():
             print('  - "{}" : {}'.format(style(key, fg='yellow'), error), file=sys.stderr)
 
     def read(self):
-        """Read the default values and overriden ones."""
+        """Read the default values and overridden ones."""
         if os.path.isfile(self.config_file) is False:
             raise IOError('Config file {} does not exist'.format(self.config_file))
 

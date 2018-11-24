@@ -21,12 +21,12 @@ def block_ct_ports(service: str, ports: list, project_name: str) -> tuple:
     try:
         container = get_client().containers.get(get_ct_item(service, 'id'))
     except (LookupError, NullResource):
-        return (False, '{} is not started, no port to block'.format(service))
+        return False, '{} is not started, no port to block'.format(service)
 
     status, iptables = container.exec_run(['which', 'iptables'])
     iptables = iptables.decode().strip()
     if iptables == '':
-        return (True, "Can't block ports on {}, is iptables installed ?".format(service))
+        return True, "Can't block ports on {}, is iptables installed ?".format(service)
 
     _allow_contact_subnet(project_name, container)
 
@@ -38,7 +38,7 @@ def block_ct_ports(service: str, ports: list, project_name: str) -> tuple:
         finally:
             container.exec_run([iptables, '-A'] + rule)
 
-    return (False, 'Blocked ports {} on container {}'.format(', '.join(ports), service))
+    return False, 'Blocked ports {} on container {}'.format(', '.join(ports), service)
 
 
 def check_cts_are_running(project_name: str):
@@ -164,7 +164,7 @@ def get_running_containers(project_name: str) -> tuple:
 
     __st__['running_cts'] = len(cts)
 
-    return (__st__['running_cts'], __st__['cts_info'])
+    return __st__['running_cts'], __st__['cts_info']
 
 
 def get_running_containers_name(project_name: str) -> list:

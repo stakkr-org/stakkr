@@ -33,11 +33,11 @@ stakkr-init=stakkr.setup:init
 stakkr-compose=stakkr.stakkr_compose:cli''',
     include_package_data=True,
     install_requires=[
-        'click-plugins==1.0.3',
+        'click-plugins==1.0.4',
         'clint==0.5.1',
         'configobj==5.0.6',
         # Docker compose includes requests and docker
-        'docker-compose>1.20<1.3',
+        'docker-compose>1.20<1.30',
         'humanfriendly'
         ] + extra_packages,
     cmdclass={'install': StakkrPostInstall},

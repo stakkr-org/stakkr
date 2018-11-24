@@ -12,7 +12,7 @@ from stakkr.configreader import Config
 from stakkr.proxy import Proxy
 
 
-class StakkrActions():
+class StakkrActions:
     """Main class that does actions asked in the cli."""
 
     _services_to_display = {
@@ -71,7 +71,7 @@ class StakkrActions():
                 continue
 
             options = self._services_to_display[ct_info['compose_name']]
-            url = self.get_url(ct_info['ports'], options['url'], ct_info['compose_name'])
+            url = self.get_url(options['url'], ct_info['compose_name'])
             name = colored.yellow(options['name'])
             text += '  - For {}'.format(name).ljust(55, ' ') + ' : ' + url + '\n'
 
@@ -108,7 +108,7 @@ class StakkrActions():
 
         recreate_param = '--force-recreate' if recreate is True else '--no-recreate'
         cmd = self.compose_base_cmd + ['up', '-d', recreate_param, '--remove-orphans']
-        cmd += self._get_single_container_option(container)
+        cmd += _get_single_container_option(container)
 
         command.verbose(self.context['VERBOSE'], 'Command: ' + ' '.join(cmd))
         command.launch_cmd_displays_output(cmd, verb, debug, True)
@@ -141,7 +141,7 @@ class StakkrActions():
 
         docker.check_cts_are_running(self.project_name)
 
-        cmd = self.compose_base_cmd + ['stop'] + self._get_single_container_option(container)
+        cmd = self.compose_base_cmd + ['stop'] + _get_single_container_option(container)
         command.launch_cmd_displays_output(cmd, verb, debug, True)
 
         self.running_cts, self.cts = docker.get_running_containers(self.project_name)
@@ -149,7 +149,6 @@ class StakkrActions():
             raise SystemError("Couldn't stop services ...")
 
         if proxy is True:
-            network_name = docker.get_network_name(self.project_name)
             Proxy(self.config['proxy'].get('port')).stop()
 
     def _call_service_post_script(self, service: str):
@@ -173,12 +172,6 @@ class StakkrActions():
             sys.exit(1)
 
         return main_config
-
-    def _get_single_container_option(self, container: str):
-        if container is None:
-            return []
-
-        return [container]
 
     def _get_relative_dir(self):
         if self.cwd_abs.startswith(self.stakkr_base_dir):
@@ -255,7 +248,7 @@ class StakkrActions():
         for service in self.main_config.get('services'):
             self._call_service_post_script(service)
 
-    def get_url(self, ports: list, service_url: str, service: str):
+    def get_url(self, service_url: str, service: str):
         """Build URL to be displayed."""
         proxy_conf = self.config['proxy']
         # By default our URL is the IP
@@ -268,3 +261,10 @@ class StakkrActions():
             puts(colored.yellow('[WARNING]') + ' Under Win and Mac, you need the proxy enabled')
 
         return service_url.format(url)
+
+
+def _get_single_container_option(container: str):
+    if container is None:
+        return []
+
+    return [container]

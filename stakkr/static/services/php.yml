@@ -20,7 +20,7 @@ services:
             - ${COMPOSE_BASE_DIR}/conf/php-fpm-override:/etc/php/7.1/fpm/user-conf.d
             - ${COMPOSE_BASE_DIR}/conf/php-fpm-override:/etc/php/7.2/fpm/user-conf.d
         cap_add:
-          - NET_ADMIN
-          - NET_RAW
+            - NET_ADMIN
+            - NET_RAW
         labels:
             - traefik.enable=False

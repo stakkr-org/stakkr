@@ -1,14 +1,12 @@
 # coding: utf-8
 """Manage public proxy to expose containers."""
 
-import os
 import click
 from docker.errors import DockerException
 from stakkr import docker_actions as docker
-from stakkr.configreader import Config
 
 
-class Proxy():
+class Proxy:
     """Main class that does actions asked by the cli."""
 
     def __init__(self, port: int = 80, proxy_name: str = 'proxy_stakkr'):

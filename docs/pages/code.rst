@@ -13,3 +13,4 @@ Stakkr works with a few modules / classes:
    code/docker_actions.rst
    code/package_utils.rst
    code/plugins.rst
+   code/proxy.rst

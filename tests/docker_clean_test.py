@@ -6,7 +6,6 @@ from click.testing import CliRunner
 from docker.errors import NotFound
 from stakkr.docker_clean import clean
 from stakkr.docker_actions import get_client as get_docker_client
-from subprocess import Popen, DEVNULL, PIPE
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, base_dir + '/../')
@@ -98,7 +97,6 @@ class DockerCleanTest(unittest.TestCase):
         # Except ct_test that is running so : 1 image, 1 network, 1 container
         self.assertIs(len(get_docker_client().networks.list()), num_default_nets + 1)
         self.assertIs(len(get_docker_client().volumes.list()), num_default_vols)
-        debug = 'Total Images: {} / Images by default: {}'.format(len(get_docker_client().images.list()), num_default_images)
         self.assertIs(len(get_docker_client().images.list()), num_default_images + 1)
         self.assertIs(len(get_docker_client().networks.list()), num_default_nets + 1)
 

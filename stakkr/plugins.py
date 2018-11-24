@@ -7,7 +7,7 @@ from os import listdir, path
 
 
 def add_plugins():
-    """Read the plugins directory, get the subfolders from it and look for .py files."""
+    """Read the plugins directory, get the sub-folders from it and look for .py files."""
     if path.isdir('plugins') is False:
         return []
 

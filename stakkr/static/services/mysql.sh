@@ -1,15 +1,15 @@
 #!/bin/bash
-for i in $(seq 1 90); do
+for SECOND in $(seq 1 90); do
     docker exec -i $1 bash -c 'mysql -p$MYSQL_ROOT_PASSWORD -e "SHOW DATABASES"' > /dev/null 2>&1
 
-    if [ $i -gt 3 ]; then
+    if [[ $SECOND -gt 3 ]]; then
         echo "Waiting for MySQL ."
-    elif [ $i -gt 4 ]; then
+    elif [[ $SECOND -gt 4 ]]; then
         echo "."
     fi
 
 
-    if [ $? -eq 0 ]; then
+    if [[ $? -eq 0 ]]; then
         break
     fi
 done

@@ -144,7 +144,7 @@ class DockerActionsTest(unittest.TestCase):
 
         stop_remove_container('pytest')
 
-    def tearDownClass():
+    def tearDownClass(self):
         stop_remove_container('pytest')
         stop_remove_container('test_maildev')
         stop_remove_container('test_php')

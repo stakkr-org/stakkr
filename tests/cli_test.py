@@ -138,7 +138,7 @@ class CliTest(unittest.TestCase):
         # Restart
         res = exec_cmd(self.cmd_base + ['restart'])
         self.assertEqual(res['stderr'], '')
-        regex = r'RESTARTING.*your stakkr services.*STOPPING.*your stakkr services.*STARTING.*your stakkr services.*For Maildev.*'
+        regex = r'RESTARTING.*your stakkr.*STOPPING.*your stakkr.*STARTING.*your stakkr services.*For Maildev.*'
         self.assertRegex(res['stdout'], regex)
         self.assertIs(res['status'], 0)
 
@@ -279,7 +279,7 @@ class CliTest(unittest.TestCase):
         self.assertRegex(res['stderr'], r'.*Have you started your server with the start action.*')
         self.assertIs(res['status'], 1)
 
-    def tearDownClass():
+    def tearDownClass(self):
         cli = CliTest()
 
         exec_cmd(cli.cmd_base + ['stop'])

@@ -24,9 +24,9 @@ def get_venv_basedir():
 
 def get_dir(dirname: str):
     """Detect if stakkr is a package or a clone and gives the right path for a directory."""
-    staticdir = os.path.dirname(os.path.realpath(__file__)) + '/' + dirname
-    if os.path.isdir(staticdir) is True:
-        return staticdir
+    static_dir = os.path.dirname(os.path.realpath(__file__)) + '/' + dirname
+    if os.path.isdir(static_dir) is True:
+        return static_dir
 
     return get_python_lib() + '/stakkr/' + dirname
 

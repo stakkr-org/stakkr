@@ -14,7 +14,7 @@ from click import echo, style
 
 def launch_cmd_displays_output(cmd: list, print_msg: bool = True, print_err: bool = True,
                                err_to_out: bool = False):
-    """Launch a command and displays conditionnaly messages and / or errors."""
+    """Launch a command and displays conditionally messages and / or errors."""
     try:
         stderr = subprocess.PIPE if err_to_out is False else subprocess.STDOUT
         result = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=stderr)

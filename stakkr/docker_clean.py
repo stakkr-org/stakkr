@@ -21,25 +21,23 @@ that are not in use""", name="docker-clean")
 @click.option('--images/--no-images', '-i/', help="Remove images", is_flag=True, default=True)
 @click.option('--volumes/--no-volumes', '-V/', help="Remove volumes", is_flag=True, default=True)
 @click.option('--networks/--no-networks', '-n/', help="Remove networks", is_flag=True, default=True)
-@click.option('--verbose', '-v', help="Display more information about what is removed",
-              is_flag=True)
-def clean(force: bool, containers: bool, images: bool, volumes: bool, networks: bool, verbose: bool):
+def clean(force: bool, containers: bool, images: bool, volumes: bool, networks: bool):
     """See command help."""
     if containers is True:
         click.secho('Cleaning Docker stopped containers:', fg='green')
-        remove_containers(force, verbose)
+        remove_containers(force)
     if images is True:
         click.secho('Cleaning Docker unused images:', fg='green')
-        remove_images(force, verbose)
+        remove_images(force)
     if volumes is True:
         click.secho('Cleaning Docker unused volumes:', fg='green')
-        remove_volumes(force, verbose)
+        remove_volumes(force)
     if networks is True:
         click.secho('Cleaning Docker unused networks:', fg='green')
-        remove_networks(force, verbose)
+        remove_networks(force)
 
 
-def remove_containers(force: bool, verbose: bool):
+def remove_containers(force: bool):
     """Remove exited containers."""
     stopped_containers = get_docker_client().containers.list(filters={'status': 'exited'})
     if len(stopped_containers) is 0:
@@ -56,7 +54,7 @@ def remove_containers(force: bool, verbose: bool):
     click.echo('  Removed {} exited container(s), saved {}'.format(cts, space))
 
 
-def remove_images(force: bool, verbose: bool):
+def remove_images(force: bool):
     """Remove unused images."""
     if force is False:
         click.secho("  --force is not set so I won't do anything", fg='red')
@@ -72,7 +70,7 @@ def remove_images(force: bool, verbose: bool):
     click.echo('  Removed {} images(s), saved {}'.format(images, space))
 
 
-def remove_networks(force: bool, verbose: bool):
+def remove_networks(force: bool):
     """Remove unused networks."""
     if force is False:
         click.secho("  --force is not set so I won't do anything", fg='red')
@@ -87,7 +85,7 @@ def remove_networks(force: bool, verbose: bool):
     click.echo('  Removed {} network(s)'.format(networks))
 
 
-def remove_volumes(force: bool, verbose: bool):
+def remove_volumes(force: bool):
     """Remove unused volumes."""
     if force is False:
         click.secho("  --force is not set so I won't do anything", fg='red')
