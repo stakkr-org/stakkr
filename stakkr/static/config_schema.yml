@@ -1,0 +1,194 @@
+---
+
+"$schema": http://json-schema.org/draft-04/schema#
+type: object
+required:
+  - environment
+  - services
+  - proxy
+  - project_name
+  - uid
+  - gid
+  - network-block
+  - subnet
+additionalProperties: false
+properties:
+  environment:
+    type: string
+    title: Environment, will be passed as env variable
+
+  services:
+    type: object
+    additionalProperties: false
+    properties:
+      adminer:
+        type: object
+        properties:
+          enabled: { type: boolean }
+          version: { type: [string, number] }
+          ram: { type: string }
+        required: [enabled, version, ram]
+
+      apache:
+        type: object
+        properties:
+          enabled: { type: boolean }
+          version: { type: [string, number] }
+          ram: { type: string }
+        required: [enabled, version, ram]
+
+      elasticsearch:
+        type: object
+        properties:
+          enabled: { type: boolean }
+          version: { type: [string, number] }
+          ram: { type: string }
+        required: [enabled, version, ram]
+
+      kibana:
+        type: object
+        properties:
+          enabled: { type: boolean }
+          version: { type: [string, number] }
+          ram: { type: string }
+        required: [enabled, version, ram]
+
+      logstash:
+        type: object
+        properties:
+          enabled: { type: boolean }
+          version: { type: [string, number] }
+          ram: { type: string }
+        required: [enabled, version, ram]
+
+      mailcatcher:
+        type: object
+        properties:
+          enabled: { type: boolean }
+          version: { type: [string, number] }
+          ram: { type: string }
+        required: [enabled, version, ram]
+
+      maildev:
+        type: object
+        properties:
+          enabled: { type: boolean }
+          version: { type: [string, number] }
+          ram: { type: string }
+        required: [enabled, version, ram]
+
+      mongo:
+        type: object
+        properties:
+          enabled: { type: boolean }
+          version: { type: [string, number] }
+          ram: { type: string }
+        required: [enabled, version, ram]
+
+      mysql:
+        type: object
+        properties:
+          enabled: { type: boolean }
+          version: { type: [string, number] }
+          ram: { type: string }
+          password: { type: string }
+        required: [enabled, version, ram, root_password]
+
+      nginx:
+        type: object
+        properties:
+          enabled: { type: boolean }
+          version: { type: [string, number] }
+          ram: { type: string }
+          document_root: { type: string }
+        required: [enabled, version, ram, document_root]
+
+      php:
+        type: object
+        properties:
+          enabled: { type: boolean }
+          version: { type: [string, number] }
+          ram: { type: string }
+        required: [enabled, version, ram]
+
+      phpmyadmin:
+        type: object
+        properties:
+          enabled: { type: boolean }
+          version: { type: [string, number] }
+          ram: { type: string }
+          upload_max_filesize: { type: string }
+        required: [enabled, version, ram, upload_max_filesize]
+
+      portainer:
+        type: object
+        properties:
+          enabled: { type: boolean }
+          version: { type: [string, number] }
+          ram: { type: string }
+        required: [enabled, version, ram]
+
+      postgres:
+        type: object
+        properties:
+          enabled: { type: boolean }
+          version: { type: [string, number] }
+          ram: { type: string }
+          password: { type: string }
+        required: [enabled, version, ram, password]
+
+      sqlserver:
+        type: object
+        properties:
+          enabled: { type: boolean }
+          version: { type: [string, number] }
+          ram: { type: string }
+          password: { type: string }
+        required: [enabled, version, ram, password]
+
+      redis:
+        type: object
+        properties:
+          enabled: { type: boolean }
+          version: { type: [string, number] }
+          ram: { type: string }
+        required: [enabled, version, ram]
+
+      xhgui:
+        type: object
+        properties:
+          enabled: { type: boolean }
+          version: { type: [string, number] }
+          ram: { type: string }
+        required: [enabled, version, ram]
+
+  proxy:
+    type: object
+    properties:
+      enabled: { type: boolean }
+      domain: { type: string }
+      port: { type: integer }
+    required: [enabled, domain, port]
+
+  project_name:
+    type: string
+    title: Project name, must be the same name as root dir. Detected by default
+
+  uid:
+    type: integer
+    title: Detected, by default uid of current user
+    min: 0
+  gid:
+    type: integer
+    title: Detected, by default gid of current user
+    min: 0
+
+  network-block:
+    type: object
+    properties:
+      php:
+        type: array
+        items: { type: integer }
+
+  subnet:
+    type: string

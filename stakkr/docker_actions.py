@@ -45,7 +45,7 @@ def check_cts_are_running(project_name: str):
     """Throw an error if cts are not running."""
     get_running_containers(project_name)
     if __st__['running_cts'] is 0:
-        raise SystemError('Have you started your server with the start action ?')
+        raise SystemError('Have you started stakkr with the start action ?')
 
 
 def container_running(container: str):
@@ -110,7 +110,7 @@ def get_ct_name(container: str):
 def get_network_name(project_name: str):
     """Find the full network name."""
     try:
-        guessed_network_name = project_name.replace('-', '') + '_stakkr'
+        guessed_network_name = '{}_stakkr'.format(project_name)
         network = get_client().networks.get(guessed_network_name)
     except NotFound:
         raise RuntimeError("Couldn't identify network (check your project name)")
@@ -150,7 +150,7 @@ def get_running_containers(project_name: str) -> tuple:
     filters = {
         'name': '{}_'.format(project_name),
         'status': 'running',
-        'network': '{}_stakkr'.format(project_name).replace('-', '')}
+        'network': '{}_stakkr'.format(project_name)}
 
     try:
         cts = get_client().containers.list(filters=filters)
@@ -243,7 +243,6 @@ def _extract_host_ports(config: list):
 
 def _get_ip_from_networks(project_name: str, networks: list):
     """Get the ip of a network."""
-    project_name = project_name.replace('-', '')
     network_settings = {}
     if '{}_stakkr'.format(project_name) in networks:
         network_settings = networks['{}_stakkr'.format(project_name)]

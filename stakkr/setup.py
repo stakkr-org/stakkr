@@ -16,12 +16,12 @@ templates and directory structure""")
     @click.option('--force', '-f', help="Force recreate directories structure", is_flag=True)
     def init(force: bool):
         """CLI Entry point, when initializing stakkr manually."""
-        config_file = package_utils.get_venv_basedir() + '/conf/compose.ini'
+        config_file = package_utils.find_project_dir() + '/stakkr.yml'
         if os.path.isfile(config_file) and force is False:
-            click.secho('Config file (conf/compose.ini) already present. Leaving.', fg='yellow')
+            click.secho('Config file (stakkr.yml) already present. Leaving.', fg='yellow')
             return
 
-        msg = "Config (conf/compose.ini) not present, don't forget to create it"
+        msg = "Config (stakkr.yml) not present, don't forget to create it"
         click.secho(msg, fg='yellow')
         _post_install(force)
 
@@ -36,9 +36,9 @@ def _post_install(force: bool = False):
     """Create templates (directories and files)."""
     print('Post Installation : create templates')
 
-    venv_dir = package_utils.get_venv_basedir()
+    project_dir = package_utils.find_project_dir()
     # If already installed don't do anything
-    if os.path.isfile(venv_dir + '/conf/compose.ini'):
+    if os.path.isfile(project_dir + '/stakkr.yml'):
         return
 
     required_dirs = [
@@ -54,12 +54,12 @@ def _post_install(force: bool = False):
         'www'
     ]
     for required_dir in required_dirs:
-        _create_dir(venv_dir, required_dir, force)
+        _create_dir(project_dir, required_dir, force)
 
     required_tpls = [
         '.env',
         'bash_completion',
-        'conf/compose.ini.tpl',
+        'stakkr.yml.tpl',
         'conf/mysql-override/mysqld.cnf',
         'conf/php-fpm-override/example.conf',
         'conf/php-fpm-override/README',
@@ -67,11 +67,11 @@ def _post_install(force: bool = False):
         'home/www-data/.bashrc'
     ]
     for required_tpl in required_tpls:
-        _copy_file(venv_dir, required_tpl, force)
+        _copy_file(project_dir, required_tpl, force)
 
 
-def _create_dir(venv_dir: str, dir_name: str, force: bool):
-    dir_name = venv_dir + '/' + dir_name.lstrip('/')
+def _create_dir(project_dir: str, dir_name: str, force: bool):
+    dir_name = project_dir + '/' + dir_name.lstrip('/')
     if os.path.isdir(dir_name) and force is False:
         return
 
@@ -79,9 +79,9 @@ def _create_dir(venv_dir: str, dir_name: str, force: bool):
         os.makedirs(dir_name)
 
 
-def _copy_file(venv_dir: str, source_file: str, force: bool):
+def _copy_file(project_dir: str, source_file: str, force: bool):
     full_path = package_utils.get_file('tpls', source_file)
-    dest_file = venv_dir + '/' + source_file
+    dest_file = project_dir + '/' + source_file
     if os.path.isfile(dest_file) and force is False:
         print('  - {} exists, do not overwrite'.format(source_file))
         return
@@ -102,7 +102,7 @@ class StakkrPostInstall(install):
         super(StakkrPostInstall, self).__init__(*args, **kwargs)
 
         try:
-            package_utils.get_venv_basedir()
+            package_utils.find_project_dir()
             _post_install(False)
         except OSError:
             msg = 'You must run setup.py from a virtualenv if you want to have'

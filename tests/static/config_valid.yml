@@ -1,0 +1,10 @@
+services:
+  php:
+    enabled: true
+    version: 7.2
+  maildev:
+    enabled: true
+  portainer:
+    enabled: true
+
+project_name: test

@@ -12,7 +12,7 @@ sys.path.insert(0, base_dir + '/../')
 
 
 class CliTest(unittest.TestCase):
-    cmd_base = ['stakkr', '-c', base_dir + '/static/config_valid.ini']
+    cmd_base = ['stakkr', '-c', base_dir + '/static/config_valid.yml']
 
     def test_no_arg(self):
         result = CliRunner().invoke(stakkr)
@@ -47,7 +47,7 @@ class CliTest(unittest.TestCase):
 
     def test_bad_config(self):
         res = exec_cmd([
-            'stakkr', '-c', base_dir + '/static/config_invalid.ini', 'start'])
+            'stakkr', '-c', base_dir + '/static/config_invalid.yml', 'start'])
         self.assertRegex(res['stderr'], r'.*Failed validating.*')
         self.assertRegex(res['stderr'], r'.*project_name.*Missing.*')
         self.assertRegex(res['stderr'], r'.*php\.version.*unacceptable.*')
@@ -74,7 +74,7 @@ class CliTest(unittest.TestCase):
 
         res = exec_cmd(self.cmd_base + ['console', 'php'])
         self.assertEqual(res['stdout'], '')
-        self.assertRegex(res['stderr'], r'.*Have you started your server with the start action.*')
+        self.assertRegex(res['stderr'], r'.*Have you started stakkr with the start action.*')
         self.assertIs(res['status'], 1)
 
     def test_exec_php(self):
@@ -91,7 +91,7 @@ class CliTest(unittest.TestCase):
         exec_cmd(self.cmd_base + ['stop'])
         res = exec_cmd(self.cmd_base + ['exec', 'php', 'php', '-v'])
         self.assertEqual(res['stdout'], '')
-        self.assertRegex(res['stderr'], r'.*Have you started your server with the start action.*')
+        self.assertRegex(res['stderr'], r'.*Have you started stakkr with the start action.*')
         self.assertIs(res['status'], 1)
 
     def test_mysql(self):

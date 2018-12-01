@@ -8,7 +8,7 @@ services:
         hostname: ${COMPOSE_PROJECT_NAME}_mysql
         networks: [stakkr]
         environment:
-            MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_ROOT_PASSWORD}
+            MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_PASSWORD}
         volumes:
             - ${COMPOSE_BASE_DIR}/data/mysql:/var/lib/mysql
             - ${COMPOSE_BASE_DIR}/conf/mysql-override:/etc/mysql/conf.d

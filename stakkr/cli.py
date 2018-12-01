@@ -21,7 +21,7 @@ a stack of services, for example for web development.
 
 Read the configuration file and setup the required services by
 linking and managing everything for you.""")
-@click.version_option('3.7.2')
+@click.version_option('4.0-dev')
 @click.option('--config', '-c', help='Change the configuration file')
 @click.option('--debug/--no-debug', '-d', default=False)
 @click.option('--verbose', '-v', is_flag=True)
@@ -31,13 +31,13 @@ def stakkr(ctx, config, debug, verbose):
     from stakkr.actions import StakkrActions
 
     # Add the virtual env in the path
-    venv_base = package_utils.get_venv_basedir()
-    sys.path.append(venv_base)
+    project_dir = package_utils.find_project_dir()
+    sys.path.append(project_dir)
 
     ctx.obj['CONFIG'] = config
     ctx.obj['DEBUG'] = debug
     ctx.obj['VERBOSE'] = verbose
-    ctx.obj['STAKKR'] = StakkrActions(venv_base, ctx.obj)
+    ctx.obj['STAKKR'] = StakkrActions(project_dir, ctx.obj)
     ctx.obj['CTS'] = get_running_containers_name(ctx.obj['STAKKR'].project_name)
 
 
@@ -134,14 +134,16 @@ def services(ctx):
     """See command Help."""
     from stakkr.stakkr_compose import get_available_services
 
-    print('Available services usable in compose.ini ', end='')
-    print('({} = currently in use) : '.format(click.style('✔', fg='green')))
+    print('Available services usable in stakkr.yml ', end='')
+    print('({} = disabled) : '.format(click.style('✘', fg='red')))
 
-    enabled_services = ctx.obj['STAKKR']._get_config()['main']['services']
+    services = ctx.obj['STAKKR']._get_config()['services']
+    enabled_services = [svc for svc, opts in services.items() if opts['enabled'] is True]
     for available_service in sorted(list(get_available_services().keys())):
         sign = click.style('✘', fg='red')
         if available_service in enabled_services:
-            sign = click.style('✔', fg='green')
+            version = services[available_service]['version']
+            sign = click.style(str(version), fg='green')
 
         print('  - {} ({})'.format(available_service, sign))
 

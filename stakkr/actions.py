@@ -29,14 +29,14 @@ class StakkrActions:
         'xhgui': {'name': 'XHGui (PHP Profiling)', 'url': 'http://{}'}
     }
 
-    def __init__(self, base_dir: str, ctx: dict):
+    def __init__(self, project_dir: str, ctx: dict):
         """Set all require properties."""
         # Work with directories and move to the right place
-        self.stakkr_base_dir = base_dir
+        self.stakkr_project_dir = project_dir
         self.context = ctx
         self.cwd_abs = os.getcwd()
         self.cwd_relative = self._get_relative_dir()
-        os.chdir(self.stakkr_base_dir)
+        os.chdir(self.stakkr_project_dir)
 
         # Set some general variables
         self.config_file = ctx['CONFIG']
@@ -46,8 +46,9 @@ class StakkrActions:
 
         # Get info from config
         self.config = self._get_config()
-        self.main_config = self.config['main']
-        self.project_name = self.main_config.get('project_name')
+        self.project_name = self.config['project_name']
+        if self.project_name == '':
+            self.project_name = os.path.basename(package_utils.find_project_dir())
 
     def console(self, container: str, user: str, tty: bool):
         """Enter a container. Stakkr will try to guess the right shell."""
@@ -101,7 +102,7 @@ class StakkrActions:
         verb = self.context['VERBOSE']
         debug = self.context['DEBUG']
 
-        self._is_containers_running(container)
+        self._is_up(container)
 
         if pull is True:
             command.launch_cmd_displays_output(self.compose_base_cmd + ['pull'], verb, debug, True)
@@ -174,13 +175,12 @@ class StakkrActions:
         return main_config
 
     def _get_relative_dir(self):
-        if self.cwd_abs.startswith(self.stakkr_base_dir):
-            return self.cwd_abs[len(self.stakkr_base_dir):].lstrip('/')
+        if self.cwd_abs.startswith(self.stakkr_project_dir):
+            return self.cwd_abs[len(self.stakkr_project_dir):].lstrip('/')
 
         return ''
 
-    def _is_containers_running(self, container: str):
-
+    def _is_up(self, container: str):
         try:
             docker.check_cts_are_running(self.project_name)
         except SystemError:
@@ -245,7 +245,7 @@ class StakkrActions:
             click.secho('Could not run service post scripts under Windows', fg='red')
             return
 
-        for service in self.main_config.get('services'):
+        for service in self.config.get('services'):
             self._call_service_post_script(service)
 
     def get_url(self, service_url: str, service: str):
