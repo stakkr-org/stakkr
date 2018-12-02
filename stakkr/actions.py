@@ -15,40 +15,24 @@ from stakkr.proxy import Proxy
 class StakkrActions:
     """Main class that does actions asked in the cli."""
 
-    _services_to_display = {
-        'adminer': {'name': 'Adminer', 'url': 'http://{}'},
-        'apache': {'name': 'Web Server', 'url': 'http://{}'},
-        'elasticsearch': {'name': 'ElasticSearch', 'url': 'http://{}'},
-        'kibana': {'name': 'Kibana', 'url': 'http://{}'},
-        'logstash': {'name': 'Logstash', 'url': 'http://{}'},
-        'mailcatcher': {'name': 'Mailcatcher (fake SMTP)', 'url': 'http://{}', 'extra_port': 25},
-        'maildev': {'name': 'Maildev (Fake SMTP)', 'url': 'http://{}', 'extra_port': 25},
-        'nginx': {'name': 'Web Server', 'url': 'http://{}'},
-        'phpmyadmin': {'name': 'PhpMyAdmin', 'url': 'http://{}'},
-        'portainer': {'name': 'Portainer (Docker GUI)', 'url': 'http://{}'},
-        'xhgui': {'name': 'XHGui (PHP Profiling)', 'url': 'http://{}'}
-    }
-
-    def __init__(self, project_dir: str, ctx: dict):
+    def __init__(self, ctx: dict):
         """Set all require properties."""
-        # Work with directories and move to the right place
-        self.stakkr_project_dir = project_dir
+        # Get info from config first to know the project name and project dir
+        self.config_file = ctx['CONFIG']
+        self.config = self._get_config()
+        self.project_name = self.config['project_name']
+        self.project_dir = self.config['project_dir']
+        sys.path.append(self.project_dir)
+
         self.context = ctx
         self.cwd_abs = os.getcwd()
         self.cwd_relative = self._get_relative_dir()
-        os.chdir(self.stakkr_project_dir)
+        os.chdir(self.project_dir)
 
         # Set some general variables
-        self.config_file = ctx['CONFIG']
         self.compose_base_cmd = self._get_compose_base_cmd()
         self.cts = []
         self.running_cts = []
-
-        # Get info from config
-        self.config = self._get_config()
-        self.project_name = self.config['project_name']
-        if self.project_name == '':
-            self.project_name = os.path.basename(package_utils.find_project_dir())
 
     def console(self, container: str, user: str, tty: bool):
         """Enter a container. Stakkr will try to guess the right shell."""
@@ -68,18 +52,19 @@ class StakkrActions:
 
         text = ''
         for ct_id, ct_info in cts.items():
-            if ct_info['compose_name'] not in self._services_to_display:
+            service_config = self.config['services'][ct_info['compose_name']]
+            if ({'service_name', 'service_url'} <= set(service_config)) is False:
                 continue
 
-            options = self._services_to_display[ct_info['compose_name']]
-            url = self.get_url(options['url'], ct_info['compose_name'])
-            name = colored.yellow(options['name'])
+            url = self.get_url(service_config['service_url'], ct_info['compose_name'])
+            name = colored.yellow(service_config['service_name'])
+
             text += '  - For {}'.format(name).ljust(55, ' ') + ' : ' + url + '\n'
 
-            if 'extra_port' in options:
-                port = str(options['extra_port'])
+            if 'service_extra_ports' in service_config:
+                ports = ', '.join(map(str, service_config['service_extra_ports']))
                 text += ' '*4 + '(In your containers use the host '
-                text += '"{}" and port {})\n'.format(ct_info['compose_name'], port)
+                text += '"{}" and port(s) {})\n'.format(ct_info['compose_name'], ports)
 
         return text
 
@@ -119,7 +104,6 @@ class StakkrActions:
             raise SystemError("Couldn't start the containers, run the start with '-v' and '-d'")
 
         self._run_iptables_rules()
-        self._run_services_post_scripts()
         if proxy is True:
             network_name = docker.get_network_name(self.project_name)
             Proxy(self.config['proxy'].get('port')).start(network_name)
@@ -152,13 +136,6 @@ class StakkrActions:
         if proxy is True:
             Proxy(self.config['proxy'].get('port')).stop()
 
-    def _call_service_post_script(self, service: str):
-        service_script = package_utils.get_file('static', 'services/{}.sh'.format(service))
-        if os.path.isfile(service_script) is True:
-            cmd = ['bash', service_script, docker.get_ct_item(service, 'name')]
-            subprocess.call(cmd)
-            command.verbose(self.context['VERBOSE'], 'Service Script : ' + ' '.join(cmd))
-
     def _get_compose_base_cmd(self):
         if self.context['CONFIG'] is None:
             return ['stakkr-compose']
@@ -175,8 +152,8 @@ class StakkrActions:
         return main_config
 
     def _get_relative_dir(self):
-        if self.cwd_abs.startswith(self.stakkr_project_dir):
-            return self.cwd_abs[len(self.stakkr_project_dir):].lstrip('/')
+        if self.cwd_abs.startswith(self.project_dir):
+            return self.cwd_abs[len(self.project_dir):].lstrip('/')
 
         return ''
 
@@ -226,27 +203,13 @@ class StakkrActions:
     def _run_iptables_rules(self):
         """For some containers we need to add iptables rules added from the config."""
         block_config = self.config['network-block']
-        for service, ports in block_config.items():
-            error, msg = docker.block_ct_ports(service, ports, self.project_name)
+        for container, ports in block_config.items():
+            error, msg = docker.block_ct_ports(container, ports, self.project_name)
             if error is True:
                 click.secho(msg, fg='red')
                 continue
 
             command.verbose(self.context['VERBOSE'], msg)
-
-    def _run_services_post_scripts(self):
-        """
-        Run services post scripts.
-
-        A service can have a .sh file that will be executed once it's started.
-        Useful to override some actions of the classical /run.sh.
-        """
-        if os.name == 'nt':
-            click.secho('Could not run service post scripts under Windows', fg='red')
-            return
-
-        for service in self.config.get('services'):
-            self._call_service_post_script(service)
 
     def get_url(self, service_url: str, service: str):
         """Build URL to be displayed."""

@@ -5,7 +5,8 @@ import anyconfig
 from sys import stderr
 from jsonschema.exceptions import _Error
 from stakkr.package_utils import get_file, find_project_dir
-from os.path import isfile
+from os import path
+
 
 class Config:
     """
@@ -38,27 +39,32 @@ class Config:
         """
         Parse the configs and validate it.
 
-        It could be either local or from a plugin
+        It could be either local or from a plugin or local services
         (first local then packages by alphabetical order).
         """
         schema = anyconfig.multi_load(self.spec_files)
         config = anyconfig.multi_load(self.config_files)
+        # Make sure the compiled configuration is valid
         try:
             anyconfig.validate(config, schema, safe=False)
-            return config
         except _Error as error:
             self.error = '{} ({})'.format(error.message, ' -> '.join(error.path))
             return False
+
+        config['project_dir'] = path.dirname(self.config_file)
+
+        if config['project_name'] == '':
+            config['project_name'] = path.basename(config['project_dir'])
+
+        return config
 
     def _build_config_files_list(self):
         self.config_files = [
             # Stakkr default config
             get_file('static', 'config_default.yml'),
             # plugins default config
-            '{}/plugins/*/config_default.yml'.format(self.project_dir)]
-        # Add services defaults if it exists
-        if isfile('{}/services/config_default.yml'.format(self.project_dir)):
-            self.config_files += ['{}/services/config_default.yml'.format(self.project_dir)]
+            '{}/plugins/*/config_default.yml'.format(self.project_dir),
+            '{}/services/*/config_default.yml'.format(self.project_dir)]
         # Stakkr main config file finally with user's values
         self.config_files += [self.config_file]
 
@@ -67,7 +73,5 @@ class Config:
             # Stakkr config validation
             get_file('static', 'config_schema.yml'),
             # plugins config validation
-            '{}/plugins/*/config_schema.yml'.format(self.project_dir)]
-        # Add services if it exists
-        if isfile('{}/services/config_schema.yml'.format(self.project_dir)):
-            self.spec_files += ['{}/services/config_schema.yml'.format(self.project_dir)]
+            '{}/plugins/*/config_schema.yml'.format(self.project_dir),
+            '{}/services/*/config_schema.yml'.format(self.project_dir)]

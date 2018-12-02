@@ -86,7 +86,7 @@ By creating a `services/` directory you can either override or create new servic
 Example: `plugins/myplugin/services/mysql.yml` will override the default mysql service while
 `plugins/myplugin/services/nginx.yml` will define a new service.
 
-Each service added by a plugin must be added in `compose.ini` to be started.
+Each service added by a plugin must be added in `stakkr.yml` to be started.
 
 
 Example of a service:
@@ -107,7 +107,6 @@ Example of a service:
 List of existing plugins
 -----------------------------------
 * `stakkr-composer <https://github.com/edyan/stakkr-composer>`_ : Download and run composer
-* `stakkr-sugarcli <https://github.com/inetprocess/stakkr-sugarcli>`_ : Download and run sugarcli
 * `stakkr-phing <https://github.com/edyan/stakkr-phing>`_ : Download and run Phing
 * `stakkr-nginx-proxy <https://github.com/inetprocess/stakkr-nginx-proxy>`_ : Nginx proxy
 * `stakkr-phpcron <https://github.com/inetprocess/stakkr-phpcron>`_ : PHP + Cron Service

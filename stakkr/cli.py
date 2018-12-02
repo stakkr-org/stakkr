@@ -11,8 +11,7 @@ import sys
 import click
 from click_plugins import with_plugins
 from pkg_resources import iter_entry_points
-from stakkr import package_utils
-from stakkr.docker_actions import get_running_containers_name
+from stakkr.docker_actions import get_running_containers_names
 
 
 @with_plugins(iter_entry_points('stakkr.plugins'))
@@ -30,15 +29,11 @@ def stakkr(ctx, config, debug, verbose):
     """Click group, set context and main object."""
     from stakkr.actions import StakkrActions
 
-    # Add the virtual env in the path
-    project_dir = package_utils.find_project_dir()
-    sys.path.append(project_dir)
-
     ctx.obj['CONFIG'] = config
     ctx.obj['DEBUG'] = debug
     ctx.obj['VERBOSE'] = verbose
-    ctx.obj['STAKKR'] = StakkrActions(project_dir, ctx.obj)
-    ctx.obj['CTS'] = get_running_containers_name(ctx.obj['STAKKR'].project_name)
+    ctx.obj['STAKKR'] = StakkrActions(ctx.obj)
+    ctx.obj['CTS'] = get_running_containers_names(ctx.obj['STAKKR'].project_name)
 
 
 @stakkr.command(help="""Enter a container to perform direct actions such as
@@ -139,7 +134,8 @@ def services(ctx):
 
     services = ctx.obj['STAKKR']._get_config()['services']
     enabled_services = [svc for svc, opts in services.items() if opts['enabled'] is True]
-    for available_service in sorted(list(get_available_services().keys())):
+    available_services = get_available_services(ctx.obj['STAKKR'].project_dir)
+    for available_service in sorted(list(available_services.keys())):
         sign = click.style('✘', fg='red')
         if available_service in enabled_services:
             version = services[available_service]['version']

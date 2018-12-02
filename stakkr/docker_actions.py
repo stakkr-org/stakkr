@@ -32,13 +32,15 @@ def block_ct_ports(service: str, ports: list, project_name: str) -> tuple:
 
     # Now for each port, add an iptable rule
     for port in ports:
-        rule = ['OUTPUT', '-p', 'tcp', '--dport', port, '-j', 'REJECT']
+        rule = ['OUTPUT', '-p', 'tcp', '--dport', str(port), '-j', 'REJECT']
         try:
             container.exec_run([iptables, '-D'] + rule)
         finally:
             container.exec_run([iptables, '-A'] + rule)
 
-    return False, 'Blocked ports {} on container {}'.format(', '.join(ports), service)
+    ports_list = ', '.join(map(str, ports))
+
+    return False, 'Blocked ports {} on container {}'.format(ports_list, service)
 
 
 def check_cts_are_running(project_name: str):
@@ -167,7 +169,7 @@ def get_running_containers(project_name: str) -> tuple:
     return __st__['running_cts'], __st__['cts_info']
 
 
-def get_running_containers_name(project_name: str) -> list:
+def get_running_containers_names(project_name: str) -> list:
     """Get a list of compose names of running containers for the current stakkr instance."""
     cts = get_running_containers(project_name)[1]
 
