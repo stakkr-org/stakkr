@@ -11,7 +11,7 @@ import os
 import subprocess
 import sys
 import click
-from stakkr import package_utils
+from stakkr import file_utils
 from stakkr.configreader import Config
 
 
@@ -67,7 +67,7 @@ def _add_local_services(project_dir: str, available_services: list):
 
 def get_available_services(project_dir: str):
     """Get standard services bundled with stakkr."""
-    services_dir = package_utils.get_dir('static') + '/services/'
+    services_dir = file_utils.get_dir('static') + '/services/'
     conf_files = _get_services_from_dir(services_dir)
 
     services = dict()
@@ -86,7 +86,7 @@ def _get_base_command(config: dict):
     # Set the network subnet ?
     if config['subnet'] != '':
         main_file = 'docker-compose.subnet.yml'
-    cmd = ['docker-compose', '-f', package_utils.get_file('static', main_file)]
+    cmd = ['docker-compose', '-f', file_utils.get_file('static', main_file)]
 
     # What to load
     activated_services = _get_enabled_services_files(

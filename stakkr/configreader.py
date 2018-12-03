@@ -4,7 +4,7 @@
 import anyconfig
 from sys import stderr
 from jsonschema.exceptions import _Error
-from stakkr.package_utils import get_file, find_project_dir
+from stakkr.file_utils import get_file, find_project_dir
 from os import path
 
 

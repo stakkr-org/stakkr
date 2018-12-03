@@ -7,7 +7,7 @@ import subprocess
 import sys
 import click
 from clint.textui import colored, puts, columns
-from stakkr import command, docker_actions as docker, package_utils
+from stakkr import command, docker_actions as docker, file_utils
 from stakkr.configreader import Config
 from stakkr.proxy import Proxy
 

@@ -4,7 +4,6 @@ include stakkr/static/config_default.yml
 include stakkr/static/config_schema.yml
 include stakkr/static/docker-compose.yml
 include stakkr/static/docker-compose.subnet.yml
-include stakkr/static/services/*.sh
 include stakkr/static/services/*.yml
 include stakkr/tpls/conf/mysql-override/mysqld.cnf
 include stakkr/tpls/conf/php-fpm-override/example.conf
@@ -12,3 +11,4 @@ include stakkr/tpls/conf/php-fpm-override/README
 include stakkr/tpls/conf/xhgui-override/config.php
 include stakkr/tpls/home/www-data/.bashrc
 include stakkr/tpls/bash_completion
+include stakkr/tpls/stakkr.yml.tpl

@@ -35,11 +35,11 @@ stakkr-compose=stakkr.stakkr_compose:cli''',
     install_requires=[
         'click-plugins==1.0.4',
         'clint==0.5.1',
-        'configobj==5.0.6', # TO BE REMOVED
         'anyconfig==0.9',
         # Docker compose includes requests and docker
         'docker-compose>1.20<1.30',
-        'humanfriendly'
+        'humanfriendly',
+        'GitPython'
         ] + extra_packages,
     cmdclass={'install': StakkrPostInstall},
     classifiers=[

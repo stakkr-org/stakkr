@@ -7,10 +7,10 @@ import subprocess
 import sys
 import unittest
 from shutil import rmtree
-from stakkr import package_utils
+from stakkr import file_utils
 __base_dir__ = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, __base_dir__ + '/../')
-__venv_dir__ = package_utils.get_venv_basedir()
+__venv_dir__ = file_utils.get_venv_basedir()
 
 
 class PluginsTest(unittest.TestCase):

@@ -3,7 +3,7 @@ import sys
 import unittest
 
 from distutils.sysconfig import get_config_vars
-from stakkr import package_utils as pu
+from stakkr import file_utils as pu
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, base_dir + '/../')

@@ -106,6 +106,34 @@ def refresh_plugins(ctx):
     print(click.style('Plugins refreshed', fg='green'))
 
 
+@stakkr.command(help="Download a package from github (see https://github.com/stakkr-org) containing services")
+@click.argument('package', required=True)
+@click.pass_context
+def package_install(ctx, package: str):
+    """See command Help."""
+    from stakkr.packages import install
+
+    services_dir = '{}/services'.format(ctx.obj['STAKKR'].project_dir)
+    success, message = install(services_dir, package)
+    if success is False:
+        click.echo(click.style(message, fg='red'))
+        sys.exit(1)
+
+    print(click.style(package, fg='green') + ' installed successfully')
+    print('Try ' + click.style('stakkr services', fg='green') + ' to see new available services')
+
+
+@stakkr.command(help="Update all packages in services/")
+@click.pass_context
+def packages_update(ctx):
+    """See command Help."""
+
+    from stakkr.packages import update_all
+    services_dir = '{}/services'.format(ctx.obj['STAKKR'].project_dir)
+    update_all(services_dir)
+    print(click.style('Packages updated', fg='green'))
+
+
 @stakkr.command(help="Restart all (or a single as CONTAINER) container(s)")
 @click.argument('container', required=False)
 @click.option('--pull', '-p', help="Force a pull of the latest images versions", is_flag=True)

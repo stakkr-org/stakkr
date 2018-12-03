@@ -4,7 +4,7 @@ import os
 import re
 import sys
 import unittest
-from stakkr import package_utils
+from stakkr import file_utils
 from stakkr.configreader import Config
 base_dir = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, base_dir + '/../')
@@ -20,7 +20,7 @@ class ConfigReaderTest(unittest.TestCase):
 
     def test_default_config(self):
         """Test the default config (exit if it exists)"""
-        if os.path.isfile(package_utils.get_venv_basedir() + '/conf/compose.ini'):
+        if os.path.isfile(file_utils.get_venv_basedir() + '/conf/compose.ini'):
             return
 
         c = Config()

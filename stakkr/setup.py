@@ -5,7 +5,7 @@ import os
 import shutil
 import sys
 from setuptools.command.install import install
-from stakkr import package_utils
+from stakkr import file_utils
 
 
 try:
@@ -16,7 +16,7 @@ templates and directory structure""")
     @click.option('--force', '-f', help="Force recreate directories structure", is_flag=True)
     def init(force: bool):
         """CLI Entry point, when initializing stakkr manually."""
-        config_file = package_utils.find_project_dir() + '/stakkr.yml'
+        config_file = os.getcwd() + '/stakkr.yml'
         if os.path.isfile(config_file) and force is False:
             click.secho('Config file (stakkr.yml) already present. Leaving.', fg='yellow')
             return
@@ -36,7 +36,7 @@ def _post_install(force: bool = False):
     """Create templates (directories and files)."""
     print('Post Installation : create templates')
 
-    project_dir = package_utils.find_project_dir()
+    project_dir = os.getcwd()
     # If already installed don't do anything
     if os.path.isfile(project_dir + '/stakkr.yml'):
         return
@@ -57,8 +57,7 @@ def _post_install(force: bool = False):
         _create_dir(project_dir, required_dir, force)
 
     required_tpls = [
-        '.env',
-        'bash_completion',
+        # 'bash_completion', # How to do with a system wide installation ?
         'stakkr.yml.tpl',
         'conf/mysql-override/mysqld.cnf',
         'conf/php-fpm-override/example.conf',
@@ -80,7 +79,7 @@ def _create_dir(project_dir: str, dir_name: str, force: bool):
 
 
 def _copy_file(project_dir: str, source_file: str, force: bool):
-    full_path = package_utils.get_file('tpls', source_file)
+    full_path = file_utils.get_file('tpls', source_file)
     dest_file = project_dir + '/' + source_file
     if os.path.isfile(dest_file) and force is False:
         print('  - {} exists, do not overwrite'.format(source_file))
@@ -102,7 +101,7 @@ class StakkrPostInstall(install):
         super(StakkrPostInstall, self).__init__(*args, **kwargs)
 
         try:
-            package_utils.find_project_dir()
+            file_utils.find_project_dir()
             _post_install(False)
         except OSError:
             msg = 'You must run setup.py from a virtualenv if you want to have'

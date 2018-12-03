@@ -1,9 +1,8 @@
 # coding: utf-8
 """
-Python Virtualenv tools.
+Files Utils to find dir, files, etc.
 
-Gives useful information about the current virtualenv.
-Such as : files locations if stakkr is installed as a package or directly cloned
+Such as : static files locations or directories location
 """
 
 from os import getcwd, listdir
