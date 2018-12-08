@@ -12,7 +12,7 @@ sys.path.insert(0, base_dir + '/../')
 
 
 class CliTest(unittest.TestCase):
-    cmd_base = ['stakkr', '-c', base_dir + '/static/config_valid.yml']
+    cmd_base = ['stakkr', '-c', base_dir + '/static/stakkr.yml']
 
     def test_no_arg(self):
         result = CliRunner().invoke(stakkr)
@@ -48,9 +48,9 @@ class CliTest(unittest.TestCase):
     def test_bad_config(self):
         res = exec_cmd([
             'stakkr', '-c', base_dir + '/static/config_invalid.yml', 'start'])
-        self.assertRegex(res['stderr'], r'.*Failed validating.*')
-        self.assertRegex(res['stderr'], r'.*project_name.*Missing.*')
-        self.assertRegex(res['stderr'], r'.*php\.version.*unacceptable.*')
+        self.assertRegex(res['stderr'], r'.*Failed validating main config or plugin configs.*')
+        self.assertRegex(res['stderr'], r'.*config_invalid\.yml.*')
+        self.assertRegex(res['stderr'], r".*'toto' was unexpected.*")
         self.assertEqual(res['stdout'], '')
         self.assertIs(res['status'], 1)
 
@@ -115,15 +115,15 @@ class CliTest(unittest.TestCase):
         self.assertIs(res['status'], 0)
 
         # Proxy is in network now
-        self.assertIs(True, ct_in_network('proxy_stakkr', 'test_stakkr'))
+        self.assertIs(True, ct_in_network('proxy_stakkr', 'static_stakkr'))
 
         # Check it's fine
         res = exec_cmd(self.cmd_base + ['status'])
         self.assertEqual(res['stderr'], '')
         self.assertRegex(res['stdout'], r'Container\s*IP\s*Url\s*Image.*')
-        self.assertRegex(res['stdout'], '.*maildev.test.localhost.*')
-        self.assertRegex(res['stdout'], '.*test_maildev.*')
-        self.assertRegex(res['stdout'], '.*test_php.*')
+        self.assertRegex(res['stdout'], '.*maildev.static.localhost.*')
+        self.assertRegex(res['stdout'], '.*static_maildev.*')
+        self.assertRegex(res['stdout'], '.*static_php.*')
         self.assertRegex(res['stdout'], '.*No traefik rule.*php.*')
         self.assertIs(res['status'], 0)
 
@@ -133,7 +133,7 @@ class CliTest(unittest.TestCase):
 
         exec_cmd(self.cmd_base + ['start'])
         # Proxy is in network now
-        self.assertIs(True, ct_in_network('proxy_stakkr', 'test_stakkr'))
+        self.assertIs(True, ct_in_network('proxy_stakkr', 'static_stakkr'))
 
         # Restart
         res = exec_cmd(self.cmd_base + ['restart'])
@@ -146,14 +146,14 @@ class CliTest(unittest.TestCase):
         res = exec_cmd(self.cmd_base + ['status'])
         self.assertEqual(res['stderr'], '')
         self.assertRegex(res['stdout'], r'Container\s*IP\s*Url\s*Image.*')
-        self.assertRegex(res['stdout'], '.*maildev.test.localhost.*')
-        self.assertRegex(res['stdout'], '.*test_maildev.*')
-        self.assertRegex(res['stdout'], '.*test_php.*')
+        self.assertRegex(res['stdout'], '.*maildev.static.localhost.*')
+        self.assertRegex(res['stdout'], '.*static_maildev.*')
+        self.assertRegex(res['stdout'], '.*static_php.*')
         self.assertRegex(res['stdout'], '.*No traefik rule.*php.*')
         self.assertIs(res['status'], 0)
 
         # Proxy is in network
-        self.assertIs(True, ct_in_network('proxy_stakkr', 'test_stakkr'))
+        self.assertIs(True, ct_in_network('proxy_stakkr', 'static_stakkr'))
 
     def test_start(self):
         self._proxy_start_check_not_in_network()
@@ -172,7 +172,7 @@ class CliTest(unittest.TestCase):
             self.assertIs(res['status'], 0)
 
         # Proxy is in network now
-        self.assertIs(True, ct_in_network('proxy_stakkr', 'test_stakkr'))
+        self.assertIs(True, ct_in_network('proxy_stakkr', 'static_stakkr'))
 
         # Again ....
         res = exec_cmd(cmd)
@@ -249,9 +249,9 @@ class CliTest(unittest.TestCase):
         res = exec_cmd(cmd)
         self.assertEqual(res['stderr'], '')
         self.assertRegex(res['stdout'], r'Container\s*IP\s*Url\s*Image.*')
-        self.assertRegex(res['stdout'], '.*maildev.test.localhost.*')
-        self.assertRegex(res['stdout'], '.*test_maildev.*')
-        self.assertRegex(res['stdout'], '.*test_php.*')
+        self.assertRegex(res['stdout'], '.*maildev.static.localhost.*')
+        self.assertRegex(res['stdout'], '.*static_maildev.*')
+        self.assertRegex(res['stdout'], '.*static_php.*')
         self.assertRegex(res['stdout'], '.*No traefik rule.*php.*')
         self.assertIs(res['status'], 0)
 
@@ -276,17 +276,17 @@ class CliTest(unittest.TestCase):
         # Stop Error : it has been stopped already
         res = exec_cmd(cmd)
         self.assertRegex(res['stdout'], r'\[STOPPING\].*your stakkr services.*')
-        self.assertRegex(res['stderr'], r'.*Have you started your server with the start action.*')
+        self.assertRegex(res['stderr'], r'.*Have you started stakkr with the start action.*')
         self.assertIs(res['status'], 1)
 
-    def tearDownClass(self):
+    def tearDownClass():
         cli = CliTest()
 
         exec_cmd(cli.cmd_base + ['stop'])
 
-        stop_remove_container('test_maildev')
-        stop_remove_container('test_php')
-        stop_remove_container('test_portainer')
+        stop_remove_container('static_maildev')
+        stop_remove_container('static_php')
+        stop_remove_container('static_portainer')
 
     def _proxy_start_check_not_in_network(self):
         from stakkr.proxy import Proxy
@@ -296,7 +296,7 @@ class CliTest(unittest.TestCase):
         # Proxy is not connected to network
         self.assertIs(
             False,
-            ct_in_network('proxy_stakkr', 'test_stakkr'))
+            ct_in_network('proxy_stakkr', 'static_stakkr'))
 
 
 def exec_cmd(cmd: list):

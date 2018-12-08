@@ -33,7 +33,7 @@ class Config:
         msg = 'Failed validating main config or plugin configs ('
         msg += ', '.join(self.config_files)
         msg += '):\n    - {}'.format(self.error)
-        print(style(msg, fg='red'), file=stderr)
+        stderr.write(style(msg, fg='red'))
 
     def read(self):
         """
@@ -51,8 +51,7 @@ class Config:
             self.error = '{} ({})'.format(error.message, ' -> '.join(error.path))
             return False
 
-        config['project_dir'] = path.dirname(self.config_file)
-
+        config['project_dir'] = path.realpath(path.dirname(self.config_file))
         if config['project_name'] == '':
             config['project_name'] = path.basename(config['project_dir'])
 

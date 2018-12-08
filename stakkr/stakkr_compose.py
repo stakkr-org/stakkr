@@ -173,7 +173,6 @@ def _set_env_from_config(config: dict):
     os.environ['COMPOSE_PROJECT_NAME'] = config['project_name']
     os.environ['DOCKER_UID'] = _get_uid(config['uid'])
     os.environ['DOCKER_GID'] = _get_gid(config['gid'])
-
     for parameter, value in config.items():
         if parameter == 'services':
             _set_env_for_services(value)

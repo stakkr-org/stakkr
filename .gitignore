@@ -12,6 +12,7 @@ venv
 .coverage*
 !.coveragerc
 htmlcov
+/tests/static/data
 
 
 # Local configuration

@@ -106,12 +106,12 @@ def refresh_plugins(ctx):
     print(click.style('Plugins refreshed', fg='green'))
 
 
-@stakkr.command(help="Download a package from github (see https://github.com/stakkr-org) containing services")
+@stakkr.command(help="Download a package from github (see github) containing services")
 @click.argument('package', required=True)
 @click.pass_context
-def package_install(ctx, package: str):
+def services_add(ctx, package: str):
     """See command Help."""
-    from stakkr.packages import install
+    from stakkr.services import install
 
     services_dir = '{}/services'.format(ctx.obj['STAKKR'].project_dir)
     success, message = install(services_dir, package)
@@ -123,12 +123,12 @@ def package_install(ctx, package: str):
     print('Try ' + click.style('stakkr services', fg='green') + ' to see new available services')
 
 
-@stakkr.command(help="Update all packages in services/")
+@stakkr.command(help="Update all services packages in services/")
 @click.pass_context
-def packages_update(ctx):
+def services_update(ctx):
     """See command Help."""
 
-    from stakkr.packages import update_all
+    from stakkr.services import update_all
     services_dir = '{}/services'.format(ctx.obj['STAKKR'].project_dir)
     update_all(services_dir)
     print(click.style('Packages updated', fg='green'))

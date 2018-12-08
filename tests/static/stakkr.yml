@@ -7,4 +7,3 @@ services:
   portainer:
     enabled: true
 
-project_name: test

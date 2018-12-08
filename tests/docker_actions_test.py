@@ -32,19 +32,20 @@ class DockerActionsTest(unittest.TestCase):
         Then extract VM Info.
         """
 
-        config = base_dir + '/static/config_valid.ini'
+        config = base_dir + '/static/stakkr.yml'
 
         # Clean
         exec_cmd(['stakkr-compose', '-c', config, 'stop'])
-        remove_network('test_stakkr')
+        remove_network('static_stakkr')
 
         # Start again
         cmd = ['stakkr-compose', '-c', config, 'up', '-d', '--force-recreate']
         exec_cmd(cmd)
-        numcts, cts = docker_actions.get_running_containers('test')
+
+        numcts, cts = docker_actions.get_running_containers('static')
         self.assertIs(len(cts), 3)
         for ct_id, ct_info in cts.items():
-            if ct_info['name'] in ('test_maildev', 'test_portainer'):
+            if ct_info['name'] in ('static_maildev', 'static_portainer'):
                 continue
 
             self.assertTrue('name' in ct_info)
@@ -54,25 +55,25 @@ class DockerActionsTest(unittest.TestCase):
             self.assertTrue('ip' in ct_info)
             self.assertTrue('image' in ct_info)
 
-            self.assertEqual(ct_info['name'], 'test_php')
+            self.assertEqual(ct_info['name'], 'static_php')
             self.assertEqual(ct_info['compose_name'], 'php')
             self.assertTrue(ct_info['running'])
             self.assertNotEqual(ct_info['ip'][:10], '192.168.23')
             self.assertEqual(ct_info['image'], 'edyan/php:7.2')
 
-        self.assertTrue(docker_actions._container_in_network('test_php', 'test_stakkr'))
-        self.assertTrue(docker_actions.network_exists('test_stakkr'))
-        self.assertFalse(docker_actions._container_in_network('test_php', 'bridge'))
+        self.assertTrue(docker_actions._container_in_network('static_php', 'static_stakkr'))
+        self.assertTrue(docker_actions.network_exists('static_stakkr'))
+        self.assertFalse(docker_actions._container_in_network('static_php', 'bridge'))
 
         exec_cmd(['stakkr-compose', '-c', config, 'stop'])
-        stop_remove_container('test_php')
+        stop_remove_container('static_php')
 
-        with self.assertRaisesRegex(LookupError, 'Container test_php does not seem to exist'):
-            docker_actions._container_in_network('test_php', 'bridge')
+        with self.assertRaisesRegex(LookupError, 'Container static_php does not seem to exist'):
+            docker_actions._container_in_network('static_php', 'bridge')
 
         exec_cmd(['stakkr', 'stop'])
-        remove_network('test_stakkr')
-        self.assertFalse(docker_actions.network_exists('test_stakkr'))
+        remove_network('static_stakkr')
+        self.assertFalse(docker_actions.network_exists('static_stakkr'))
 
     def test_get_container_info_network_set(self):
         """
@@ -80,9 +81,10 @@ class DockerActionsTest(unittest.TestCase):
         definint a network, then extract VM Info
 
         """
-        exec_cmd(['stakkr-compose', '-c', base_dir + '/static/config_valid_network.ini', 'stop'])
+        exec_cmd(['stakkr-compose', '-c', base_dir + '/static/config_valid_network.yml', 'stop'])
+        exec_cmd(['stakkr-compose', '-c', base_dir + '/static/config_valid_network.yml', 'down'])
         exec_cmd([
-            'stakkr-compose', '-c', base_dir + '/static/config_valid_network.ini',
+            'stakkr-compose', '-c', base_dir + '/static/config_valid_network.yml',
             'up', '-d', '--force-recreate', '--remove-orphans'])
         numcts, cts = docker_actions.get_running_containers('testnet')
 
@@ -144,13 +146,13 @@ class DockerActionsTest(unittest.TestCase):
 
         stop_remove_container('pytest')
 
-    def tearDownClass(self):
+    def tearDownClass():
         stop_remove_container('pytest')
-        stop_remove_container('test_maildev')
-        stop_remove_container('test_php')
-        stop_remove_container('test_portainer')
+        stop_remove_container('static_maildev')
+        stop_remove_container('static_php')
+        stop_remove_container('static_portainer')
         remove_network('nw_pytest')
-        remove_network('test_stakkr')
+        remove_network('static_stakkr')
 
 
 def exec_cmd(cmd: list):

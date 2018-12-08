@@ -74,7 +74,7 @@ class DockerCleanTest(unittest.TestCase):
         self.assertIs(len(cts), (2 + num_default_cts))
 
         # CLEAN
-        result = CliRunner().invoke(clean, ['--force', '--verbose'])
+        result = CliRunner().invoke(clean, ['--force'])
         self.assertEqual(0, result.exit_code)
         regex = r'.*Cleaning Docker stopped containers.*'
         self.assertRegex(result.output, regex)
@@ -103,7 +103,7 @@ class DockerCleanTest(unittest.TestCase):
         ct_test.stop()
 
         # Stop adminer and clean again
-        result = CliRunner().invoke(clean, ['--force', '--verbose'])
+        result = CliRunner().invoke(clean, ['--force'])
         self.assertEqual(0, result.exit_code, 'Error: {}'.format(result.output))
         regex = r'.*Cleaning Docker stopped containers.*'
         self.assertRegex(result.output, regex)

@@ -1,1 +1,4 @@
 project_name: toto
+services:
+  toto:
+    enabled: true

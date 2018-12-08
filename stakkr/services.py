@@ -10,7 +10,7 @@ def install(services_dir: str, package: str):
     from os.path import isdir
     from urllib.parse import urlparse
 
-    url = '{}/package-{}.git'.format(__github_url__, package)
+    url = '{}/services-{}.git'.format(__github_url__, package)
     if urlparse(package).scheme != '':
         url = package
 

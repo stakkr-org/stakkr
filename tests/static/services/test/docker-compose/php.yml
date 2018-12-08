@@ -1,0 +1,26 @@
+version: '2.2'
+
+services:
+    php:
+        image: edyan/php:${DOCKER_PHP_VERSION}
+        container_name: ${COMPOSE_PROJECT_NAME}_php
+        hostname: ${COMPOSE_PROJECT_NAME}_php
+        networks: [stakkr]
+        mem_limit: ${DOCKER_PHP_RAM}
+        environment:
+            FPM_UID: ${DOCKER_UID}
+            FPM_GID: ${DOCKER_GID}
+            ENVIRONMENT: ${DOCKER_ENVIRONMENT}
+        volumes:
+            - ${COMPOSE_BASE_DIR}/home/www-data:/home/www-data
+            - ${COMPOSE_BASE_DIR}/www:/var/www
+            - ${COMPOSE_BASE_DIR}/logs/php:/var/log/php
+            - ${COMPOSE_BASE_DIR}/conf/php-fpm-override:/etc/php5/fpm/user-conf.d
+            - ${COMPOSE_BASE_DIR}/conf/php-fpm-override:/etc/php/7.0/fpm/user-conf.d
+            - ${COMPOSE_BASE_DIR}/conf/php-fpm-override:/etc/php/7.1/fpm/user-conf.d
+            - ${COMPOSE_BASE_DIR}/conf/php-fpm-override:/etc/php/7.2/fpm/user-conf.d
+        cap_add:
+            - NET_ADMIN
+            - NET_RAW
+        labels:
+            - traefik.enable=False
