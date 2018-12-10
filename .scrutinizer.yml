@@ -21,7 +21,6 @@ build:
                     - "source venv/bin/activate"
                     - "pip install --upgrade pip"
                     - "pip install ."
-                    - "stakkr-init"
                     - "pip install -r requirements-dev.txt"
                 override:
                     - command: "py.test --cov-config=.coveragerc tests/"
