@@ -64,8 +64,7 @@ class ConfigReaderTest(unittest.TestCase):
         self.assertEqual(7.2, config['services']['php']['version'])
         self.assertTrue(config['services']['php']['enabled'])
 
-        self.assertTrue('apache' in config['services'])
-        self.assertFalse(config['services']['apache']['enabled'])
+        self.assertTrue('apache' not in config['services'])
 
         self.assertTrue('project_name' in config)
         self.assertEqual('static', config['project_name'])
