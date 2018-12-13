@@ -20,11 +20,13 @@ class Config:
         Build list of files to validate a config, set default values
         Then the given config file
         """
-        self.config_file = path.abspath(config_file)
-        self.project_dir = path.dirname(self.config_file)
-        if self.config_file is None:
-            self.config_file = '{}/stakkr.yml'.format(self.project_dir)
+
+        if config_file is not None:
+            self.config_file = path.abspath(config_file)
+            self.project_dir = path.dirname(self.config_file)
+        else:
             self.project_dir = find_project_dir()
+            self.config_file = '{}/stakkr.yml'.format(self.project_dir)
 
         self._build_config_files_list()
         self._build_config_schemas_list()

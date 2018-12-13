@@ -3,15 +3,14 @@ from distutils.core import setup
 from stakkr.setup import StakkrPostInstall
 
 
-here = os.path.abspath(os.path.dirname(__file__))
 extra_packages = []
 if os.name == 'nt':
     extra_packages.append('pypiwin32')
 
-
-__version__ = '3.7.2'
+__version__ = '4.0'
 
 # Get the long description from the README file
+here = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
