@@ -1,5 +1,7 @@
 General
 =======
+* Add in doc that pip install should be done with --user
+
 * Use python-anyconfig for Config validation and not configobj
 * Use click-completion
 * Move conf/compose.ini to .stakkr.yml
