@@ -130,6 +130,8 @@ def restart(ctx, container: str, pull: bool, recreate: bool, proxy: bool):
 @click.pass_context
 def services(ctx):
     """See command Help."""
+    ctx.obj['STAKKR'].init_project()
+
     from stakkr.stakkr_compose import get_available_services
 
     print('Available services usable in stakkr.yml ', end='')
@@ -154,7 +156,8 @@ def services_add(ctx, package: str):
     """See command Help."""
     from stakkr.services import install
 
-    services_dir = '{}/services'.format(ctx.obj['STAKKR'].project_dir)
+    project_dir = _get_project_dir(ctx.obj['CONFIG'])
+    services_dir = '{}/services'.format(project_dir)
     success, message = install(services_dir, package)
     if success is False:
         click.echo(click.style(message, fg='red'))
@@ -168,10 +171,10 @@ def services_add(ctx, package: str):
 @click.pass_context
 def services_update(ctx):
     """See command Help."""
-
     from stakkr.services import update_all
 
-    services_dir = '{}/services'.format(ctx.obj['STAKKR'].project_dir)
+    project_dir = _get_project_dir(ctx.obj['CONFIG'])
+    services_dir = '{}/services'.format(project_dir)
     update_all(services_dir)
     print(click.style('Packages updated', fg='green'))
 
@@ -226,6 +229,17 @@ def _show_status(ctx):
 
     print('\nServices URLs :')
     print(services_ports)
+
+
+def _get_project_dir(config: str):
+    from os.path import abspath, dirname
+
+    if config is not None:
+        config = abspath(config)
+        return dirname(config)
+
+    from stakkr.file_utils import find_project_dir
+    return find_project_dir()
 
 
 def debug_mode():
