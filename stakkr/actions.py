@@ -19,23 +19,22 @@ class StakkrActions:
         """Set all require properties."""
         # Get info from config first to know the project name and project dir
         self.config_file = ctx['CONFIG']
-        self.config = self._get_config()
-        self.project_name = self.config['project_name']
-        self.project_dir = self.config['project_dir']
-        sys.path.append(self.project_dir)
 
         self.context = ctx
-        self.cwd_abs = os.getcwd()
-        self.cwd_relative = self._get_relative_dir()
-        os.chdir(self.project_dir)
 
         # Set some general variables
-        self.compose_base_cmd = self._get_compose_base_cmd()
+        self.config = None
+        self.project_name = None
+        self.project_dir = None
+        self.cwd_abs = os.getcwd()
+        self.cwd_relative = None
         self.cts = []
         self.running_cts = []
 
     def console(self, container: str, user: str, tty: bool):
         """Enter a container. Stakkr will try to guess the right shell."""
+        self.init_project()
+
         docker.check_cts_are_running(self.project_name)
 
         tty = 't' if tty is True else ''
@@ -48,6 +47,8 @@ class StakkrActions:
 
     def get_services_urls(self):
         """Once started, displays a message with a list of running containers."""
+        self.init_project()
+
         cts = docker.get_running_containers(self.project_name)[1]
 
         text = ''
@@ -70,6 +71,8 @@ class StakkrActions:
 
     def exec_cmd(self, container: str, user: str, args: tuple, tty: bool):
         """Run a command from outside to any container. Wrapped into /bin/sh."""
+        self.init_project()
+
         docker.check_cts_are_running(self.project_name)
 
         # Protect args to avoid strange behavior in exec
@@ -82,18 +85,31 @@ class StakkrActions:
         command.verbose(self.context['VERBOSE'], 'Command : "' + ' '.join(cmd) + '"')
         subprocess.call(cmd, stdin=sys.stdin)
 
+    def init_project(self):
+        if self.config is not None:
+            return
+
+        self.config = self._get_config()
+        self.project_name = self.config['project_name']
+        self.project_dir = self.config['project_dir']
+        sys.path.append(self.project_dir)
+
+        self.cwd_relative = self._get_relative_dir()
+        os.chdir(self.project_dir)
+
     def start(self, container: str, pull: bool, recreate: bool, proxy: bool):
         """If not started, start the containers defined in config."""
+        self.init_project()
         verb = self.context['VERBOSE']
         debug = self.context['DEBUG']
 
         self._is_up(container)
 
         if pull is True:
-            command.launch_cmd_displays_output(self.compose_base_cmd + ['pull'], verb, debug, True)
+            command.launch_cmd_displays_output(self._get_compose_base_cmd() + ['pull'], verb, debug, True)
 
         recreate_param = '--force-recreate' if recreate is True else '--no-recreate'
-        cmd = self.compose_base_cmd + ['up', '-d', recreate_param, '--remove-orphans']
+        cmd = self._get_compose_base_cmd() + ['up', '-d', recreate_param, '--remove-orphans']
         cmd += _get_single_container_option(container)
 
         command.verbose(self.context['VERBOSE'], 'Command: ' + ' '.join(cmd))
@@ -110,6 +126,8 @@ class StakkrActions:
 
     def status(self):
         """Return a nice table with the list of started containers."""
+        self.init_project()
+
         try:
             docker.check_cts_are_running(self.project_name)
         except SystemError:
@@ -121,12 +139,13 @@ class StakkrActions:
 
     def stop(self, container: str, proxy: bool):
         """If started, stop the containers defined in config. Else throw an error."""
+        self.init_project()
         verb = self.context['VERBOSE']
         debug = self.context['DEBUG']
 
         docker.check_cts_are_running(self.project_name)
 
-        cmd = self.compose_base_cmd + ['stop'] + _get_single_container_option(container)
+        cmd = self._get_compose_base_cmd() + ['stop'] + _get_single_container_option(container)
         command.launch_cmd_displays_output(cmd, verb, debug, True)
 
         self.running_cts, self.cts = docker.get_running_containers(self.project_name)

@@ -33,7 +33,6 @@ def stakkr(ctx, config, debug, verbose):
     ctx.obj['DEBUG'] = debug
     ctx.obj['VERBOSE'] = verbose
     ctx.obj['STAKKR'] = StakkrActions(ctx.obj)
-    ctx.obj['CTS'] = get_running_containers_names(ctx.obj['STAKKR'].project_name)
 
 
 @stakkr.command(help="""Enter a container to perform direct actions such as
@@ -44,6 +43,8 @@ install packages, run commands, etc.""")
 @click.pass_context
 def console(ctx, container: str, user: str, tty: bool):
     """See command Help."""
+    ctx.obj['STAKKR'].init_project()
+    ctx.obj['CTS'] = get_running_containers_names(ctx.obj['STAKKR'].project_name)
     if len(ctx.obj['CTS']) is not 0:
         ct_choice = click.Choice(ctx.obj['CTS'])
         ct_choice.convert(container, None, ctx)
@@ -65,6 +66,8 @@ Examples:\n
 @click.argument('command', required=True, nargs=-1, type=click.UNPROCESSED)
 def exec_cmd(ctx, user: str, container: str, command: tuple, tty: bool):
     """See command Help."""
+    ctx.obj['STAKKR'].init_project()
+    ctx.obj['CTS'] = get_running_containers_names(ctx.obj['STAKKR'].project_name)
     if len(ctx.obj['CTS']) is not 0:
         click.Choice(ctx.obj['CTS']).convert(container, None, ctx)
 

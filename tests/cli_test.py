@@ -51,7 +51,7 @@ class CliTest(unittest.TestCase):
         self.assertRegex(res['stderr'], r'.*Failed validating main config or plugin configs.*')
         self.assertRegex(res['stderr'], r'.*config_invalid\.yml.*')
         self.assertRegex(res['stderr'], r".*'toto' was unexpected.*")
-        self.assertEqual(res['stdout'], '')
+        self.assertRegex(res['stdout'], r".*STARTING.* your stakkr services")
         self.assertIs(res['status'], 1)
 
     def test_console_no_ct(self):
