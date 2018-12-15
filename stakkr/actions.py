@@ -25,7 +25,7 @@ class StakkrActions:
         # Set some general variables
         self.config = None
         self.project_name = None
-        self.project_dir = None
+        self.project_dir = file_utils.find_project_dir()
         self.cwd_abs = os.getcwd()
         self.cwd_relative = None
         self.cts = []

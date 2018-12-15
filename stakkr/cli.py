@@ -154,7 +154,6 @@ def services_add(ctx, package: str):
     """See command Help."""
     from stakkr.services import install
 
-    ctx.obj['STAKKR'].init_project()
     services_dir = '{}/services'.format(ctx.obj['STAKKR'].project_dir)
     success, message = install(services_dir, package)
     if success is False:
@@ -172,7 +171,6 @@ def services_update(ctx):
 
     from stakkr.services import update_all
 
-    ctx.obj['STAKKR'].init_project()
     services_dir = '{}/services'.format(ctx.obj['STAKKR'].project_dir)
     update_all(services_dir)
     print(click.style('Packages updated', fg='green'))
