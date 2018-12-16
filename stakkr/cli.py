@@ -99,6 +99,9 @@ def refresh_plugins(ctx):
     """See command Help."""
     from stakkr.plugins import add_plugins
 
+    print(click.style('Not implemented yet in v4', fg='red'))
+    exit(1)
+
     print(click.style('Adding plugins from plugins/', fg='green'))
     plugins = add_plugins()
     if len(plugins) is 0:
