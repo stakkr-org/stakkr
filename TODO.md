@@ -26,5 +26,18 @@ General
 * gérer bash completion et zsh completion niveau systeme
 * ecrire la doc pour faire les tests unitaires
 
-apk add python3 git
-python3 -m pip install https://github.com/stakkr-org/stakkr/archive/v4.0-dev.zip
+
+# Development :
+```bash
+$ docker run --privileged --name stakkr-test -v $(pwd):/stakkr-core --rm -d docker:stable-dind
+$ docker exec -ti stakkr-test /bin/sh
+
+$ apk add python3 git vim
+$ python3 -m pip install -e /stakkr-core
+# Or from the latest dev version :
+# $ python3 -m pip install https://github.com/stakkr-org/stakkr/archive/v4.0-dev.zip
+
+$ mkdir /stakkr-dev
+$ cd /stakkr-dev
+$ stakkr-init
+```
