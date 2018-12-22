@@ -2,7 +2,6 @@ General
 =======
 * Add unit tests for `stakkr services`, `stakkr services-add xyz` and `stakkr services-update`
 * Use click-completion for bash and zsh completion
-* Rename conf/ to etc/ and get more standard paths
 * Rename logs/ to var/log/ or implement a log centralization service :) (https://hub.docker.com/r/graylog/graylog/ or https://hub.docker.com/r/prom/prometheus/ ?)
 * Move `stakkr mysql` to plugins/
 * improve error message when config invalid (no need to display standard config_default.yml)
