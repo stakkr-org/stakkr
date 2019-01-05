@@ -4,35 +4,34 @@
 import os
 import shutil
 import sys
-from setuptools.command.install import install
+import click
 from stakkr import file_utils
+from stakkr.actions import StakkrActions
+from yaml import load, dump
 
 
-try:
-    import click
-
-    @click.command(help="""Initialize for the first time stakkr by copying
+@click.command(help="""Initialize for the first time stakkr by copying
 templates and directory structure""")
-    @click.option('--force', '-f', help="Force recreate directories structure", is_flag=True)
-    def init(force: bool):
-        """CLI Entry point, when initializing stakkr manually."""
-        config_file = os.getcwd() + '/stakkr.yml'
-        if os.path.isfile(config_file) and force is False:
-            click.secho('Config file (stakkr.yml) already present. Leaving.', fg='yellow')
-            return
+@click.option('--force', '-f', help="Force recreate directories structure", is_flag=True)
+@click.argument('recipe', required=False)
+def init(force: bool, recipe: str = None):
+    """CLI Entry point, when initializing stakkr manually."""
+    config_file = os.getcwd() + '/stakkr.yml'
+    if os.path.isfile(config_file) and force is False:
+        click.secho('Config file (stakkr.yml) already present. Leaving.', fg='yellow')
+        return
 
+    if recipe is not None:
+        install_recipe(recipe)
+        msg = "Recipe has been installed"
+    else:
+        install_filetree(force)
         msg = "Config (stakkr.yml) not present, don't forget to create it"
-        click.secho(msg, fg='yellow')
-        _post_install(force)
 
-except ImportError:
-    def init():
-        """If click is not installed, display that message."""
-        print('Stakkr has not been installed yet')
-        sys.exit(1)
+    click.secho(msg, fg='yellow')
 
 
-def _post_install(force: bool = False):
+def install_filetree(force: bool = False):
     """Create templates (directories and files)."""
     print('Post Installation : create templates')
 
@@ -69,6 +68,25 @@ def _post_install(force: bool = False):
         _copy_file(project_dir, required_tpl, force)
 
 
+def install_recipe(recipe: str):
+    recipe_config = _recipe_get_config(recipe)
+    with open(recipe_config, 'r') as stream:
+        recipe = load(stream)
+
+    click.secho('Installing services')
+    _recipe_install_services(recipe['services'])
+
+    click.secho('Creating config')
+    _recipe_create_stakkr_config(recipe['config'])
+
+    click.secho('Starting stakkr (can take a few minutes)')
+    stakkr = _recipe_init_stakkr()
+    res = stakkr.start(None, True, True, True)
+
+    click.secho('Running commands')
+    _recipe_run_commands(stakkr, recipe['commands'])
+    _recipe_display_messages(stakkr)
+
 def _create_dir(project_dir: str, dir_name: str, force: bool):
     dir_name = project_dir + '/' + dir_name.lstrip('/')
     if os.path.isdir(dir_name) and force is False:
@@ -93,17 +111,48 @@ def _copy_file(project_dir: str, source_file: str, force: bool):
         print(msg, file=sys.stderr)
 
 
-class StakkrPostInstall(install):
-    """Class called by the main setup.py."""
+def _recipe_get_config(recipe: str):
+    if recipe is None:
+        return
 
-    def __init__(self, *args, **kwargs):
-        """Inherit from setup install class and ensure we are in a venv."""
-        super(StakkrPostInstall, self).__init__(*args, **kwargs)
+    recipe_config = file_utils.get_file('static/recipes', '{}.yml'.format(recipe))
+    if os.path.isfile(recipe_config) is False:
+        click.secho('"{}" recipe does not exist'.format(recipe), fg='red')
+        sys.exit(1)
 
-        try:
-            file_utils.find_project_dir()
-            _post_install(False)
-        except OSError:
-            msg = 'You must run setup.py from a virtualenv if you want to have'
-            msg += ' templates installed'
-            print(msg)
+    return recipe_config
+
+
+def _recipe_create_stakkr_config(config: dict):
+    with open('stakkr.yml', 'w') as outfile:
+        dump(config, outfile, default_flow_style=False)
+
+
+def _recipe_install_services(services: list):
+    from stakkr.services import install
+
+    for service in services:
+        success, message = install('services', service)
+        if success is False:
+            click.echo(click.style(message, fg='red'))
+            sys.exit(1)
+
+
+def _recipe_init_stakkr():
+    return StakkrActions({
+        'CONFIG': '{}/stakkr.yml'.format(os.getcwd()),
+        'VERBOSE': False,
+        'DEBUG': False
+    })
+
+
+def _recipe_run_commands(stakkr: StakkrActions, commands: str):
+    for title, cmd in commands.items():
+        click.secho('  ↳ {}'.format(title))
+        user = cmd['user'] if 'user' in cmd else 'root'
+        stakkr.exec_cmd(cmd['container'], user, cmd['args'], True)
+
+def _recipe_display_messages(stakkr: StakkrActions):
+    services_ports = stakkr.get_services_urls()
+    print('\nServices URLs :')
+    print(services_ports)

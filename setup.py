@@ -1,6 +1,5 @@
 import os
 from distutils.core import setup
-from stakkr.setup import StakkrPostInstall
 
 
 extra_packages = []
@@ -40,7 +39,6 @@ stakkr-compose=stakkr.stakkr_compose:cli''',
         'humanfriendly',
         'GitPython'
         ] + extra_packages,
-    cmdclass={'install': StakkrPostInstall},
     classifiers=[
         'Development Status :: 4 - Beta',
         # 'Development Status :: 5 - Production/Stable',

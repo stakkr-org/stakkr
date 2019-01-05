@@ -5,7 +5,7 @@ Before running any command
 ---------------------------------
 .. IMPORTANT::
     You have to be in a virtual environement. To verify that, check that your
-	prompt starts with something like ``(xyz_stakkr)``
+    prompt starts with something like ``(xyz_stakkr)``
 
 If you have autoenv, and if you kept the name of the virtualenv as
 described above, just enter the directory, and it’ll be automatically activated.

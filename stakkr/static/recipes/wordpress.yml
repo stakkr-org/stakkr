@@ -1,0 +1,81 @@
+config:
+  services:
+     adminer:
+       enabled: true
+       version: latest
+       ram: 256M
+     mysql:
+       enabled: true
+       version: 5.7
+       ram: 1024M
+       root_password: root
+     apache:
+       enabled: true
+       version: latest
+       ram: 256M
+     php:
+       enabled: true
+       version: 7.2
+       ram: 1024M
+
+services:
+  - databases
+  - php
+  - webservers
+
+commands:
+  Update apt:
+    container: php
+    args: [apt, update, -qq]
+  Install required packages:
+    container: php
+    args: [apt, install, -qq, -y, less, curl, mysql-client]
+  Create Wordpress DB:
+    container: mysql
+    args: [mysql, -proot, -e, CREATE DATABASE wordpress]
+  Create /home/www-data/bin:
+    container: php
+    user: www-data
+    args: [mkdir, -p, /home/www-data/bin]
+  Install wp-cli:
+    container: php
+    user: www-data
+    args: [curl, 'https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar', -o, /home/www-data/bin/wp, -s]
+  Set wp-cli as executable:
+    container: php
+    user: www-data
+    args: [chmod, +x, /home/www-data/bin/wp]
+  Download wordpress:
+    container: php
+    user: www-data
+    args: [/home/www-data/bin/wp, core, download, --path=/var/www]
+  Configure wordpress:
+    container: php
+    user: www-data
+    args:
+      - /home/www-data/bin/wp
+      - core
+      - config
+      - '--path=/var/www'
+      - '--dbhost=mysql'
+      - '--dbname=wordpress'
+      - '--dbuser=root'
+      - '--dbpass=root'
+  Install wordpress:
+    container: php
+    user: www-data
+    args:
+      - /home/www-data/bin/wp
+      - core
+      - install
+      - '--path=/var/www'
+      - '--url=http://stakkr.localhost'
+      - '--title=Wordpress'
+      - '--admin_email=admin@example.com'
+      - '--admin_name=admin'
+      - '--admin_password=admin'
+
+
+messages:
+  - Wordpress has been installed in www/
+  - To access it, go to the webserver URL given above and follow the wizard

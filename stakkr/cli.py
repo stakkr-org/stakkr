@@ -186,7 +186,7 @@ def services_update(ctx):
 @click.argument('container', required=False)
 @click.option('--pull', '-p', help="Force a pull of the latest images versions", is_flag=True)
 @click.option('--recreate', '-r', help="Recreate all containers", is_flag=True)
-@click.option('--proxy/--no-proxy', '-P', help="Start the proxy", default=True)
+@click.option('--proxy/--no-proxy', '-P', help="Start proxy", default=True)
 @click.pass_context
 def start(ctx, container: str, pull: bool, recreate: bool, proxy: bool):
     """See command Help."""

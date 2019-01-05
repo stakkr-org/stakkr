@@ -27,7 +27,7 @@ To install stakkr, you need python 3 and docker.
 
 - For **Ubuntu**, install python3 with ``sudo apt -y install python3-pip python3-setuptools python3-virtualenv python3-wheel``. You can download Docker from : https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/
 
-- For **MacOS**, install python3 from https://www.python.org/downloads/mac-osx/ (3.6 is ok) or with brew with ``brew install python3 autoenv``. Then docker from https://docs.docker.com/docker-for-mac/install/.
+- For **MacOS**, install python3 from https://www.python.org/downloads/mac-osx/ (3.6 is ok) or with brew with ``brew install python3``. Then docker from https://docs.docker.com/docker-for-mac/install/.
 
 - For **Windows**, install python3 from https://www.python.org/downloads/ and docker from https://docs.docker.com/docker-for-windows/install/
 
@@ -36,7 +36,7 @@ Then :
 
 .. code:: shell
 
-    $ pip --no-cache-dir install stakkr
+    $ python -m pip --no-cache-dir install stakkr
     $ mkdir my_project
     $ cd my_project
     $ stakkr-init
@@ -65,9 +65,9 @@ Then install stakkr and its dependencies :
 
 .. code:: shell
 
-    $ pip install --upgrade pip wheel
-    $ pip install -e .
-    $ pip install -r requirements-dev.txt
+    $ python -m pip install --upgrade pip wheel
+    $ python -m pip install -e .
+    $ python -m pip install -r requirements-dev.txt
     $ stakkr-init
 
 
