@@ -15,6 +15,7 @@ General
 * find a solution to generate a stakkr.yml template automatically
 * Make sure config is read once only
 * Test mailhog deeply
+* Prepare recipes as wordpress, drupal, etc...
 * Add pgadmin + phpredadmin in databases
 * ~~Redo stakkr-init~~
 * ~~Services outside, each will be a repo~~

@@ -1,6 +1,6 @@
 # Everything about Python
 /.cache
-/.pytest_cache
+.pytest_cache
 /build
 /dist
 *.egg-info

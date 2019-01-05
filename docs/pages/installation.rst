@@ -1,141 +1,87 @@
+============
 Installation
-========================================
+============
 
 
 Docker
-----------
+======
 You must have Docker installed on your computer. Pick the right version for your OS from https://www.docker.com/community-edition
 
-
-Prerequisites
-----------------
 .. WARNING::
-	You need to first install OS packages for Python3: ``pip``, ``setuptools``, ``virtualenv`` and (optionally) `autoenv <https://github.com/kennethreitz/autoenv>`_ on your OS.
 
-	Also, to use docker for Linux as a normal user, you need to add your user to the ``docker`` group (see the documentation)
-
-
-Example of installation of the dependencies on Ubuntu:
-
-.. code:: shell
-
-    $ sudo apt-get -y install python3-pip python3-setuptools python3-virtualenv virtualenv
-    $ sudo pip3 install --upgrade pip
-    $ sudo pip3 install autoenv
+    Also, to use docker for Linux as a normal user, you need to add your user to the ``docker`` group (see the documentation)
 
 
 Stakkr
-----------
+======
 
-There are 2 ways to intall Stakkr.
+Stakkr is installable via pip, system-wide (or for a specific user). It's clean and detects automatically
+the config file (``stakkr.yml``) presence in a directory or parent directory to execute commands. ``stakkr.yml`` acts
+like ``docker-compose.yml`` with super power (and is super simple !).
 
-1. The easy way
-~~~~~~~~~~~~~~~~~~
-Stakkr is usable as a library, it's clean, you have a very beautiful tree
-once installed, and it's **recommended**. You can install as many stakkrs that you need.
-Just be careful to set different names (and networks if you need) in `conf/compose.ini`
+It means that a directory with a ``stakkr.yml`` is a complete stack.
 
-1.1 Installation under Linux
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Installation and configuration
+------------------------------
+To install stakkr, you need python 3 and docker.
 
-For Ubuntu, you can download Docker from : https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/
-
-.. code:: shell
-
-    $ mkdir mydev
-    $ cd mydev
-    $ virtualenv -p /usr/bin/python3 mydev_stakkr
-    $ source mydev_stakkr/bin/activate
-    $ pip --no-cache-dir install stakkr
-
-It'll run a ``post_install`` script that copy some templates / create base directories to work.
-
-If you have installed ``autoenv``, add into your ``.bashrc``:
-
-.. code:: shell
-
-    source `which activate.sh`
-
-
-
-1.2 Installation under Windows
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-First install python3 from https://www.python.org/downloads/ and
+- For **Ubuntu**, install python3 with ``sudo apt -y install python3-pip python3-setuptools python3-virtualenv python3-wheel``.
+You can download Docker from : https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/
+- For **MacOS**, install python3 from https://www.python.org/downloads/mac-osx/ (3.6 is ok)
+or with brew with ``brew install python3 autoenv``. Then docker from https://docs.docker.com/docker-for-mac/install/.
+- For **Windows**, install python3 from https://www.python.org/downloads/ and
 docker from https://docs.docker.com/docker-for-windows/install/
 
-.. code:: shell
 
-    > pip install virtualenv
-    > mkdir mydev
-    > cd mydev
-    > virtualenv venv
-    > venv\Scripts\activate
-    > pip install stakkr
-
-
-
-1.3 Installation under MacOS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-First install python3 from https://www.python.org/downloads/mac-osx/ (3.6 is ok) or with brew with `brew install python3 autoenv`.
-Then docker from https://docs.docker.com/docker-for-mac/install/.
-
+Then :
 
 .. code:: shell
 
-    $ mkdir mydev
-    $ cd mydev
-    $ python3 -m venv mydev_stakkr
-    $ source mydev_stakkr/bin/activate
-    $ pip3 --no-cache-dir install stakkr
+    $ pip --no-cache-dir install stakkr
+    $ mkdir my_project
+    $ cd my_project
+    $ stakkr-init
 
-
-1.4 Development version
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-If you want to install the dev version, you can do the following :
-
-.. code:: shell
-
-    $ pip install git+https://github.com/edyan/stakkr.git
-
-
-
-2. The old way
-~~~~~~~~~~~~~~~~
-Stakkr gets installed by cloning the github repo .... *not recommended if you don't develop on it*.
-
-You can clone the repository as many times as you want as you can have
-multiple instances at the same time. A good practice is too have one
-clone for one project or one clone for projects with the same versions
-of PHP / MySQL / Elasticsearch, etc ...
-
-.. code:: shell
-
-    $ git clone https://github.com/edyan/stakkr myenv
-
-
-Once cloned, you can run the ``install.sh`` script made for Ubuntu
-(tested on 16.04) that will install the dependencies:
-
-.. code:: shell
-
-    $ cd myenv
-    $ ./install.sh
+Init copies some templates and creates base directories to work.
 
 
 Development
---------------
+-----------
 
-To develop, use the 2nd way to install Stakkr then :
+Setup your env
+~~~~~~~~~~~~~~
+
+To develop stakkr, you have to create a virtual environment :
 
 .. code:: shell
 
+    $ git clone git@github.com:stakkr-org/stakkr.git stakkr
+    $ cd stakkr
+    $ python3 -m venv venv
+    $ source venv/bin/activate
+    # For Windows use "venv\Scripts\activate"
+
+
+Then install stakkr and its dependencies :
+
+.. code:: shell
+
+    $ pip install --upgrade pip wheel
+    $ pip install -e .
     $ pip install -r requirements-dev.txt
+    $ stakkr-init
+
+
+Run Tests
+~~~~~~~~~
+
+.. code:: shell
+
     $ py.test -c pytest.ini
 
 
-To generate that doc :
+Generate that doc
+~~~~~~~~~~~~~~~~~
 
 .. code:: shell
 
