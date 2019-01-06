@@ -95,9 +95,10 @@ The code below starts a dind container and init a symfony app :
 
 .. code:: shell
 
-    $ docker run --rm -ti docker:dind ash
+    $ docker run -d --privileged --rm --name stakkr-test docker:dind
+    $ docker exec -ti stakkr-test ash
     $ apk add curl git python3
     $ python3 -m pip install --upgrade https://github.com/stakkr-org/stakkr/archive/master.zip
-    $ mkdir /app
-    $ cd /app
+    $ mkdir /app && cd /app
     $ stakkr-init symfony
+    $ curl http://apache.app.stakkr.org

@@ -20,10 +20,6 @@ services:
   - webservers
 
 commands:
-  Create /home/www-data/bin:
-    container: php
-    user: www-data
-    args: [mkdir, -p, /home/www-data/bin]
   Download composer:
     container: php
     user: www-data

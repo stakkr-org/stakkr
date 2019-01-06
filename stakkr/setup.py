@@ -69,6 +69,13 @@ def install_filetree(force: bool = False):
 
 
 def install_recipe(recipe: str):
+    required_dirs = ['home/www-data', 'home/www-data/bin', 'www']
+    for required_dir in required_dirs:
+        _create_dir(project_dir, required_dir, force)
+    required_tpls = ['home/www-data/.bashrc']
+    for required_tpl in required_tpls:
+        _copy_file(project_dir, required_tpl, force)
+
     recipe_config = _recipe_get_config(recipe)
     with open(recipe_config, 'r') as stream:
         recipe = load(stream)

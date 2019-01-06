@@ -28,10 +28,6 @@ commands:
   Create Wordpress DB:
     container: mysql
     args: [mysql, -proot, -e, CREATE DATABASE wordpress]
-  Create /home/www-data/bin:
-    container: php
-    user: www-data
-    args: [mkdir, -p, /home/www-data/bin]
   Install wp-cli:
     container: php
     user: www-data
