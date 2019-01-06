@@ -1,12 +1,12 @@
 import os
-from distutils.core import setup
+from setuptools import setup
 
 
 extra_packages = []
 if os.name == 'nt':
     extra_packages.append('pypiwin32')
 
-__version__ = '4.0'
+__version__ = '4.0b1'
 
 # Get the long description from the README file
 here = os.path.dirname(os.path.abspath(__file__))
