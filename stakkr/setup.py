@@ -64,7 +64,7 @@ def install_filetree(force: bool = False):
 
 
 def install_recipe(recipe: str):
-    # Create some directories / files required
+    click.secho('Create some required files / directories')
     required_dirs = ['home/www-data', 'home/www-data/bin', 'www']
     for required_dir in required_dirs:
         _create_dir(os.getcwd(), required_dir, False)
@@ -105,10 +105,10 @@ def _copy_file(project_dir: str, source_file: str, force: bool):
     full_path = file_utils.get_file('tpls', source_file)
     dest_file = project_dir + '/' + source_file
     if os.path.isfile(dest_file) and force is False:
-        print('  - {} exists, do not overwrite'.format(source_file))
+        click.secho('  - {} exists, do not overwrite'.format(source_file))
         return
 
-    print('  - {} written'.format(source_file))
+    click.secho('  - {} written'.format(source_file))
     try:
         shutil.copy(full_path, dest_file)
     except Exception:
