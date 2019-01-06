@@ -1,0 +1,42 @@
+config:
+  services:
+     adminer:
+       enabled: true
+     mysql:
+       enabled: true
+       version: 5.7
+       ram: 1024M
+       root_password: root
+     nginx:
+       enabled: true
+     php:
+       enabled: true
+       version: latest
+       ram: 1024M
+
+services:
+  - databases
+  - php
+  - webservers
+
+commands:
+  Create /home/www-data/bin:
+    container: php
+    user: www-data
+    args: [mkdir, -p, /home/www-data/bin]
+  Download composer:
+    container: php
+    user: www-data
+    args: [php, -r, "copy('https://getcomposer.org/download/1.8.0/composer.phar', '/home/www-data/bin/composer');"]
+  Set composer as executable:
+    container: php
+    user: www-data
+    args: [chmod, +x, /home/www-data/bin/composer]
+  Create a phpinfo in /var/www:
+    container: php
+    user: www-data
+    args: [php, -r, "file_put_contents('/var/www/index.php', '<?php phpinfo();');"]
+
+messages:
+  - Your LEMP stack is ready (Nginx, PHP, MySQL)
+  - MySQL user and password are "root / root"

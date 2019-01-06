@@ -28,7 +28,7 @@ def init(force: bool, recipe: str = None):
         install_filetree(force)
         msg = "Config (stakkr.yml) not present, don't forget to create it"
 
-    click.secho(msg, fg='yellow')
+    click.secho(msg, fg='green')
 
 
 def install_filetree(force: bool = False):
@@ -81,11 +81,11 @@ def install_recipe(recipe: str):
 
     click.secho('Starting stakkr (can take a few minutes)')
     stakkr = _recipe_init_stakkr()
-    res = stakkr.start(None, True, True, True)
+    stakkr.start(None, True, True, True)
 
     click.secho('Running commands')
     _recipe_run_commands(stakkr, recipe['commands'])
-    _recipe_display_messages(stakkr)
+    _recipe_display_messages(stakkr, recipe['messages'])
 
 def _create_dir(project_dir: str, dir_name: str, force: bool):
     dir_name = project_dir + '/' + dir_name.lstrip('/')
@@ -152,7 +152,13 @@ def _recipe_run_commands(stakkr: StakkrActions, commands: str):
         user = cmd['user'] if 'user' in cmd else 'root'
         stakkr.exec_cmd(cmd['container'], user, cmd['args'], True)
 
-def _recipe_display_messages(stakkr: StakkrActions):
+def _recipe_display_messages(stakkr: StakkrActions, recipe_messages: list):
     services_ports = stakkr.get_services_urls()
-    print('\nServices URLs :')
-    print(services_ports)
+    click.secho('\nServices URLs :')
+    click.secho(services_ports)
+
+    if len(recipe_messages) > 0:
+        click.secho('Recipe messages:', fg='green')
+
+    for message in recipe_messages:
+        click.secho('  - {}'.format(message))

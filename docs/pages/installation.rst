@@ -86,3 +86,13 @@ Generate that doc
 
     $ cd docs
     $ sphinx-autobuild . _build_html
+
+
+Try stakkr from a docker in docker container
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: shell
+
+    $ docker run --rm -ti docker:dind ash
+    $ apk add python3
+    $ 

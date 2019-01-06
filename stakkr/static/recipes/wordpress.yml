@@ -2,21 +2,16 @@ config:
   services:
      adminer:
        enabled: true
-       version: latest
-       ram: 256M
      mysql:
        enabled: true
        version: 5.7
-       ram: 1024M
        root_password: root
      apache:
        enabled: true
-       version: latest
        ram: 256M
      php:
        enabled: true
        version: 7.2
-       ram: 1024M
 
 services:
   - databases
@@ -69,13 +64,13 @@ commands:
       - core
       - install
       - '--path=/var/www'
-      - '--url=http://stakkr.localhost'
+      - '--url=http://apache.$STAKKR_PROJECT_NAME.$STAKKR_PROXY_DOMAIN'
       - '--title=Wordpress'
       - '--admin_email=admin@example.com'
       - '--admin_name=admin'
       - '--admin_password=admin'
 
-
 messages:
   - Wordpress has been installed in www/
   - To access it, go to the webserver URL given above and follow the wizard
+  - 'Login: admin - Password: admin'

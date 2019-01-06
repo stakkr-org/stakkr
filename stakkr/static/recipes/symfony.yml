@@ -1,0 +1,49 @@
+config:
+  services:
+     adminer:
+       enabled: true
+     mysql:
+       enabled: true
+       version: 5.7
+       ram: 1024M
+       root_password: root
+     nginx:
+       enabled: true
+       document_root: /var/www/app/public
+     php:
+       enabled: true
+       version: 7.2
+       ram: 1024M
+
+services:
+  - databases
+  - php
+  - webservers
+
+commands:
+  Update apt:
+    container: php
+    args: [apt, update, -qq]
+  Install required packages:
+    container: php
+    args: [apt, install, -qq, -y, unzip, git]
+  Create /home/www-data/bin:
+    container: php
+    user: www-data
+    args: [mkdir, -p, /home/www-data/bin]
+  Download composer:
+    container: php
+    user: www-data
+    args: [php, -r, "copy('https://getcomposer.org/download/1.8.0/composer.phar', '/home/www-data/bin/composer');"]
+  Set composer as executable:
+    container: php
+    user: www-data
+    args: [chmod, +x, /home/www-data/bin/composer]
+  Install symfony:
+    container: php
+    user: www-data
+    args: [/home/www-data/bin/composer, '-q', create-project, symfony/website-skeleton, /var/www/app]
+
+messages:
+  - Symfony is ready and running with a LEMP stack (Nginx, PHP, MySQL)
+  - MySQL user and password are "root / root"
