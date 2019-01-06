@@ -36,7 +36,7 @@ Then :
 
 .. code:: bash
 
-    $ sudo python -m pip --no-cache-dir install stakkr
+    $ sudo python3 -m pip --no-cache-dir install stakkr
     $ mkdir my_project
     $ cd my_project
 
