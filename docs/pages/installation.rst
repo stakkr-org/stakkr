@@ -91,8 +91,13 @@ Generate that doc
 Try stakkr from a docker in docker container
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+The code below starts a dind container and init a symfony app :
+
 .. code:: shell
 
     $ docker run --rm -ti docker:dind ash
     $ apk add python3
-    $ 
+    $ python3 -m pip install --upgrade https://github.com/stakkr-org/stakkr/archive/master.zip
+    $ mkdir /app
+    $ cd /app
+    $ stakkr-init symfony
