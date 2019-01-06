@@ -36,7 +36,7 @@ Then :
 
 .. code:: shell
 
-    $ python -m pip --no-cache-dir install stakkr
+    $ python -m pip --no-cache-dir --user install stakkr
     $ mkdir my_project
     $ cd my_project
     $ stakkr-init
@@ -95,10 +95,24 @@ The code below starts a dind container and init a symfony app :
 
 .. code:: shell
 
+    # From the host
     $ docker run -d --privileged --rm --name stakkr-test docker:dind
     $ docker exec -ti stakkr-test ash
-    $ apk add curl git python3
-    $ python3 -m pip install --upgrade https://github.com/stakkr-org/stakkr/archive/master.zip
-    $ mkdir /app && cd /app
+
+    # From the container
+    # Install packages required by stakkr + w3m as a local browser
+    $ apk add curl git python3 w3m
+
+    # Stakkr should always be started as another user than root
+    $ addgroup edyan
+    $ adduser -s /bin/ash -D -S -G edyan edyan
+    $ addgroup edyan root
+    $ su - edyan
+
+    # Install stakkr
+    $ python3 -m pip install --user --upgrade https://github.com/stakkr-org/stakkr/archive/master.zip
+    $ mkdir ~/app && cd ~/app
     $ stakkr-init symfony
-    $ curl http://apache.app.stakkr.org
+
+    # The following command should returns the default symfony page
+    $ w3m http://apache.app.stakkr.org

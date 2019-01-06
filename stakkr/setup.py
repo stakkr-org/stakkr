@@ -21,11 +21,12 @@ def init(force: bool, recipe: str = None):
         click.secho('Config file (stakkr.yml) already present. Leaving.', fg='yellow')
         return
 
+    click.secho('Create some required files / directories')
+    install_filetree(force)
     if recipe is not None:
         install_recipe(recipe)
         msg = "Recipe has been installed"
     else:
-        install_filetree(force)
         msg = "Config (stakkr.yml) not present, don't forget to create it"
 
     click.secho(msg, fg='green')
@@ -64,14 +65,6 @@ def install_filetree(force: bool = False):
 
 
 def install_recipe(recipe: str):
-    click.secho('Create some required files / directories')
-    required_dirs = ['home/www-data', 'home/www-data/bin', 'www']
-    for required_dir in required_dirs:
-        _create_dir(os.getcwd(), required_dir, False)
-    required_tpls = ['home/www-data/.bashrc']
-    for required_tpl in required_tpls:
-        _copy_file(os.getcwd(), required_tpl, False)
-
     # Get config
     recipe_config = _recipe_get_config(recipe)
     with open(recipe_config, 'r') as stream:
