@@ -34,7 +34,7 @@ To install stakkr, you need python 3 and docker.
 
 Then :
 
-.. code:: shell
+.. code:: bash
 
     $ sudo python -m pip --no-cache-dir install stakkr
     $ mkdir my_project
@@ -58,7 +58,7 @@ Setup your env
 
 To develop stakkr, you have to create a virtual environment :
 
-.. code:: shell
+.. code:: bash
 
     $ git clone git@github.com:stakkr-org/stakkr.git stakkr
     $ cd stakkr
@@ -69,7 +69,7 @@ To develop stakkr, you have to create a virtual environment :
 
 Then install stakkr and its dependencies :
 
-.. code:: shell
+.. code:: bash
 
     $ python -m pip install --upgrade pip wheel
     $ python -m pip install -e .
@@ -80,7 +80,7 @@ Then install stakkr and its dependencies :
 Run Tests
 ~~~~~~~~~
 
-.. code:: shell
+.. code:: bash
 
     $ py.test -c pytest.ini
 
@@ -88,7 +88,7 @@ Run Tests
 Generate that doc
 ~~~~~~~~~~~~~~~~~
 
-.. code:: shell
+.. code:: bash
 
     $ cd docs
     $ sphinx-autobuild . _build_html
@@ -99,7 +99,7 @@ Try stakkr from a docker in docker container
 
 The code below starts a dind container and init a symfony app :
 
-.. code:: shell
+.. code:: bash
 
     # From the host
     $ docker run -d --privileged --rm --name stakkr-test docker:dind
@@ -109,14 +109,15 @@ The code below starts a dind container and init a symfony app :
     # Install packages required by stakkr + w3m as a local browser
     $ apk add curl git python3 w3m
 
+    # Install stakkr
+    $ python3 -m pip install --upgrade https://github.com/stakkr-org/stakkr/archive/master.zip
     # Stakkr should always be started as another user than root
     $ addgroup edyan
     $ adduser -s /bin/ash -D -S -G edyan edyan
     $ addgroup edyan root
-    $ python3 -m pip install --upgrade https://github.com/stakkr-org/stakkr/archive/master.zip
     $ su - edyan
 
-    # Install stakkr
+    # Create a symfony project from a recipe
     $ mkdir ~/app && cd ~/app
     $ stakkr-init symfony
     # The following command should returns the default symfony page
