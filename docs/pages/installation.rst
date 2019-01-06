@@ -36,12 +36,18 @@ Then :
 
 .. code:: shell
 
-    $ python -m pip --no-cache-dir --user install stakkr
+    $ sudo python -m pip --no-cache-dir install stakkr
     $ mkdir my_project
     $ cd my_project
-    $ stakkr-init
 
-Init copies some templates and creates base directories to work.
+    # RECIPE is optional but better to start from an existing one ! Examples :
+    #   stakkr-init wordpress
+    #   stakkr-init symfony
+
+    $ stakkr-init {RECIPE}
+
+As you see, it's better to install stakkr as root. Else you have to set your PATH to include
+python user directory. ``stakkr-init`` copies some templates and creates base directories to work.
 
 
 Development
@@ -107,13 +113,17 @@ The code below starts a dind container and init a symfony app :
     $ addgroup edyan
     $ adduser -s /bin/ash -D -S -G edyan edyan
     $ addgroup edyan root
+    $ python3 -m pip install --upgrade https://github.com/stakkr-org/stakkr/archive/master.zip
     $ su - edyan
 
     # Install stakkr
-    $ python3 -m pip install --user --upgrade https://github.com/stakkr-org/stakkr/archive/master.zip
-    $ export PATH=$PATH:/home/edyan/.local/bin
     $ mkdir ~/app && cd ~/app
     $ stakkr-init symfony
-
     # The following command should returns the default symfony page
-    $ w3m http://apache.app.stakkr.org
+    $ w3m http://nginx.app.localhost
+
+    # Go further
+    $ mkdir ~/wp && cd ~/wp
+    $ stakkr-init wordpress
+    # The following command should returns wordpress home
+    $ w3m http://apache.wp.localhost
