@@ -171,14 +171,17 @@ def _set_env_from_config(config: dict):
     """Define environment variables to be used in services yaml."""
     os.environ['COMPOSE_BASE_DIR'] = config['project_dir']
     os.environ['COMPOSE_PROJECT_NAME'] = config['project_name']
-    os.environ['DOCKER_UID'] = _get_uid(config['uid'])
-    os.environ['DOCKER_GID'] = _get_gid(config['gid'])
     for parameter, value in config.items():
         if parameter == 'services':
             _set_env_for_services(value)
             continue
 
         os.environ['DOCKER_{}'.format(parameter.upper())] = str(value)
+
+    # Do that at the end, else the value in config will overwrite the possible
+    # default value
+    os.environ['DOCKER_UID'] = _get_uid(config['uid'])
+    os.environ['DOCKER_GID'] = _get_gid(config['gid'])
 
 
 if __name__ == '__main__':

@@ -21,7 +21,7 @@ def init(force: bool, recipe: str = None):
         click.secho('Config file (stakkr.yml) already present. Leaving.', fg='yellow')
         return
 
-    click.secho('Create some required files / directories')
+    click.secho('Create some required files / directories', fg='green')
     install_filetree(force)
     if recipe is not None:
         install_recipe(recipe)
@@ -34,8 +34,6 @@ def init(force: bool, recipe: str = None):
 
 def install_filetree(force: bool = False):
     """Create templates (directories and files)."""
-    click.secho('Create templates', fg='green')
-
     required_dirs = [
         'conf/mysql-override',
         'conf/php-fpm-override',
