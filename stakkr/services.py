@@ -19,10 +19,13 @@ def install(services_dir: str, package: str):
         msg = 'Package "{}" is already installed'.format(package)
         return False, msg
 
-    from git import Repo, exc
     try:
+        from git import Repo, exc
         Repo.clone_from(url, dest)
+
         return True, None
+    except ImportError as error:
+        return False, 'Make sure git is installed'
     except exc.GitCommandError as error:
         return False, "Couldn't clone {} ({})".format(url, error)
 
