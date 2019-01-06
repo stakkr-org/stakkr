@@ -45,13 +45,9 @@ properties:
     title: Project name, must be the same name as root dir. Detected by default
 
   uid:
-    type: integer
     title: Detected, by default uid of current user
-    min: 0
   gid:
-    type: integer
     title: Detected, by default gid of current user
-    min: 0
 
   network-block:
     type: object

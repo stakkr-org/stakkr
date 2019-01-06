@@ -111,6 +111,7 @@ The code below starts a dind container and init a symfony app :
 
     # Install stakkr
     $ python3 -m pip install --user --upgrade https://github.com/stakkr-org/stakkr/archive/master.zip
+    $ export PATH=$PATH:/home/edyan/.local/bin
     $ mkdir ~/app && cd ~/app
     $ stakkr-init symfony
 
