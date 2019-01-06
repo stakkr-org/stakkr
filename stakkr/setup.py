@@ -67,10 +67,10 @@ def install_recipe(recipe: str):
     # Create some directories / files required
     required_dirs = ['home/www-data', 'home/www-data/bin', 'www']
     for required_dir in required_dirs:
-        _create_dir(os.getcwd(), required_dir)
+        _create_dir(os.getcwd(), required_dir, False)
     required_tpls = ['home/www-data/.bashrc']
     for required_tpl in required_tpls:
-        _copy_file(os.getcwd(), required_tpl)
+        _copy_file(os.getcwd(), required_tpl, False)
 
     # Get config
     recipe_config = _recipe_get_config(recipe)
