@@ -33,12 +33,7 @@ def init(force: bool, recipe: str = None):
 
 def install_filetree(force: bool = False):
     """Create templates (directories and files)."""
-    print('Post Installation : create templates')
-
-    project_dir = os.getcwd()
-    # If already installed don't do anything
-    if os.path.isfile(project_dir + '/stakkr.yml'):
-        return
+    click.secho('Create templates', fg='green')
 
     required_dirs = [
         'conf/mysql-override',
@@ -53,7 +48,7 @@ def install_filetree(force: bool = False):
         'www'
     ]
     for required_dir in required_dirs:
-        _create_dir(project_dir, required_dir, force)
+        _create_dir(os.getcwd(), required_dir, force)
 
     required_tpls = [
         # 'bash_completion', # How to do with a system wide installation ?
@@ -65,21 +60,24 @@ def install_filetree(force: bool = False):
         'home/www-data/.bashrc'
     ]
     for required_tpl in required_tpls:
-        _copy_file(project_dir, required_tpl, force)
+        _copy_file(os.getcwd(), required_tpl, force)
 
 
 def install_recipe(recipe: str):
+    # Create some directories / files required
     required_dirs = ['home/www-data', 'home/www-data/bin', 'www']
     for required_dir in required_dirs:
-        _create_dir(project_dir, required_dir, force)
+        _create_dir(os.getcwd(), required_dir)
     required_tpls = ['home/www-data/.bashrc']
     for required_tpl in required_tpls:
-        _copy_file(project_dir, required_tpl, force)
+        _copy_file(os.getcwd(), required_tpl)
 
+    # Get config
     recipe_config = _recipe_get_config(recipe)
     with open(recipe_config, 'r') as stream:
         recipe = load(stream)
 
+    # Install everything declared in the recipe
     click.secho('Installing services')
     _recipe_install_services(recipe['services'])
 
