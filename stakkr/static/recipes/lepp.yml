@@ -3,7 +3,7 @@ config:
     adminer:
       enabled: true
     postgres:
-      enabled: false
+      enabled: true
       version: latest
       ram: 1024M
       password: postgres
@@ -34,5 +34,5 @@ commands:
     args: [php, -r, "file_put_contents('/var/www/index.php', '<?php phpinfo();');"]
 
 messages:
-- Your LAPP stack is ready (Nginx, PHP, Postgres)
+- Your LEPP stack is ready (Nginx, PHP, Postgres)
 - Postgres user and password are "postgres / postgres"
