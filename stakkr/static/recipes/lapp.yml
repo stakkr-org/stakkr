@@ -1,23 +1,23 @@
 config:
   services:
-     adminer:
-       enabled: true
-     mysql:
-       enabled: true
-       version: 5.7
-       ram: 1024M
-       root_password: root
-     apache:
-       enabled: true
-     php:
-       enabled: true
-       version: latest
-       ram: 1024M
+    adminer:
+      enabled: true
+    postgres:
+      enabled: false
+      version: latest
+      ram: 1024M
+      password: postgres
+    nginx:
+      enabled: true
+    php:
+      enabled: true
+      version: latest
+      ram: 1024M
 
 services:
-  - databases
-  - php
-  - webservers
+- databases
+- php
+- webservers
 
 commands:
   Download composer:
@@ -34,5 +34,5 @@ commands:
     args: [php, -r, "file_put_contents('/var/www/index.php', '<?php phpinfo();');"]
 
 messages:
-  - Your LAMP stack is ready (Apache, PHP, MySQL)
-  - MySQL user and password are "root / root"
+- Your LAPP stack is ready (Nginx, PHP, Postgres)
+- Postgres user and password are "postgres / postgres"
