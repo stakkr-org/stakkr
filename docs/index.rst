@@ -1,11 +1,11 @@
-.. image:: https://raw.githubusercontent.com/edyan/stakkr/master/docs/stakkr-logo.png
+.. image:: https://raw.githubusercontent.com/stakkr-org/stakkr/master/docs/stakkr-logo.png
     :width: 200px
     :align: center
 
 Overview
 ==================================
-.. image:: https://scrutinizer-ci.com/g/edyan/stakkr/badges/quality-score.png?b=master
-.. image:: https://travis-ci.org/edyan/stakkr.svg?branch=master
+.. image:: https://scrutinizer-ci.com/g/stakkr-org/stakkr/badges/quality-score.png?b=master
+.. image:: https://api.travis-ci.com/stakkr-org/stakkr.svg?branch=master
 .. image:: https://img.shields.io/pypi/l/stakkr.svg
    :target: https://pypi.python.org/pypi/stakkr
 
