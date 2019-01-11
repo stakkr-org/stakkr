@@ -37,17 +37,27 @@ Then :
 .. code:: bash
 
     $ sudo python3 -m pip --no-cache-dir install stakkr
+
+    ###
+    # If you want a beta / rc version append "--pre" at the end
+    # If you don't want to install it system wide, you can remove "sudo" and append "--user" at the end
+    # but to make it work, you'll need to change your $PATH variable
+    # For windows just run : python -m pip --no-cache-dir install stakkr
+    ###
+    
     $ mkdir my_project
     $ cd my_project
 
+    ##
     # RECIPE is optional but better to start from an existing one ! Examples :
+    # Most commons : "lamp", "lepp" (nginx, postgre, php), lemp (nginx, mysql, php)
     #   stakkr-init wordpress
     #   stakkr-init symfony
+    ##
 
     $ stakkr-init {RECIPE}
 
-As you see, it's better to install stakkr as root. Else you have to set your PATH to include
-python user directory. ``stakkr-init`` copies some templates and creates base directories to work.
+``stakkr-init`` copies some templates and creates base directories to work.
 
 
 Development
