@@ -64,7 +64,7 @@ author = 'Emmanuel Dyan'
 # built documents.
 #
 # The short X.Y version.
-version = '4.0b3'
+version = '4.0b4'
 # The full version, including alpha/beta/rc tags.
 release = version
 
