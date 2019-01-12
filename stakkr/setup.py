@@ -5,9 +5,9 @@ import os
 import shutil
 import sys
 import click
+from yaml import load, dump
 from stakkr import file_utils
 from stakkr.actions import StakkrActions
-from yaml import load, dump
 
 
 @click.command(help="""Initialize for the first time stakkr by copying
@@ -63,6 +63,7 @@ def install_filetree(force: bool = False):
 
 
 def install_recipe(recipe: str):
+    """Install a recipe (do all tasks)"""
     # Get config
     recipe_config = _recipe_get_config(recipe)
     with open(recipe_config, 'r') as stream:
@@ -84,6 +85,7 @@ def install_recipe(recipe: str):
     _recipe_display_messages(stakkr, recipe['messages'])
 
 def _create_dir(project_dir: str, dir_name: str, force: bool):
+    """Create a directory from stakkr skel"""
     dir_name = project_dir + '/' + dir_name.lstrip('/')
     if os.path.isdir(dir_name) and force is False:
         return
@@ -93,6 +95,7 @@ def _create_dir(project_dir: str, dir_name: str, force: bool):
 
 
 def _copy_file(project_dir: str, source_file: str, force: bool):
+    """Copy a file from a template to project dir"""
     full_path = file_utils.get_file('tpls', source_file)
     dest_file = project_dir + '/' + source_file
     if os.path.isfile(dest_file) and force is False:
@@ -108,8 +111,9 @@ def _copy_file(project_dir: str, source_file: str, force: bool):
 
 
 def _recipe_get_config(recipe: str):
+    """Get recipe"""
     if recipe is None:
-        return
+        return ''
 
     recipe_config = file_utils.get_file('static/recipes', '{}.yml'.format(recipe))
     if os.path.isfile(recipe_config) is False:
@@ -120,11 +124,13 @@ def _recipe_get_config(recipe: str):
 
 
 def _recipe_create_stakkr_config(config: dict):
+    """Build stakkr config from recipe"""
     with open('stakkr.yml', 'w') as outfile:
         dump(config, outfile, default_flow_style=False)
 
 
 def _recipe_install_services(services: list):
+    """Install services defined in recipe"""
     from stakkr.services import install
 
     for service in services:
@@ -141,6 +147,7 @@ def _recipe_install_services(services: list):
 
 
 def _recipe_init_stakkr():
+    """Initialize Stakkr"""
     return StakkrActions({
         'CONFIG': '{}/stakkr.yml'.format(os.getcwd()),
         'VERBOSE': False,
@@ -149,17 +156,19 @@ def _recipe_init_stakkr():
 
 
 def _recipe_run_commands(stakkr: StakkrActions, commands: str):
+    """Run all commands defined in recipe"""
     for title, cmd in commands.items():
         click.secho('  ↳ {}'.format(title))
         user = cmd['user'] if 'user' in cmd else 'root'
         stakkr.exec_cmd(cmd['container'], user, cmd['args'], True)
 
 def _recipe_display_messages(stakkr: StakkrActions, recipe_messages: list):
+    """Build messages to display after installing a recipe"""
     services_ports = stakkr.get_services_urls()
     click.secho('\nServices URLs :')
     click.secho(services_ports)
 
-    if len(recipe_messages) > 0:
+    if recipe_messages:
         click.secho('Recipe messages:', fg='green')
 
     for message in recipe_messages:

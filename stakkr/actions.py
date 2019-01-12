@@ -7,7 +7,7 @@ import subprocess
 import sys
 import click
 from clint.textui import colored, puts, columns
-from stakkr import command, docker_actions as docker, file_utils
+from stakkr import command, docker_actions as docker
 from stakkr.configreader import Config
 from stakkr.proxy import Proxy
 
@@ -52,7 +52,7 @@ class StakkrActions:
         cts = docker.get_running_containers(self.project_name)[1]
 
         text = ''
-        for ct_id, ct_info in cts.items():
+        for _, ct_info in cts.items():
             service_config = self.config['services'][ct_info['compose_name']]
             if ({'service_name', 'service_url'} <= set(service_config)) is False:
                 continue
@@ -85,11 +85,24 @@ class StakkrActions:
         command.verbose(self.context['VERBOSE'], 'Command : "' + ' '.join(cmd) + '"')
         subprocess.call(cmd, stdin=sys.stdin)
 
+    def get_config(self):
+        config = Config(self.config_file)
+        main_config = config.read()
+        if main_config is False:
+            config.display_errors()
+            sys.exit(1)
+
+        return main_config
+
     def init_project(self):
+        """
+        Initializing the project by reading config and
+        setting some properties of the object
+        """
         if self.config is not None:
             return
 
-        self.config = self._get_config()
+        self.config = self.get_config()
         self.project_name = self.config['project_name']
         self.project_dir = self.config['project_dir']
         sys.path.append(self.project_dir)
@@ -160,15 +173,6 @@ class StakkrActions:
             return ['stakkr-compose']
 
         return ['stakkr-compose', '-c', self.context['CONFIG']]
-
-    def _get_config(self):
-        config = Config(self.config_file)
-        main_config = config.read()
-        if main_config is False:
-            config.display_errors()
-            sys.exit(1)
-
-        return main_config
 
     def _get_relative_dir(self):
         if self.cwd_abs.startswith(self.project_dir):

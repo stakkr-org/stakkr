@@ -7,6 +7,7 @@ __github_url__ = 'https://github.com/stakkr-org'
 
 
 def install(services_dir: str, package: str):
+    """Install a specific service by cloning a repo"""
     from os.path import isdir
     from urllib.parse import urlparse
 
@@ -32,6 +33,7 @@ def install(services_dir: str, package: str):
 
 
 def update_all(services_dir: str):
+    """Update all services by pulling"""
     from os import listdir
 
     for folder in listdir(services_dir):
@@ -40,6 +42,7 @@ def update_all(services_dir: str):
 
 
 def update_package(path: str):
+    """Update a single service withgit pull"""
     from git import Repo, exc
 
     try:

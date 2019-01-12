@@ -25,6 +25,7 @@ def get_file(directory: str, filename: str):
 
 
 def find_project_dir():
+    """Determine the project base dir, by searching a stakkr.yml file"""
     path = getcwd()
     while True:
         files = listdir(path)

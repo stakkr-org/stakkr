@@ -1,3 +1,5 @@
+-e git+https://github.com/edyan/deploy-that.git#egg=deploy-that
+pylint
 pytest==4.0.2
 pytest-cov==2.6.0
 pytest-pep8==1.0.6

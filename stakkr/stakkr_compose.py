@@ -19,7 +19,7 @@ from stakkr.configreader import Config
                context_settings=dict(ignore_unknown_options=True))
 @click.option('--config-file', '-c', help="Set stakkr config file location (default stakkr.yml)")
 @click.argument('command', nargs=-1, type=click.UNPROCESSED)
-def cli(config_file: str, command):
+def cli(config_file: str = None, command: tuple = ()):
     """Command line entry point."""
     config, config_file = _get_config(config_file)
 

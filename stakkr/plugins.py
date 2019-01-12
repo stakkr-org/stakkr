@@ -23,7 +23,7 @@ def add_plugins():
 
 def _add_plugin_from_dir(plugins: list, full_path: str):
     files = _get_files_from_folder(full_path)
-    if len(files) is 0:
+    if not files:
         print('  -> No plugin found in "{}"'.format(full_path))
         return plugins
 

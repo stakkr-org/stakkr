@@ -8,7 +8,6 @@ That saves a lot of space ...
 """
 
 import sys
-from subprocess import check_output, CalledProcessError, STDOUT
 import click
 import humanfriendly
 from stakkr.docker_actions import get_client as get_docker_client
@@ -21,8 +20,14 @@ that are not in use""", name="docker-clean")
 @click.option('--images/--no-images', '-i/', help="Remove images", is_flag=True, default=True)
 @click.option('--volumes/--no-volumes', '-V/', help="Remove volumes", is_flag=True, default=True)
 @click.option('--networks/--no-networks', '-n/', help="Remove networks", is_flag=True, default=True)
-def clean(force: bool, containers: bool, images: bool, volumes: bool, networks: bool):
+def clean(
+        force: bool = False,
+        containers: bool = True,
+        images: bool = True,
+        volumes: bool = True,
+        networks: bool = True):
     """See command help."""
+
     if containers is True:
         click.secho('Cleaning Docker stopped containers:', fg='green')
         remove_containers(force)
@@ -40,7 +45,7 @@ def clean(force: bool, containers: bool, images: bool, volumes: bool, networks: 
 def remove_containers(force: bool):
     """Remove exited containers."""
     stopped_containers = get_docker_client().containers.list(filters={'status': 'exited'})
-    if len(stopped_containers) is 0:
+    if not stopped_containers:
         print('  No exited container to remove')
         return
 
@@ -92,7 +97,7 @@ def remove_volumes(force: bool):
         return
 
     res = get_docker_client().volumes.prune()
-    if res['VolumesDeleted'] is None or len(res['VolumesDeleted']) is 0:
+    if (res['VolumesDeleted'] is None) or (not res['VolumesDeleted']):
         print('  No volume to remove')
         return
 

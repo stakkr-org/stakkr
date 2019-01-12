@@ -51,12 +51,12 @@ def _print_errors(result: BufferedReader):
     for line in result.stderr:
         err = line.decode()
 
-        if num is 0:
+        if num == 0:
             print(style("Command returned errors :", fg='red'))
 
         if num < 5:
             print(err, end='')
-        elif num is 5:
+        elif num == 5:
             print(style('... and more', fg='red'))
 
         num += 1

@@ -1,11 +1,11 @@
 # coding: utf-8
 """Simple Config Reader."""
 
-import anyconfig
+from os import path
 from sys import stderr
+import anyconfig
 from jsonschema.exceptions import _Error
 from stakkr.file_utils import get_file, find_project_dir
-from os import path
 
 
 class Config:

@@ -23,7 +23,7 @@ def block_ct_ports(service: str, ports: list, project_name: str) -> tuple:
     except (LookupError, NullResource):
         return False, '{} is not started, no port to block'.format(service)
 
-    status, iptables = container.exec_run(['which', 'iptables'])
+    _, iptables = container.exec_run(['which', 'iptables'])
     iptables = iptables.decode().strip()
     if iptables == '':
         return True, "Can't block ports on {}, is iptables installed ?".format(service)
@@ -46,7 +46,7 @@ def block_ct_ports(service: str, ports: list, project_name: str) -> tuple:
 def check_cts_are_running(project_name: str):
     """Throw an error if cts are not running."""
     get_running_containers(project_name)
-    if __st__['running_cts'] is 0:
+    if not __st__['running_cts']:
         raise SystemError('Have you started stakkr with the start action ?')
 
 
@@ -93,7 +93,7 @@ def get_ct_item(compose_name: str, item_name: str):
     if 'cts_info' not in __st__:
         raise LookupError('Before getting an info from a ct, run check_cts_are_running()')
 
-    for ct_id, ct_data in __st__['cts_info'].items():
+    for _, ct_data in __st__['cts_info'].items():
         if ct_data['compose_name'] == compose_name:
             return ct_data[item_name]
 
@@ -147,7 +147,7 @@ def get_switch_ip():
 
 def get_running_containers(project_name: str) -> tuple:
     """Get the number of running containers and theirs details for the current stakkr instance."""
-    from requests.exceptions import ConnectionError
+    from requests import exceptions
 
     filters = {
         'name': '{}_'.format(project_name),
@@ -156,8 +156,8 @@ def get_running_containers(project_name: str) -> tuple:
 
     try:
         cts = get_client().containers.list(filters=filters)
-    except ConnectionError:
-        raise ConnectionError('Make sure docker is installed and running')
+    except exceptions.ConnectionError:
+        raise exceptions.ConnectionError('Make sure docker is installed and running')
 
     __st__['cts_info'] = dict()
     for container in cts:
@@ -181,11 +181,12 @@ def guess_shell(container: str) -> str:
     container = get_client().containers.get(container)
 
     cmd = 'which -a bash sh'
-    status, shells = container.exec_run(cmd, stdout=True, stderr=False)
+    _, shells = container.exec_run(cmd, stdout=True, stderr=False)
     shells = shells.splitlines()
     if b'/bin/bash' in shells:
         return '/bin/bash'
-    elif b'/bin/sh' in shells:
+
+    if b'/bin/sh' in shells:
         return '/bin/sh'
 
     raise EnvironmentError('Could not find a shell for that container')
@@ -200,8 +201,8 @@ def network_exists(network: str):
         return False
 
 
-def _allow_contact_subnet(project_name: str, container: str) -> None:
-    status, iptables = container.exec_run(['which', 'iptables'])
+def _allow_contact_subnet(project_name: str, container: str) -> bool:
+    _, iptables = container.exec_run(['which', 'iptables'])
     iptables = iptables.decode().strip()
     if iptables == '':
         return False
@@ -213,6 +214,7 @@ def _allow_contact_subnet(project_name: str, container: str) -> None:
     finally:
         container.exec_run([iptables, '-A', 'OUTPUT', '-d', subnet, '-j', 'ACCEPT'])
 
+    return True
 
 def _extract_container_info(project_name: str, ct_id: str):
     """Get a hash of info about a container : name, ports, image, ip ..."""
@@ -237,7 +239,7 @@ def _extract_container_info(project_name: str, ct_id: str):
 
 def _extract_host_ports(config: list):
     ports = []
-    for ct_port, host_ports in config['HostConfig']['PortBindings'].items():
+    for _, host_ports in config['HostConfig']['PortBindings'].items():
         ports += [host_port['HostPort'] for host_port in host_ports]
 
     return ports
