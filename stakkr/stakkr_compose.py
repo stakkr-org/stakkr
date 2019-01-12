@@ -154,7 +154,6 @@ def _set_env_for_proxy(config: dict):
     """Define environment variables to be used in services yaml."""
     os.environ['PROXY_ENABLED'] = str(config['enabled'])
     os.environ['PROXY_DOMAIN'] = str(config['domain'])
-    os.environ['PROXY_PORT'] = str(config['port'])
 
 
 def _set_env_for_services(services: dict):

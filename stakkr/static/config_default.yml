@@ -9,15 +9,14 @@ services:
     ram: 512M
     service_name: Portainer (Docker Webadmin)
     service_url: http://{}
+
 proxy:
   enabled: true
   domain: localhost
-  port: 80
+  http_port: 80
+  https_port: 443
 
 project_name: ''
-
-network-block:
-  php: [25, 465, 587]
 
 subnet: ''
 

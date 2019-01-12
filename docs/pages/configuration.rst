@@ -1,28 +1,87 @@
 Configuration
 =============
 
-Copy the file ``conf/compose.ini.tpl`` to ``conf/compose.ini`` and set
-the right Configuration parameters. The config validation is defined in configspec.ini
+If you used a recipe, simply edit the ``stakkr.yml`` file manually to change a service version
+or set any parameter. Else, copy the file ``stakkr.yml.tpl`` to ``stakkr.yml`` and set
+the right configuration parameters you need.
 
-Main configuration parameters should be defined in the ``[main]`` section.
-Another section (``[network-block]``) has been created to define TCP ports to block for outgoing
-requests.
+Configuration is validated. Read carefully the message in case of error.
+
+Main configuration parameters should be defined in the ``services`` section.
 
 
-.. WARNING::
-   Don't use double quotes to protect your values.
+Services
+-----------------
+You can define a list of services you want to have. Each service consists of a yml
+file in the ``services/`` directory of the source code.
+Each container ("Service") will have a hostname which is the ... service name.
+To reach, for example, the elasticsearch server from a web application
+use ``elasticsearch``. To connect to mysql it's ``mysql``.
 
-   Use ``#`` to comment your lines and not ``;``
+
+Example of a LAMP stack :
+
+.. code:: yaml
+
+      services:
+        adminer:
+          enabled: true
+        mysql:
+          enabled: true
+          version: 5.7
+          ram: 1024M
+          root_password: root
+        apache:
+          enabled: true
+        php:
+          enabled: true
+          version: latest
+          ram: 1024M
+          blocked_ports: [25, 465, 587]
+
+
+To have a complete list of services, launch :
+
+.. code:: shell
+
+    $ stakkr services
+
+The parameters are pretty generic, but some services could define new
+parameters such as databases for passwords :
+
+.. code:: yaml
+
+      services:
+        any_service:
+          # Enable it or not. Default false
+          enabled: false
+          # Version on docker hub
+          version: latest
+          # Limited as much as possible to keep computer resources usage
+          ram: 512M
+          # Displayed after stakkr has started
+          service_name: Portainer (Docker Webadmin)
+          # Same than above
+          service_url: http://{}
+          # Port to block for outgoing connexions. Requires :
+          # - "cap_add: [NET_ADMIN, NET_RAW]" in compose file
+          # - iptables on the container
+          blocked_ports: []
+
+HTTPS
+-----
+If you need to work with websites in HTTPS, change the urls to *https://*. If you don't
+want to accept the certificate everytime, you can ask chrome to accept all *localhost*
+certificates by calling ``chrome://flags/#allow-insecure-localhost`` as a URL.
 
 
 Network and changes in general
-------------------------------------
+------------------------------
 You can define your own network in compose.ini by setting a ``subnet``.
 It's optional, and it's probably better to let it like that.
 
 .. WARNING::
-   If you change that, run ``docker-clean`` which
-   removes orphans images, stopped container, etc ...
+   If you change that, run ``docker-clean`` which removes orphans images, stopped container, etc ...
 
    As we use ``traefik`` as a reverse proxy, no need to expose any ports
    or to access containers directly via their IP.
@@ -32,31 +91,8 @@ It's optional, and it's probably better to let it like that.
    a clean environment.
 
 
-Services
------------------
-You can define a list of services you want to have. Each service
-consists of a yml file in the ``services/`` directory of the
-source code. Each container ("Service") will have a hostname
-which is the ... service name. To reach, for example,
-the elasticsearch server from a web application use ``elasticsearch``.
-To connect to mysql it's ``mysql``.
-
-.. code:: cfg
-
-    services=apache,php,mysql
-
-A service can launch a post-start script that has the same name with an
-``.sh`` extension (example: ``services/mysql.sh``).
-
-To have a complete list of services, launch :
-
-.. code:: shell
-
-    $ stakkr services
-
-
 Special case of Elasticsearch
-------------------------------
+-----------------------------
 ElasticSearch needs a few manual commands to start from the version 5.x. Before starting stakkr, do the following :
 
 .. code:: shell
@@ -67,7 +103,7 @@ ElasticSearch needs a few manual commands to start from the version 5.x. Before 
 
 
 Special case of xhgui service
-----------------------------------
+-----------------------------
 To be able to profile your script, add the service xhgui and read the
 `documentation`_
 
@@ -80,43 +116,20 @@ different for each project.
 
 .. code:: ini
 
-    # Change Machines names only if you need it
-    project_name=stakkr
+    environment: dev # Environment variables sent to containers
 
-PHP Version :
+    proxy: # traefik
+      enabled: true # By default it's enabled
+      domain: localhost # append domain. Example : http://apache.my_project.localhost
+      http_port: 80 # Http Port to expose
+      https_port: 443 # Https Port to expose
 
-.. code:: ini
+    project_name: '' # detected automatically, usually the main directory name
 
-    # Set your PHP version from 5.3 to 7.0 (5.6 by default)
-    php.version=7.0
+    subnet: '' # if you really need to override the default network
 
-MySQL Password if mysql is defined in the services list:
-
-.. code:: ini
-
-    # Password set on first start. Once the data exist won't be changed
-    mysql.root_password=changeme
-
-Memory assigned to the VMS:
-
-.. code:: ini
-
-    apache.ram=512M
-    elasticsearch.ram=512M
-    mysql.ram=512M
-    php.ram=512M
-
-.. _documentation: https://github.com/edyan/docker-xhgui
-
-
-Port Blocking: by default, we can block ports only for the PHP container (as iptables is installed).
-Define in a list what port you want to **block for OUTPUT TCP requests**. That has been done to
-avoid mistakes such as using a production database and send a lot of emails ...
-
-.. code:: ini
-
-    [network-block]
-    php=25,465,587
+    uid: # if you really need to set a specific uid for files, current user by default
+    gid: # same for gid, current user's group by default
 
 
 Files location

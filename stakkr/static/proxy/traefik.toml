@@ -1,0 +1,19 @@
+logLevel = "INFO"
+defaultEntryPoints = ["https", "http"]
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+  [entryPoints.https]
+  address = ":443"
+    [entryPoints.https.tls]
+      [[entryPoints.https.tls.certificates]]
+      CertFile = "/etc/traefik/ssl/traefik.localhost.crt"
+      KeyFile = "/etc/traefik/ssl/traefik.localhost.key"
+
+# API definition
+[api]
+dashboard = true
+
+[docker]
+watch = true

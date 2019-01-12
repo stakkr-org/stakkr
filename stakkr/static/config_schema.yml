@@ -9,7 +9,6 @@ required:
   - project_name
   - uid
   - gid
-  - network-block
   - subnet
 additionalProperties: false
 properties:
@@ -30,6 +29,7 @@ properties:
           name: { type: string }
           service_name: { type: string }
           service_url: { type: string }
+          blocked_ports: { type: array, items: { type: integer } }
         required: [enabled, version, ram, service_name, service_url]
 
   proxy:
@@ -37,8 +37,9 @@ properties:
     properties:
       enabled: { type: boolean }
       domain: { type: string }
-      port: { type: integer }
-    required: [enabled, domain, port]
+      http_port: { type: integer }
+      https_port: { type: integer }
+    required: [enabled, domain, http_port, https_port]
 
   project_name:
     type: string
@@ -48,13 +49,6 @@ properties:
     title: Detected, by default uid of current user
   gid:
     title: Detected, by default gid of current user
-
-  network-block:
-    type: object
-    properties:
-      php:
-        type: array
-        items: { type: integer }
 
   subnet:
     type: string

@@ -86,6 +86,7 @@ class StakkrActions:
         subprocess.call(cmd, stdin=sys.stdin)
 
     def get_config(self):
+        """Read and validate config from config file"""
         config = Config(self.config_file)
         main_config = config.read()
         if main_config is False:
@@ -129,13 +130,14 @@ class StakkrActions:
         command.launch_cmd_displays_output(cmd, verb, debug, True)
 
         self.running_cts, self.cts = docker.get_running_containers(self.project_name)
-        if self.running_cts is 0:
+        if not self.running_cts:
             raise SystemError("Couldn't start the containers, run the start with '-v' and '-d'")
 
         self._run_iptables_rules()
         if proxy is True:
             network_name = docker.get_network_name(self.project_name)
-            Proxy(self.config['proxy'].get('port')).start(network_name)
+            conf = self.config['proxy']
+            Proxy(conf.get('http_port'), conf.get('https_port')).start(network_name)
 
     def status(self):
         """Return a nice table with the list of started containers."""
@@ -162,11 +164,11 @@ class StakkrActions:
         command.launch_cmd_displays_output(cmd, verb, debug, True)
 
         self.running_cts, self.cts = docker.get_running_containers(self.project_name)
-        if self.running_cts is not 0 and container is None:
+        if self.running_cts and container is None:
             raise SystemError("Couldn't stop services ...")
 
         if proxy is True:
-            Proxy(self.config['proxy'].get('port')).stop()
+            Proxy().stop()
 
     def _get_compose_base_cmd(self):
         if self.context['CONFIG'] is None:
@@ -197,6 +199,7 @@ class StakkrActions:
             sys.exit(0)
 
     def _print_status_headers(self):
+        """Display messages for stakkr status (header)"""
         puts(columns(
             [(colored.green('Container')), 16], [colored.green('IP'), 15],
             [(colored.green('Url')), 32], [(colored.green('Image')), 32],
@@ -210,6 +213,7 @@ class StakkrActions:
             ))
 
     def _print_status_body(self):
+        """Display messages for stakkr status (body)"""
         self.running_cts, self.cts = docker.get_running_containers(self.project_name)
 
         for container in sorted(self.cts.keys()):
@@ -225,9 +229,14 @@ class StakkrActions:
 
     def _run_iptables_rules(self):
         """For some containers we need to add iptables rules added from the config."""
-        block_config = self.config['network-block']
-        for container, ports in block_config.items():
-            error, msg = docker.block_ct_ports(container, ports, self.project_name)
+        for _, ct_info in self.cts.items():
+            container = ct_info['compose_name']
+            ct_config = self.config['services'][container]
+            if 'blocked_ports' not in ct_config:
+                continue
+
+            blocked_ports = ct_config['blocked_ports']
+            error, msg = docker.block_ct_ports(container, blocked_ports, self.project_name)
             if error is True:
                 click.secho(msg, fg='red')
                 continue
@@ -240,9 +249,10 @@ class StakkrActions:
         # By default our URL is the IP
         url = docker.get_ct_item(service, 'ip')
         # If proxy enabled, display nice urls
-        if int(proxy_conf['enabled']) is 1:
+        if bool(proxy_conf['enabled']):
+            http_port = int(proxy_conf['http_port'])
             url = docker.get_ct_item(service, 'traefik_host')
-            url += '' if int(proxy_conf['port']) is 80 else ':{}'.format(proxy_conf['port'])
+            url += '' if http_port == 80 else ':{}'.format(http_port)
         elif os_name() in ['Windows', 'Darwin']:
             puts(colored.yellow('[WARNING]') + ' Under Win and Mac, you need the proxy enabled')
 
