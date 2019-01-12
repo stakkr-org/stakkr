@@ -20,12 +20,12 @@ a stack of services, for example for web development.
 
 Read the configuration file and setup the required services by
 linking and managing everything for you.""")
-@click.version_option('4.0')
+@click.version_option('4.0b2')
 @click.option('--config', '-c', help='Change the configuration file')
 @click.option('--debug/--no-debug', '-d', default=False)
 @click.option('--verbose', '-v', is_flag=True)
 @click.pass_context
-def stakkr(ctx, config, debug, verbose):
+def stakkr(ctx, config=None, debug=False, verbose=True):
     """Click group, set context and main object."""
     from stakkr.actions import StakkrActions
 
@@ -45,7 +45,7 @@ def console(ctx, container: str, user: str, tty: bool):
     """See command Help."""
     ctx.obj['STAKKR'].init_project()
     ctx.obj['CTS'] = get_running_containers_names(ctx.obj['STAKKR'].project_name)
-    if len(ctx.obj['CTS']) is not 0:
+    if ctx.obj['CTS']:
         ct_choice = click.Choice(ctx.obj['CTS'])
         ct_choice.convert(container, None, ctx)
 
@@ -68,7 +68,7 @@ def exec_cmd(ctx, user: str, container: str, command: tuple, tty: bool):
     """See command Help."""
     ctx.obj['STAKKR'].init_project()
     ctx.obj['CTS'] = get_running_containers_names(ctx.obj['STAKKR'].project_name)
-    if len(ctx.obj['CTS']) is not 0:
+    if ctx.obj['CTS']:
         click.Choice(ctx.obj['CTS']).convert(container, None, ctx)
 
     ctx.obj['STAKKR'].exec_cmd(container, _get_cmd_user(user, container), command, tty)
@@ -104,7 +104,7 @@ def refresh_plugins(ctx):
 
     print(click.style('Adding plugins from plugins/', fg='green'))
     plugins = add_plugins()
-    if len(plugins) is 0:
+    if not plugins:
         print(click.style('No plugin to add', fg='yellow'))
         exit(0)
 
@@ -124,7 +124,7 @@ def restart(ctx, container: str, pull: bool, recreate: bool, proxy: bool):
     try:
         ctx.invoke(stop, container=container, proxy=proxy)
     except Exception:
-        print()
+        pass
 
     ctx.invoke(start, container=container, pull=pull, recreate=recreate, proxy=proxy)
 
@@ -140,16 +140,16 @@ def services(ctx):
     print('Available services usable in stakkr.yml ', end='')
     print('({} = disabled) : '.format(click.style('✘', fg='red')))
 
-    services = ctx.obj['STAKKR']._get_config()['services']
-    enabled_services = [svc for svc, opts in services.items() if opts['enabled'] is True]
-    available_services = get_available_services(ctx.obj['STAKKR'].project_dir)
-    for available_service in sorted(list(available_services.keys())):
+    svcs = ctx.obj['STAKKR'].get_config()['services']
+    enabled_svcs = [svc for svc, opts in svcs.items() if opts['enabled'] is True]
+    available_svcs = get_available_services(ctx.obj['STAKKR'].project_dir)
+    for available_svc in sorted(list(available_svcs.keys())):
         sign = click.style('✘', fg='red')
-        if available_service in enabled_services:
-            version = services[available_service]['version']
+        if available_svc in enabled_svcs:
+            version = svcs[available_svc]['version']
             sign = click.style(str(version), fg='green')
 
-        print('  - {} ({})'.format(available_service, sign))
+        print('  - {} ({})'.format(available_svc, sign))
 
 
 @stakkr.command(help="Download a pack of services from github (see github) containing services")
