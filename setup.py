@@ -9,16 +9,18 @@ if os.name == 'nt':
 __version__ = '4.0b3'
 
 # Get the long description from the README file
-here = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
-    long_description = f.read()
+def readme():
+    here = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
+        return f.read()
 
 setup(
     name='stakkr',
     version=__version__,
     description='A configurable stack based on docker to run any combination of services (PHP, MySQL, Apache, Nginx, Mongo, etc..)',
-    long_description=long_description,
-    url='http://github.com/edyan/stakkr',
+    long_description=readme(),
+    long_description_content_type='text/x-rst',
+    url='http://github.com/stakkr-org/stakkr',
     author='Emmanuel Dyan',
     author_email='emmanueldyan@gmail.com',
     license='Apache 2.0',

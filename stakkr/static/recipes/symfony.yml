@@ -1,7 +1,5 @@
 config:
   services:
-    adminer:
-      enabled: true
     nginx:
       enabled: true
       document_root: /var/www/app/public
