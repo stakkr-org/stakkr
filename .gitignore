@@ -20,6 +20,7 @@ htmlcov
 /.idea
 .DS_Store
 /conf
+stakkr.yml*
 deploythat.yml
 
 # Data added during install
@@ -43,3 +44,4 @@ bash_completion
 # ReadTheDocs
 /docs/_build
 /docs/_build_html
+
