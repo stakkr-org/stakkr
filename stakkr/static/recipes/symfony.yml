@@ -1,22 +1,19 @@
 config:
   services:
-     adminer:
-       enabled: true
-     mysql:
-       enabled: true
-       version: 5.7
-       ram: 1024M
-       root_password: root
-     nginx:
-       enabled: true
-       document_root: /var/www/app/public
-     php:
-       enabled: true
-       version: 7.2
-       ram: 1024M
+    adminer:
+      enabled: true
+    nginx:
+      enabled: true
+      document_root: /var/www/app/public
+    php:
+      enabled: true
+      version: 7.2
+      ram: 1024M
+  proxy:
+    enabled: true
+    domain: localhost
 
 services:
-  - databases
   - php
   - webservers
 
@@ -42,4 +39,4 @@ commands:
 
 messages:
   - Symfony is ready and running with a LEMP stack (Nginx, PHP, MySQL)
-  - MySQL user and password are "root / root"
+  - If you need a database, install services "databases" with the command "stakkr services-add databases"

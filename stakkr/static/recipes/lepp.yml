@@ -13,11 +13,14 @@ config:
       enabled: true
       version: latest
       ram: 1024M
+  proxy:
+    enabled: true
+    domain: localhost
 
 services:
-- databases
-- php
-- webservers
+  - databases
+  - php
+  - webservers
 
 commands:
   Download composer:
@@ -35,4 +38,4 @@ commands:
 
 messages:
 - Your LEPP stack is ready (Nginx, PHP, Postgres)
-- Postgres user and password are "postgres / postgres"
+- Postgres user and password are "postgres / postgres". Server is "postgres".

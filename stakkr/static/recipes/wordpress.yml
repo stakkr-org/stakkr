@@ -1,17 +1,20 @@
 config:
   services:
-     adminer:
-       enabled: true
-     mysql:
-       enabled: true
-       version: 5.7
-       root_password: root
-     apache:
-       enabled: true
-       ram: 256M
-     php:
-       enabled: true
-       version: 7.2
+    adminer:
+      enabled: true
+    mysql:
+      enabled: true
+      version: 5.7
+      root_password: root
+    apache:
+      enabled: true
+      ram: 256M
+    php:
+      enabled: true
+      version: 7.2
+  proxy:
+    enabled: true
+    domain: localhost
 
 services:
   - databases

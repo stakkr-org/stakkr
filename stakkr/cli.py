@@ -166,8 +166,12 @@ def services_add(ctx, package: str):
         click.echo(click.style(message, fg='red'))
         sys.exit(1)
 
-    print(click.style(package, fg='green') + ' installed successfully')
-    print('Try ' + click.style('stakkr services', fg='green') + ' to see new available services')
+    stdout_msg = 'Package "' + click.style(package, fg='green') + '" installed successfully'
+    if message is not None:
+        stdout_msg = click.style(message, fg='yellow')
+
+    click.echo(stdout_msg)
+    click.echo('Try ' + click.style('stakkr services', fg='green') + ' to see new available services')
 
 
 @stakkr.command(help="Update all services packs in services/")

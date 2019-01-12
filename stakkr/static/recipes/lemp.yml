@@ -1,18 +1,21 @@
 config:
   services:
-     adminer:
-       enabled: true
-     mysql:
-       enabled: true
-       version: 5.7
-       ram: 1024M
-       root_password: root
-     nginx:
-       enabled: true
-     php:
-       enabled: true
-       version: latest
-       ram: 1024M
+    adminer:
+      enabled: true
+    mysql:
+      enabled: true
+      version: 5.7
+      ram: 1024M
+      root_password: root
+    nginx:
+      enabled: true
+    php:
+      enabled: true
+      version: latest
+      ram: 1024M
+  proxy:
+    enabled: true
+    domain: localhost
 
 services:
   - databases
@@ -35,4 +38,4 @@ commands:
 
 messages:
   - Your LEMP stack is ready (Nginx, PHP, MySQL)
-  - MySQL user and password are "root / root"
+  - MySQL user and password are "root / root". Server is "mysql"

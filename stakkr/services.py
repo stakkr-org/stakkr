@@ -14,14 +14,15 @@ def install(services_dir: str, package: str):
     if urlparse(package).scheme != '':
         url = package
 
-    dest = '{}/{}'.format(services_dir, package)
-    if isdir(dest):
-        msg = 'Package "{}" is already installed'.format(package)
-        return False, msg
+    path = '{}/{}'.format(services_dir, package)
+    if isdir(path):
+        msg = 'Package "{}" is already installed, updating'.format(package)
+        update_package(path)
+        return True, msg
 
     try:
         from git import Repo, exc
-        Repo.clone_from(url, dest)
+        Repo.clone_from(url, path)
 
         return True, None
     except ImportError as error:

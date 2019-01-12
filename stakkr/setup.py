@@ -130,8 +130,14 @@ def _recipe_install_services(services: list):
     for service in services:
         success, message = install('services', service)
         if success is False:
-            click.echo(click.style(message, fg='red'))
+            click.echo(click.style('    😧 {}'.format(message), fg='red'))
             sys.exit(1)
+
+        if message is not None:
+            click.echo(click.style('    😊 {}'.format(message), fg='yellow'))
+            continue
+
+        click.echo(click.style('    😀 Package "{}" Installed'.format(service), fg='green'))
 
 
 def _recipe_init_stakkr():
