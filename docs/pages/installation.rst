@@ -60,6 +60,30 @@ Then :
 ``stakkr-init`` copies some templates and creates base directories to work.
 
 
+Use stakkr from a docker dind (Docker-In-Docker) image
+------------------------------------------------------
+
+You can else use the ready-to-go Docker Image edyan/stakkr to test the tool.
+
+Be careful that uid and gid of ``stakkr`` user into the container won't be the same than
+for your user. The volume will contain files with other permissions.
+
+.. code:: bash
+
+    $ mkdir ~/my_project
+    $ docker run -p 80:80 -p 443:443 -v ~/my_project:/home/stakkr/app -d --privileged --rm --name stakkr-dev stakkr/stakkr
+    $ docker exec -ti stakkr-dev ash
+    $ chown -R stakkr:stakkr /home/stakkr
+    $ su - stakkr
+    # Create a symfony project from a recipe
+    $ cd ~/app
+    $ stakkr-init symfony
+
+
+Now open http://nginx.app.localhost from your browser.
+
+
+
 Development
 -----------
 
@@ -122,10 +146,10 @@ The code below starts a dind container and init a symfony app :
     # Install stakkr
     $ python3 -m pip install --upgrade https://github.com/stakkr-org/stakkr/archive/master.zip
     # Stakkr should always be started as another user than root
-    $ addgroup edyan
-    $ adduser -s /bin/ash -D -S -G edyan edyan
-    $ addgroup edyan root
-    $ su - edyan
+    $ addgroup stakkr
+    $ adduser -s /bin/ash -D -S -G stakkr stakkr
+    $ addgroup stakkr root
+    $ su - stakkr
 
     # Create a symfony project from a recipe
     $ mkdir ~/app && cd ~/app
@@ -138,3 +162,4 @@ The code below starts a dind container and init a symfony app :
     $ stakkr-init wordpress
     # The following command should returns wordpress home
     $ w3m http://apache.wp.localhost
+

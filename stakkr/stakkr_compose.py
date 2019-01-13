@@ -38,22 +38,6 @@ def cli(config_file: str = None, command: tuple = ()):
     subprocess.call(base_cmd + list(command))
 
 
-def _add_services_from_plugins(project_dir: str, available_services: list):
-    """Read plugin path and extract services in subdirectories services/."""
-    from pkg_resources import iter_entry_points
-
-    # Override services with plugins
-    for entry in iter_entry_points('stakkr.plugins'):
-        plugin_dir = str(entry).split('=')[0].strip()
-        services_dir = project_dir + '/plugins/' + plugin_dir + '/services'
-
-        conf_files = _get_services_from_dir(services_dir)
-        for conf_file in conf_files:
-            available_services[conf_file[:-4]] = services_dir + '/' + conf_file
-
-    return available_services
-
-
 def _add_local_services(project_dir: str, available_services: list):
     """Get services in the virtualenv services/ directory, so specific to that stakkr."""
     services_dir = project_dir + '/services/*/docker-compose'
@@ -74,7 +58,6 @@ def get_available_services(project_dir: str):
     for conf_file in conf_files:
         services[conf_file[:-4]] = services_dir + conf_file
 
-    services = _add_services_from_plugins(project_dir, services)
     services = _add_local_services(project_dir, services)
 
     return services
@@ -114,7 +97,7 @@ def _get_config(config_file: str):
 
 
 def _get_enabled_services_files(project_dir: str, configured_services: list):
-    """Compile all available services : standard, plugins, local install."""
+    """Compile all available services : standard and local install."""
     available_services = get_available_services(project_dir)
 
     services_files = []

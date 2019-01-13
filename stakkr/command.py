@@ -3,7 +3,6 @@
 Command Wrapper.
 
 A command wrapper to get a live output displayed.
-Useful when you need to write a plugin that outputs some progress or info.
 """
 
 import subprocess

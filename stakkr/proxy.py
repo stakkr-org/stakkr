@@ -10,29 +10,29 @@ from stakkr.file_utils import get_dir
 class Proxy:
     """Main class that does actions asked by the cli."""
 
-    def __init__(self, http_port: int = 80, https_port: int = 443, proxy_name: str = 'proxy_stakkr'):
+    def __init__(self, http_port: int = 80, https_port: int = 443, ct_name: str = 'proxy_stakkr'):
         """Set the right values to start the proxy."""
         self.ports = {'http': http_port, 'https': https_port}
-        self.proxy_name = proxy_name
+        self.ct_name = ct_name
         self.docker_client = docker.get_client()
 
     def start(self, stakkr_network: str = None):
         """Start stakkr proxy if stopped."""
-        if docker.container_running(self.proxy_name) is False:
+        if docker.container_running(self.ct_name) is False:
             print(click.style('[STARTING]', fg='green') + ' traefik')
             self._start_container()
 
         # Connect it to network if asked
         if stakkr_network is not None:
-            docker.add_container_to_network(self.proxy_name, stakkr_network)
+            docker.add_container_to_network(self.ct_name, stakkr_network)
 
     def stop(self):
         """Stop stakkr proxy."""
-        if docker.container_running(self.proxy_name) is False:
+        if docker.container_running(self.ct_name) is False:
             return
 
         print(click.style('[STOPPING]', fg='green') + ' traefik')
-        proxy_ct = self.docker_client.containers.get(self.proxy_name)
+        proxy_ct = self.docker_client.containers.get(self.ct_name)
         proxy_ct.stop()
 
     def _start_container(self):
@@ -42,7 +42,7 @@ class Proxy:
             self.docker_client.images.pull('traefik:latest')
             self.docker_client.containers.run(
                 'traefik:latest', remove=True, detach=True,
-                hostname=self.proxy_name, name=self.proxy_name,
+                hostname=self.ct_name, name=self.ct_name,
                 volumes=[
                     '/var/run/docker.sock:/var/run/docker.sock',
                     '{}/traefik.toml:/etc/traefik/traefik.toml'.format(proxy_conf_dir),

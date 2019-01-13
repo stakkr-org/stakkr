@@ -12,7 +12,7 @@ class Config:
     """
     Parser of Stakkr.
 
-    Set default values and validate conf/compose.ini with conf/configspec.ini.
+    Set default values and validate stakkr.yml with specs
     """
 
     def __init__(self, config_file: str):
@@ -20,14 +20,7 @@ class Config:
         Build list of files to validate a config, set default values
         Then the given config file
         """
-
-        if config_file is not None:
-            self.config_file = path.abspath(config_file)
-            self.project_dir = path.dirname(self.config_file)
-        else:
-            self.project_dir = find_project_dir()
-            self.config_file = '{}/stakkr.yml'.format(self.project_dir)
-
+        self.config_file, self.project_dir = get_config_and_project_dir(config_file)
         self._build_config_files_list()
         self._build_config_schemas_list()
         self.error = ''
@@ -36,7 +29,7 @@ class Config:
         """Display errors in STDOUT."""
         from click import style
 
-        msg = 'Failed validating main config or plugin configs ('
+        msg = 'Failed validating config ('
         msg += ', '.join(self.config_files)
         msg += '):\n    - {}'.format(self.error)
         stderr.write(style(msg, fg='red'))
@@ -45,7 +38,7 @@ class Config:
         """
         Parse the configs and validate it.
 
-        It could be either local or from a plugin or local services
+        It could be either local or from a local services
         (first local then packages by alphabetical order).
         """
         schema = anyconfig.multi_load(self.spec_files)
@@ -67,8 +60,6 @@ class Config:
         self.config_files = [
             # Stakkr default config
             get_file('static', 'config_default.yml'),
-            # plugins default config
-            '{}/plugins/*/config_default.yml'.format(self.project_dir),
             '{}/services/*/config_default.yml'.format(self.project_dir)]
         # Stakkr main config file finally with user's values
         self.config_files += [self.config_file]
@@ -77,6 +68,16 @@ class Config:
         self.spec_files = [
             # Stakkr config validation
             get_file('static', 'config_schema.yml'),
-            # plugins config validation
-            '{}/plugins/*/config_schema.yml'.format(self.project_dir),
             '{}/services/*/config_schema.yml'.format(self.project_dir)]
+
+
+def get_config_and_project_dir(config_file: str):
+    """Guess config file name and project dir"""
+    if config_file is not None:
+        config_file = path.abspath(config_file)
+        project_dir = path.dirname(config_file)
+    else:
+        project_dir = find_project_dir()
+        config_file = '{}/stakkr.yml'.format(project_dir)
+
+    return config_file, project_dir

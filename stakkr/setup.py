@@ -42,7 +42,6 @@ def install_filetree(force: bool = False):
         'home/www-data',
         'home/www-data/bin',
         'logs',
-        'plugins',
         'services',
         'www'
     ]

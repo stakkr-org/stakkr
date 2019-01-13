@@ -32,6 +32,23 @@ properties:
           blocked_ports: { type: array, items: { type: integer } }
         required: [enabled, version, ram, service_name, service_url]
 
+  aliases:
+    type: object
+    items:
+      type: object
+      additionalProperties: false
+      properties:
+        description: { type: string }
+        exec:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              container: { type: string }
+              user: { type: string }
+              args: { type: array, items: { type: string } }
+
   proxy:
     type: object
     properties:

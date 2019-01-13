@@ -9,12 +9,10 @@ Give all options to manage services to be launched, stopped, etc.
 
 import sys
 import click
-from click_plugins import with_plugins
-from pkg_resources import iter_entry_points
+from click.core import Command, Argument
 from stakkr.docker_actions import get_running_containers_names
 
 
-@with_plugins(iter_entry_points('stakkr.plugins'))
 @click.group(help="""Main CLI Tool that easily create / maintain
 a stack of services, for example for web development.
 
@@ -93,25 +91,6 @@ def mysql(ctx, tty: bool, command: tuple):
     ctx.invoke(exec_cmd, user='root', container='mysql', command=command, tty=tty)
 
 
-@stakkr.command(help='Required to be launched if you install a new plugin', name="refresh-plugins")
-@click.pass_context
-def refresh_plugins(ctx):
-    """See command Help."""
-    from stakkr.plugins import add_plugins
-
-    print(click.style('Not implemented yet in v4', fg='red'))
-    exit(1)
-
-    print(click.style('Adding plugins from plugins/', fg='green'))
-    plugins = add_plugins()
-    if not plugins:
-        print(click.style('No plugin to add', fg='yellow'))
-        exit(0)
-
-    print()
-    print(click.style('Plugins refreshed', fg='green'))
-
-
 @stakkr.command(help="Restart all (or a single as CONTAINER) container(s)")
 @click.argument('container', required=False)
 @click.option('--pull', '-p', help="Force a pull of the latest images versions", is_flag=True)
@@ -129,7 +108,8 @@ def restart(ctx, container: str, pull: bool, recreate: bool, proxy: bool):
     ctx.invoke(start, container=container, pull=pull, recreate=recreate, proxy=proxy)
 
 
-@stakkr.command(help="List available services available for compose.ini (with info if the service is enabled)")
+@stakkr.command(help="""List available services available for stakkr.yml
+(with info if the service is enabled)""")
 @click.pass_context
 def services(ctx):
     """See command Help."""
@@ -257,9 +237,56 @@ def debug_mode():
     return False
 
 
+def get_aliases():
+    from stakkr.configreader import get_config_and_project_dir
+    from argparse import ArgumentParser
+    from yaml import load, error
+
+    class StakkrArgumentParser(ArgumentParser):
+        """Own Argument Parser to avoid options"""
+        def error(self, msg):
+            pass
+
+    parser = StakkrArgumentParser()
+    parser.add_argument('-c')
+    args = vars(parser.parse_args())
+    config_file, _ = get_config_and_project_dir(args['c'])
+    config = {}
+    try:
+        with open(config_file, 'r') as stream:
+            config = load(stream)
+    except (error.YAMLError, FileNotFoundError):
+        pass
+
+    return config['aliases'] if 'aliases' in config else {}
+
+
+def run_commands(extra_args: tuple, commands: dict):
+    from click.globals import get_current_context
+
+    ctx = get_current_context()
+    for command in commands:
+        user = command['user'] if 'user' in command else 'root'
+        container = command['container']
+        args = command['args'] + list(extra_args) if extra_args is not None else []
+        tty = bool(command['tty']) if 'tty' in command else True
+
+        ctx.invoke(exec_cmd, user=user, container=container, command=args, tty=tty)
+
+
 def main():
     """Call the CLI Script."""
     try:
+        for alias, conf in get_aliases().items():
+            cli_cmd = Command(
+                name=alias,
+                context_settings=dict(ignore_unknown_options=True, allow_extra_args=True),
+                params=[Argument(param_decls=['extra_args'], nargs=-1, type=click.UNPROCESSED)],
+                callback=lambda extra_args: run_commands(extra_args, conf['exec']),
+                help=conf['description'] if 'description' in conf else 'No description')
+
+            stakkr.add_command(cli_cmd)
+
         stakkr(obj={})
     except Exception as error:
         msg = click.style(r""" ______ _____  _____   ____  _____
