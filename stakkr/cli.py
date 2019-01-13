@@ -10,7 +10,9 @@ Give all options to manage services to be launched, stopped, etc.
 import sys
 import click
 from click.core import Command, Argument
+from click.globals import get_current_context
 from stakkr.docker_actions import get_running_containers_names
+from stakkr.aliases import get_aliases
 
 
 @click.group(help="""Main CLI Tool that easily create / maintain
@@ -237,33 +239,8 @@ def debug_mode():
     return False
 
 
-def get_aliases():
-    from stakkr.configreader import get_config_and_project_dir
-    from argparse import ArgumentParser
-    from yaml import load, error
-
-    class StakkrArgumentParser(ArgumentParser):
-        """Own Argument Parser to avoid options"""
-        def error(self, msg):
-            pass
-
-    parser = StakkrArgumentParser()
-    parser.add_argument('-c')
-    args = vars(parser.parse_args())
-    config_file, _ = get_config_and_project_dir(args['c'])
-    config = {}
-    try:
-        with open(config_file, 'r') as stream:
-            config = load(stream)
-    except (error.YAMLError, FileNotFoundError):
-        pass
-
-    return config['aliases'] if 'aliases' in config else {}
-
-
 def run_commands(extra_args: tuple, commands: dict):
-    from click.globals import get_current_context
-
+    """Run commands for a specific alias"""
     ctx = get_current_context()
     for command in commands:
         user = command['user'] if 'user' in command else 'root'
@@ -277,6 +254,7 @@ def run_commands(extra_args: tuple, commands: dict):
 def main():
     """Call the CLI Script."""
     try:
+        # Set aliases from configuration
         for alias, conf in get_aliases().items():
             cli_cmd = Command(
                 name=alias,
