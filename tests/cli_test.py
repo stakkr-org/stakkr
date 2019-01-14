@@ -48,7 +48,7 @@ class CliTest(unittest.TestCase):
     def test_bad_config(self):
         res = exec_cmd([
             'stakkr', '-c', base_dir + '/static/config_invalid.yml', 'start'])
-        self.assertRegex(res['stderr'], r'.*Failed validating main config or plugin configs.*')
+        self.assertRegex(res['stderr'], r'.*Failed validating config.*')
         self.assertRegex(res['stderr'], r'.*config_invalid\.yml.*')
         self.assertRegex(res['stderr'], r".*'toto' was unexpected.*")
         self.assertRegex(res['stdout'], r".*STARTING.* your stakkr services")
@@ -278,6 +278,9 @@ class CliTest(unittest.TestCase):
         self.assertRegex(res['stdout'], r'\[STOPPING\].*your stakkr services.*')
         self.assertRegex(res['stderr'], r'.*Have you started stakkr with the start action.*')
         self.assertIs(res['status'], 1)
+
+    def setUpClass():
+        """Clean data directory"""
 
     def tearDownClass():
         cli = CliTest()

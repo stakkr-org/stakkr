@@ -42,6 +42,7 @@ Then :
     # If you want a beta / rc version append "--pre" at the end
     # If you don't want to install it system wide, you can remove "sudo" and append "--user" at the end
     # but to make it work, you'll need to change your $PATH variable
+    # That option is recommended when you know how to do and especially for MacOs
     # For windows just run : python -m pip --no-cache-dir install stakkr
     ###
     
