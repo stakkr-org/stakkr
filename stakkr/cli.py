@@ -9,7 +9,7 @@ Give all options to manage services to be launched, stopped, etc.
 
 import sys
 import click
-from click.core import Command, Argument
+from click.core import Command, Argument, Option
 from click.globals import get_current_context
 from stakkr.docker_actions import get_running_containers_names
 from stakkr.aliases import get_aliases
@@ -72,25 +72,6 @@ def exec_cmd(ctx, user: str, container: str, command: tuple, tty: bool):
         click.Choice(ctx.obj['CTS']).convert(container, None, ctx)
 
     ctx.obj['STAKKR'].exec_cmd(container, _get_cmd_user(user, container), command, tty)
-
-
-@stakkr.command(help="""`stakkr mysql` is a wrapper for the mysql binary
-located in the mysql service.
-
-You can run any mysql command as root, such as :\n
-- ``stakkr mysql -e "CREATE DATABASE mydb"`` to create a DB from outside\n
-- ``stakkr mysql`` to enter the mysql console\n
-- ``cat myfile.sql | stakkr mysql --no-tty mydb`` to import a file from outside to mysql\n
-
-For scripts, you must use the relative path.
-""", context_settings=dict(ignore_unknown_options=True, allow_interspersed_args=False))
-@click.pass_context
-@click.option('--tty/--no-tty', '-t/ ', is_flag=True, default=True, help="Use a TTY")
-@click.argument('command', nargs=-1, type=click.UNPROCESSED)
-def mysql(ctx, tty: bool, command: tuple):
-    """See command Help."""
-    command = ('mysql', '-p$MYSQL_ROOT_PASSWORD') + command
-    ctx.invoke(exec_cmd, user='root', container='mysql', command=command, tty=tty)
 
 
 @stakkr.command(help="Restart all (or a single as CONTAINER) container(s)")
@@ -239,14 +220,13 @@ def debug_mode():
     return False
 
 
-def run_commands(extra_args: tuple, commands: dict):
+def run_commands(extra_args: tuple, tty: bool, commands: dict):
     """Run commands for a specific alias"""
     ctx = get_current_context()
     for command in commands:
         user = command['user'] if 'user' in command else 'root'
         container = command['container']
         args = command['args'] + list(extra_args) if extra_args is not None else []
-        tty = bool(command['tty']) if 'tty' in command else True
 
         ctx.invoke(exec_cmd, user=user, container=container, command=args, tty=tty)
 
@@ -255,12 +235,14 @@ def main():
     """Call the CLI Script."""
     try:
         # Set aliases from configuration
+        arg_extra_args = Argument(param_decls=['extra_args'], nargs=-1, type=click.UNPROCESSED)
+        opt_tty = Option(param_decls=['--tty/--no-tty'], is_flag=True, default=True, help="Use a TTY")
         for alias, conf in get_aliases().items():
             cli_cmd = Command(
                 name=alias,
                 context_settings=dict(ignore_unknown_options=True, allow_extra_args=True),
-                params=[Argument(param_decls=['extra_args'], nargs=-1, type=click.UNPROCESSED)],
-                callback=lambda extra_args: run_commands(extra_args, conf['exec']),
+                params=[arg_extra_args, opt_tty],
+                callback=lambda extra_args, tty: run_commands(extra_args, tty, conf['exec']),
                 help=conf['description'] if 'description' in conf else 'No description')
 
             stakkr.add_command(cli_cmd)

@@ -17,19 +17,13 @@ class StakkrActions:
 
     def __init__(self, ctx: dict):
         """Set all require properties."""
-        # Get info from config first to know the project name and project dir
-        self.config_file = ctx['CONFIG']
-
         self.context = ctx
 
         # Set some general variables
         self.config = None
         self.project_name = None
         self.project_dir = None
-        self.cwd_abs = os.getcwd()
         self.cwd_relative = None
-        self.cts = []
-        self.running_cts = []
 
     def console(self, container: str, user: str, tty: bool):
         """Enter a container. Stakkr will try to guess the right shell."""
@@ -87,7 +81,7 @@ class StakkrActions:
 
     def get_config(self):
         """Read and validate config from config file"""
-        config = Config(self.config_file)
+        config = Config(self.context['CONFIG'])
         main_config = config.read()
         if main_config is False:
             config.display_errors()
@@ -129,11 +123,11 @@ class StakkrActions:
         command.verbose(self.context['VERBOSE'], 'Command: ' + ' '.join(cmd))
         command.launch_cmd_displays_output(cmd, verb, debug, True)
 
-        self.running_cts, self.cts = docker.get_running_containers(self.project_name)
-        if not self.running_cts:
+        running_cts, cts = docker.get_running_containers(self.project_name)
+        if not running_cts:
             raise SystemError("Couldn't start the containers, run the start with '-v' and '-d'")
 
-        self._run_iptables_rules()
+        self._run_iptables_rules(cts)
         if proxy is True:
             network_name = docker.get_network_name(self.project_name)
             conf = self.config['proxy']
@@ -149,8 +143,10 @@ class StakkrActions:
             puts(colored.yellow('[INFO]') + ' stakkr is currently stopped')
             sys.exit(0)
 
-        self._print_status_headers()
-        self._print_status_body()
+        _, cts = docker.get_running_containers(self.project_name)
+
+        _print_status_headers()
+        _print_status_body(cts)
 
     def stop(self, container: str, proxy: bool):
         """If started, stop the containers defined in config. Else throw an error."""
@@ -163,8 +159,8 @@ class StakkrActions:
         cmd = self._get_compose_base_cmd() + ['stop'] + _get_single_container_option(container)
         command.launch_cmd_displays_output(cmd, verb, debug, True)
 
-        self.running_cts, self.cts = docker.get_running_containers(self.project_name)
-        if self.running_cts and container is None:
+        running_cts, _ = docker.get_running_containers(self.project_name)
+        if running_cts and container is None:
             raise SystemError("Couldn't stop services ...")
 
         if proxy is True:
@@ -177,8 +173,8 @@ class StakkrActions:
         return ['stakkr-compose', '-c', self.context['CONFIG']]
 
     def _get_relative_dir(self):
-        if self.cwd_abs.startswith(self.project_dir):
-            return self.cwd_abs[len(self.project_dir):].lstrip('/')
+        if os.getcwd().startswith(self.project_dir):
+            return os.getcwd()[len(self.project_dir):].lstrip('/')
 
         return ''
 
@@ -198,38 +194,9 @@ class StakkrActions:
             puts(colored.yellow('[INFO]') + ' service {} is already started ...'.format(container))
             sys.exit(0)
 
-    def _print_status_headers(self):
-        """Display messages for stakkr status (header)"""
-        puts(columns(
-            [(colored.green('Container')), 16], [colored.green('IP'), 15],
-            [(colored.green('Url')), 32], [(colored.green('Image')), 32],
-            [(colored.green('Docker ID')), 15], [(colored.green('Docker Name')), 25]
-            ))
-
-        puts(columns(
-            ['-'*16, 16], ['-'*15, 15],
-            ['-'*32, 32], ['-'*32, 32],
-            ['-'*15, 15], ['-'*25, 25]
-            ))
-
-    def _print_status_body(self):
-        """Display messages for stakkr status (body)"""
-        self.running_cts, self.cts = docker.get_running_containers(self.project_name)
-
-        for container in sorted(self.cts.keys()):
-            ct_data = self.cts[container]
-            if ct_data['ip'] == '':
-                continue
-
-            puts(columns(
-                [ct_data['compose_name'], 16], [ct_data['ip'], 15],
-                [ct_data['traefik_host'], 32], [ct_data['image'], 32],
-                [ct_data['id'][:12], 15], [ct_data['name'], 25]
-                ))
-
-    def _run_iptables_rules(self):
+    def _run_iptables_rules(self, cts: dict):
         """For some containers we need to add iptables rules added from the config."""
-        for _, ct_info in self.cts.items():
+        for _, ct_info in cts.items():
             container = ct_info['compose_name']
             ct_config = self.config['services'][container]
             if 'blocked_ports' not in ct_config:
@@ -264,3 +231,32 @@ def _get_single_container_option(container: str):
         return []
 
     return [container]
+
+
+def _print_status_headers():
+    """Display messages for stakkr status (header)"""
+    puts(columns(
+        [(colored.green('Container')), 16], [colored.green('IP'), 15],
+        [(colored.green('Url')), 32], [(colored.green('Image')), 32],
+        [(colored.green('Docker ID')), 15], [(colored.green('Docker Name')), 25]
+    ))
+
+    puts(columns(
+        ['-'*16, 16], ['-'*15, 15],
+        ['-'*32, 32], ['-'*32, 32],
+        ['-'*15, 15], ['-'*25, 25]
+    ))
+
+
+def _print_status_body(cts: dict):
+    """Display messages for stakkr status (body)"""
+    for container in sorted(cts.keys()):
+        ct_data = cts[container]
+        if ct_data['ip'] == '':
+            continue
+
+        puts(columns(
+            [ct_data['compose_name'], 16], [ct_data['ip'], 15],
+            [ct_data['traefik_host'], 32], [ct_data['image'], 32],
+            [ct_data['id'][:12], 15], [ct_data['name'], 25]
+        ))

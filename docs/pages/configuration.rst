@@ -1,9 +1,9 @@
 Configuration
 =============
 
-If you used a recipe, simply edit the ``stakkr.yml`` file manually to change a service version
-or set any parameter. Else, copy the file ``stakkr.yml.tpl`` to ``stakkr.yml`` and set
-the right configuration parameters you need.
+If you used a recipe, simply edit the ``stakkr.yml`` file manually to change a service
+version or set any parameter. Else, copy the file ``stakkr.yml.tpl`` to ``stakkr.yml``
+and set the right configuration parameters you need.
 
 Configuration is validated. Read carefully the message in case of error.
 
@@ -74,6 +74,50 @@ If you need to work with websites in HTTPS, change the urls to *https://*. If yo
 want to accept the certificate everytime, you can ask chrome to accept all *localhost*
 certificates by calling ``chrome://flags/#allow-insecure-localhost`` as a URL.
 
+Aliases
+-------
+To enter a container you can use the ``stakkr console`` command. Nevertheless, to avoid
+doing :
+
+.. code:: bash
+
+    stakkr console php
+    cd app
+    composer install
+
+You can set the following alias in the ``stakkr.yml`` file :
+
+.. code:: yaml
+
+  services:
+  ...
+
+  aliases:
+    composer:
+      description: Run a PHP composer command
+      exec:
+        - container: php
+          user: www-data
+          args: [php, /home/www-data/bin/composer]
+
+And then :
+
+.. code:: bash
+
+    cd app
+    stakkr composer install
+
+
+An alias is a dictionary with :
+
+* A key that is the command name (``composer`` above)
+* A description displayed when you run ``stakkr``
+* An exec list with all commands to run when ``stakkr {alias}`` is invoked.
+    * ``container`` is the container name
+    * ``user`` the user to run the command
+    * ``args`` a dictionnary with the command cut in pieces (that's required).
+
+
 
 Network and changes in general
 ------------------------------
@@ -114,7 +158,7 @@ Other useful parameters
 Project name (will be used as container's prefix). It should be
 different for each project.
 
-.. code:: ini
+.. code:: yaml
 
     environment: dev # Environment variables sent to containers
 

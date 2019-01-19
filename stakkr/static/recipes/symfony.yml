@@ -11,6 +11,14 @@ config:
     enabled: true
     domain: localhost
 
+  aliases:
+    composer:
+      description: Run a PHP composer command
+      exec:
+        - container: php
+          user: www-data
+          args: [php, /home/www-data/bin/composer]
+
 services:
   - php
   - webservers

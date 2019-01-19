@@ -17,7 +17,7 @@ Stakkr
 
 Stakkr is installable via pip, system-wide (or for a specific user). It's clean and detects automatically
 the config file (``stakkr.yml``) presence in a directory or parent directory to execute commands. ``stakkr.yml`` acts
-like ``docker-compose.yml`` with super power (and is super simple !).
+like ``docker-compose.yml`` with super power (plus, it is super simple !).
 
 It means that a directory with a ``stakkr.yml`` is a complete stack.
 
@@ -50,8 +50,8 @@ Then :
     $ cd my_project
 
     ##
-    # RECIPE is optional but better to start from an existing one ! Examples :
-    # Most commons : "lamp", "lepp" (nginx, postgre, php), lemp (nginx, mysql, php)
+    # RECIPE is optional but better to start from an existing one !
+    # Examples (see below for the current list) :
     #   stakkr-init wordpress
     #   stakkr-init symfony
     ##
@@ -59,6 +59,17 @@ Then :
     $ stakkr-init {RECIPE}
 
 ``stakkr-init`` copies some templates and creates base directories to work.
+
+
+Recipes
+-------
+Currently, the following recipes are available (see https://github.com/stakkr-org/stakkr/tree/master/stakkr/static/recipes) :
+
+* **LAMP** : PHP (latest) + Apache (2.4) + MySQL (5.7) + ``stakkr composer`` to use ``composer`` and ``stakkr mysql`` to use ``mysql``.
+* **LEMP** : PHP (latest) + Nginx (latest alpine) + MySQL (5.7) + ``stakkr composer`` to use ``composer`` and ``stakkr mysql`` to use ``mysql``.
+* **LEPP** : PHP (latest) + Nginx (latest alpine) + PostgreSQL (latest) + ``stakkr composer`` to use ``composer``.
+* **Symfony** : PHP (7.2) + Nginx (latest alpine) + ``stakkr composer`` to use ``composer`` + ``Symfony Framework`` pre-installed.
+* **Wordpress** : PHP (7.2) + Apache (2.4) + MySQL (5.7) + ``stakkr wp`` to use ``wp-cli`` + ``Wordpress`` pre-installed.
 
 
 Use stakkr from a docker dind (Docker-In-Docker) image

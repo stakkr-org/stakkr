@@ -8,9 +8,10 @@ Stakkr works with a few modules / classes:
    :caption: List of modules:
 
    code/actions.rst
+   code/aliases.rst
    code/command.rst
    code/configreader.rst
    code/docker_actions.rst
-   code/package_utils.rst
-   code/plugins.rst
+   code/file_utils.rst
    code/proxy.rst
+   code/services.rst

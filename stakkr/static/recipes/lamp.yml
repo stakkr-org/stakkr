@@ -17,6 +17,27 @@ config:
     enabled: true
     domain: localhost
 
+  aliases:
+    composer:
+      description: Run a PHP composer command
+      exec:
+        - container: php
+          user: www-data
+          args: [php, /home/www-data/bin/composer]
+
+    mysql:
+      description: |
+        Wrapper for the mysql binary located in the mysql service.
+
+        You can run any mysql command as root, such as :\n
+        - ``stakkr mysql -e "CREATE DATABASE mydb"`` to create a DB from outside\n
+        - ``stakkr mysql`` to enter the mysql console\n
+        - ``cat myfile.sql | stakkr mysql --no-tty mydb`` to import a file from outside to mysql\n
+      exec:
+        - container: mysql
+          user: root
+          args: [mysql, -p$MYSQL_ROOT_PASSWORD]
+
 services:
   - databases
   - php

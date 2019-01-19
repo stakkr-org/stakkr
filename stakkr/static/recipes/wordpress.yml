@@ -16,6 +16,14 @@ config:
     enabled: true
     domain: localhost
 
+  aliases:
+    wp:
+      description: Run a wp-cli command
+      exec:
+        - container: php
+          user: www-data
+          args: [php, /home/www-data/bin/wp]
+
 services:
   - databases
   - php
@@ -73,3 +81,4 @@ messages:
   - Wordpress has been installed in www/
   - To access it, go to the webserver URL given above and follow the wizard
   - 'Login: admin - Password: admin'
+  - Try also the command 'cd www && stakkr wp user list'

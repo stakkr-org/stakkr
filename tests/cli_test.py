@@ -94,14 +94,6 @@ class CliTest(unittest.TestCase):
         self.assertRegex(res['stderr'], r'.*Have you started stakkr with the start action.*')
         self.assertIs(res['status'], 1)
 
-    def test_mysql(self):
-        exec_cmd(self.cmd_base + ['start'])
-
-        res = exec_cmd(self.cmd_base + ['mysql', '--version'])
-        self.assertEqual(res['stdout'], '')
-        self.assertRegex(res['stderr'], r'.*Invalid value: invalid choice: mysql.*')
-        self.assertIs(res['status'], 2)
-
     def test_restart_stopped(self):
         self._proxy_start_check_not_in_network()
 
