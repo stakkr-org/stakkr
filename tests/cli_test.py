@@ -2,6 +2,7 @@ import os
 import subprocess
 import sys
 import unittest
+import shutil
 
 from click.testing import CliRunner
 from stakkr.docker_actions import get_client as docker_client, _container_in_network as ct_in_network
@@ -271,8 +272,58 @@ class CliTest(unittest.TestCase):
         self.assertRegex(res['stderr'], r'.*Have you started stakkr with the start action.*')
         self.assertIs(res['status'], 1)
 
+    def test_services_list(self):
+        res = exec_cmd(self.cmd_base + ['services'])
+        self.assertEqual(res['stderr'], '')
+        self.assertRegex(res['stdout'], r'.*Available services usable in stakkr.yml.*maildev.*latest.*php.*portainer.*')
+        self.assertNotRegex(res['stdout'], r'.*nginx.*')
+        self.assertIs(res['status'], 0)
+
+    def test_services_add_bad_service(self):
+        res = exec_cmd(self.cmd_base + ['services-add', 'bad_service'])
+        self.assertRegex(res['stdout'], r'.*bad_service.*is not a valid repo \(status = 404\).*')
+        self.assertEqual(res['stderr'], '')
+        self.assertIs(res['status'], 1)
+
+    def test_services_add_service_from_name(self):
+        res = exec_cmd(self.cmd_base + ['services-add', 'databases'])
+        self.assertEqual(res['stderr'], '')
+        self.assertRegex(res['stdout'], r'.*Package.*databases.*installed successfully.*')
+        self.assertRegex(res['stdout'], r'.*Try stakkr services to see new available services.*')
+        self.assertIs(res['status'], 0)
+
+    def test_services_update_service_from_name(self):
+        res = exec_cmd(self.cmd_base + ['services-update'])
+        self.assertEqual(res['stderr'], '')
+        self.assertRegex(res['stdout'], r'.*Packages updated')
+        self.assertIs(res['status'], 0)
+
+    def test_services_double_install(self):
+        shutil.rmtree(base_dir + '/static/services/databases')
+
+        res = exec_cmd(self.cmd_base + ['services-add', 'databases'])
+        self.assertEqual(res['stderr'], '')
+        self.assertRegex(res['stdout'], r'.*Package.*databases.*installed successfully')
+        self.assertIs(res['status'], 0)
+
+        res = exec_cmd(self.cmd_base + ['services-add', 'databases'])
+        self.assertEqual(res['stderr'], '')
+        self.assertRegex(res['stdout'], r'.*Package "databases" is already installed, updating')
+        self.assertIs(res['status'], 0)
+
+    def test_services_add_service_from_url(self):
+        res = exec_cmd(self.cmd_base + ['services-add', 'https://github.com/stakkr-org/services-databases.git'])
+        self.assertEqual(res['stderr'], '')
+        self.assertRegex(res['stdout'], r'.*Package.*databases.*installed successfully')
+        self.assertIs(res['status'], 0)
+
     def setUpClass():
-        """Clean data directory"""
+        """Clean services directory"""
+        cli = CliTest()
+
+        shutil.rmtree(base_dir + '/static/services')
+        exec_cmd(cli.cmd_base + ['services-add', 'php'])
+        exec_cmd(cli.cmd_base + ['services-add', 'emails'])
 
     def tearDownClass():
         cli = CliTest()
@@ -282,6 +333,10 @@ class CliTest(unittest.TestCase):
         stop_remove_container('static_maildev')
         stop_remove_container('static_php')
         stop_remove_container('static_portainer')
+
+        shutil.rmtree(base_dir + '/static/services')
+        exec_cmd(cli.cmd_base + ['services-add', 'php'])
+        exec_cmd(cli.cmd_base + ['services-add', 'emails'])
 
     def _proxy_start_check_not_in_network(self):
         from stakkr.proxy import Proxy
