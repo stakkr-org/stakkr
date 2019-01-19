@@ -14,6 +14,8 @@ venv
 !.coveragerc
 htmlcov
 /tests/static/data
+/tests/static/services/*
+!/tests/static/services/test
 
 
 # Local configuration
