@@ -299,7 +299,7 @@ class CliTest(unittest.TestCase):
         self.assertIs(res['status'], 0)
 
     def test_services_double_install(self):
-        shutil.rmtree(base_dir + '/static/services/databases')
+        shutil.rmtree(base_dir + '/static/services/databases', ignore_errors=True)
 
         res = exec_cmd(self.cmd_base + ['services-add', 'databases'])
         self.assertEqual(res['stderr'], '')
@@ -321,9 +321,9 @@ class CliTest(unittest.TestCase):
         """Clean services directory"""
         cli = CliTest()
 
-        shutil.rmtree(base_dir + '/static/services/databases')
-        shutil.rmtree(base_dir + '/static/services/emails')
-        shutil.rmtree(base_dir + '/static/services/php')
+        shutil.rmtree(base_dir + '/static/services/databases', ignore_errors=True)
+        shutil.rmtree(base_dir + '/static/services/emails', ignore_errors=True)
+        shutil.rmtree(base_dir + '/static/services/php', ignore_errors=True)
         exec_cmd(cli.cmd_base + ['services-add', 'php'])
         exec_cmd(cli.cmd_base + ['services-add', 'emails'])
 
@@ -336,9 +336,9 @@ class CliTest(unittest.TestCase):
         stop_remove_container('static_php')
         stop_remove_container('static_portainer')
 
-        shutil.rmtree(base_dir + '/static/services/databases')
-        shutil.rmtree(base_dir + '/static/services/emails')
-        shutil.rmtree(base_dir + '/static/services/php')
+        shutil.rmtree(base_dir + '/static/services/databases', ignore_errors=True)
+        shutil.rmtree(base_dir + '/static/services/emails', ignore_errors=True)
+        shutil.rmtree(base_dir + '/static/services/php', ignore_errors=True)
         exec_cmd(cli.cmd_base + ['services-add', 'php'])
         exec_cmd(cli.cmd_base + ['services-add', 'emails'])
 
