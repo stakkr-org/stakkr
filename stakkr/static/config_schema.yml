@@ -32,22 +32,47 @@ properties:
           blocked_ports: { type: array, items: { type: integer } }
         required: [enabled, version, ram, service_name, service_url]
 
+
   aliases:
     type: object
-    items:
+    additionalProperties:
       type: object
-      additionalProperties: false
+      required: [description, exec]
       properties:
         description: { type: string }
         exec:
           type: array
           items:
             type: object
-            additionalProperties: false
+            required: [container, args]
             properties:
               container: { type: string }
               user: { type: string }
-              args: { type: array, items: { type: string } }
+              args:
+                type: array
+                title: Command itself split in parts
+                items: { type: [string, number] }
+
+
+#
+#      required: [description]
+#        type: object
+#        items:
+#          type: object
+#          description: { type: string }
+#          exec:
+#            type: array
+#            title: List of commands to run
+#          items:
+#            type: object
+#            required: [container, args]
+#            properties:
+#              container: { type: string }
+#              user: { type: string }
+#              args:
+#                type: array
+#                title: Command itself split in parts
+#                items: { type: string }
 
   proxy:
     type: object

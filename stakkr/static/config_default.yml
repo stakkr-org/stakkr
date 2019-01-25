@@ -10,6 +10,8 @@ services:
     service_name: Portainer (Docker Webadmin)
     service_url: http://{}
 
+aliases: {}
+
 proxy:
   enabled: true
   domain: localhost

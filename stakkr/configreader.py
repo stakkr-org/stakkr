@@ -1,6 +1,7 @@
 # coding: utf-8
 """Simple Config Reader."""
 
+from collections.abc import Iterable
 from os import path
 from sys import stderr
 import anyconfig
@@ -31,7 +32,7 @@ class Config:
 
         msg = 'Failed validating config ('
         msg += ', '.join(self.config_files)
-        msg += '):\n    - {}'.format(self.error)
+        msg += '):\n    - {}\n'.format(self.error)
         stderr.write(style(msg, fg='red'))
 
     def read(self):
@@ -47,7 +48,7 @@ class Config:
         try:
             anyconfig.validate(config, schema, safe=False)
         except _Error as error:
-            self.error = '{} ({})'.format(error.message, ' -> '.join(error.path))
+            self.error = '{} ({})'.format(error.message, ' -> '.join(map(str, error.path)))
             return False
 
         config['project_dir'] = path.realpath(path.dirname(self.config_file))

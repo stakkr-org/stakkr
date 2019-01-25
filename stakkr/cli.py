@@ -238,6 +238,9 @@ def main():
         arg_extra_args = Argument(param_decls=['extra_args'], nargs=-1, type=click.UNPROCESSED)
         opt_tty = Option(param_decls=['--tty/--no-tty'], is_flag=True, default=True, help="Use a TTY")
         for alias, conf in get_aliases().items():
+            if conf is None:
+                continue
+
             cli_cmd = Command(
                 name=alias,
                 context_settings=dict(ignore_unknown_options=True, allow_extra_args=True),
