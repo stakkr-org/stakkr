@@ -1,8 +1,10 @@
+"""Test stakkr-compose command"""
+
 import os
 import sys
-import stakkr.stakkr_compose as sc
 import subprocess
 import unittest
+import stakkr.stakkr_compose as sc
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, base_dir + '/../')
@@ -45,8 +47,17 @@ class StakkrComposeTest(unittest.TestCase):
     #     self.assertTrue(services_files[0].endswith('static/services/maildev.yml'))
 
     def test_get_available_services(self):
+        from shutil import rmtree
+
         stakkr_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '/stakkr'
         static_path = os.path.dirname(os.path.realpath(__file__)) + '/static'
+        rmtree(static_path + '/services/db', ignore_errors=True)
+        rmtree(static_path + '/services/databases', ignore_errors=True)
+
+        add_databases = ['stakkr', '-c', base_dir + '/static/stakkr.yml', 'services-add', 'php']
+        add_emails = ['stakkr', '-c', base_dir + '/static/stakkr.yml', 'services-add', 'emails']
+        subprocess.Popen(add_databases, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.Popen(add_emails, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         services = sc.get_available_services(static_path)
         self.assertFalse('apache' in services)
@@ -57,7 +68,7 @@ class StakkrComposeTest(unittest.TestCase):
         self.assertTrue('maildev' in services)
 
         self.assertEqual(stakkr_path + '/static/services/portainer.yml', services['portainer'])
-        self.assertEqual(static_path + '/services/test/docker-compose/php.yml', services['php'])
+        self.assertEqual(static_path + '/services/php/docker-compose/php.yml', services['php'])
 
     # def test_get_valid_configured_services(self):
     #     services = sc.get_configured_services(base_dir + '/static/stakkr.yml')

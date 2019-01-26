@@ -8,6 +8,7 @@ General
 * Add option `-r` to remove containers on stop (`stakkr stop -r -> stakkr-compose down`)
 * Test mailhog deeply
 * Add pgadmin + phpredadmin in databases
+* Need to fix commands list when doing "stakkr -c tests/static/config_aliases.yml"
 
 * ~~Redo stakkr-init~~
 * ~~Services outside, each will be a repo~~

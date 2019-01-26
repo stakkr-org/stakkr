@@ -9,7 +9,7 @@ from requests import head, HTTPError
 __github_url__ = 'https://github.com/stakkr-org'
 
 
-def install(services_dir: str, package: str):
+def install(services_dir: str, package: str, name: str):
     """Install a specific service by cloning a repo"""
     from os.path import isdir
     from urllib.parse import urlparse
@@ -18,7 +18,7 @@ def install(services_dir: str, package: str):
     if urlparse(package).scheme != '':
         url = package
 
-    path = '{}/{}'.format(services_dir, package)
+    path = '{}/{}'.format(services_dir, name)
     try:
         _check_repo_exists(url)
 

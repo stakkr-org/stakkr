@@ -53,27 +53,6 @@ properties:
                 title: Command itself split in parts
                 items: { type: [string, number] }
 
-
-#
-#      required: [description]
-#        type: object
-#        items:
-#          type: object
-#          description: { type: string }
-#          exec:
-#            type: array
-#            title: List of commands to run
-#          items:
-#            type: object
-#            required: [container, args]
-#            properties:
-#              container: { type: string }
-#              user: { type: string }
-#              args:
-#                type: array
-#                title: Command itself split in parts
-#                items: { type: string }
-
   proxy:
     type: object
     properties:

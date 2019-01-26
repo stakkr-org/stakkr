@@ -115,16 +115,21 @@ def services(ctx):
         print('  - {} ({})'.format(available_svc, sign))
 
 
-@stakkr.command(help="Download a pack of services from github (see github) containing services")
+@stakkr.command(help="""Download a pack of services from github (see github) containing services.
+PACKAGE is the git url or package name.
+NAME is the directory name to clone the repo.
+""")
 @click.argument('package', required=True)
+@click.argument('name', required=False)
 @click.pass_context
-def services_add(ctx, package: str):
+def services_add(ctx, package: str, name: str):
     """See command Help."""
     from stakkr.services import install
 
     project_dir = _get_project_dir(ctx.obj['CONFIG'])
     services_dir = '{}/services'.format(project_dir)
-    success, message = install(services_dir, package)
+    name = package if name is None else name
+    success, message = install(services_dir, package, name)
     if success is False:
         click.echo(click.style(message, fg='red'))
         sys.exit(1)

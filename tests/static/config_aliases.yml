@@ -1,0 +1,15 @@
+services:
+  php:
+    enabled: true
+    version: 7.2
+
+subnet: 192.168.23.0/24
+project_name: testnet
+
+aliases:
+  phpver:
+    description: Get the current php version
+    exec:
+      -
+        container: php
+        args: [php, -v]
