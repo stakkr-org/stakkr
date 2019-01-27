@@ -34,7 +34,7 @@ environment, to change your parameters, choose your images, learn the ``docker-c
 line tool, etc ... In brief, it's not very flexible and hard to learn.
 
 Stakkr will help you, via a very simple configuration file and a predefined list of services
-(that can be extended by plugins) to build a complete environment. Plus, to control it in command line.
+(that can be extended with aliases and custom services) to build a complete environment. Plus, to control it in command line.
 It makes use of docker easy.
 
 Last, but not the least, it's highly configurable and each service mounts a volume to have a persistence

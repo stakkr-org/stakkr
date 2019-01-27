@@ -24,10 +24,10 @@ Some rules:
 - The service will be available in ``stakkr.yml`` once defined
 - A configuration parameter such as :
 
-.. code:: yaml
+.. code-block:: yaml
 
-    memcached:
-      ram: 1024M
+   memcached:
+     ram: 1024M
 
 
 generates an environment variable with a name like ``DOCKER_MEMCACHED_RAM``. That
@@ -42,96 +42,97 @@ Let's make a new nginx service.
 1/ We need to define the ``config_schema.yml`` that will validate the service :
 See https://json-schema.org
 
-.. code:: yaml
-    :caption: services/nginx2/config_schema.yml
+.. code-block:: yaml
+   :caption: services/nginx2/config_schema.yml
 
-    ---
+   ---
 
-    "$schema": http://json-schema.org/draft-04/schema#
-    type: object
-    properties:
-      services:
-        type: object
-        additionalProperties: false
-        properties:
-          nginx2:
-            type: object
-            additionalProperties: false
-            properties:
-              enabled: { type: boolean }
-              version: { type: [string, number] }
-              ram: { type: string }
-              service_name: { type: string }
-              service_url: { type: string }
-            required: [enabled, version, ram, service_name, service_url]
+   "$schema": http://json-schema.org/draft-04/schema#
+   type: object
+   properties:
+     services:
+       type: object
+       additionalProperties: false
+       properties:
+         nginx2:
+           type: object
+           additionalProperties: false
+           properties:
+             enabled: { type: boolean }
+             version: { type: [string, number] }
+             ram: { type: string }
+             service_name: { type: string }
+             service_url: { type: string }
+           required: [enabled, version, ram, service_name, service_url]
 
 
 2/ Then the ``config_default.yml`` with the default values, some are
 required :
 
-.. code:: yaml
-    :caption: services/nginx2/config_default.yml
+.. code-block:: yaml
+   :caption: services/nginx2/config_default.yml
 
-    ---
+   ---
 
-    services:
-      nginx2:
-        enabled: false # Required and set to false by default
-        version: latest
-        ram: 256M
-        service_name: Nginx (Web Server) # Required for stakkr status message
-        service_url: http://{} (works also in https) # Required for stakkr status message
+   services:
+     nginx2:
+       enabled: false # Required and set to false by default
+       version: latest
+       ram: 256M
+       service_name: Nginx (Web Server) # Required for stakkr status message
+       service_url: http://{} (works also in https) # Required for stakkr status message
 
 
 3/ Then the service itself in a **docker-compose/** subdirectory :
 
-.. code:: yaml
-    :caption: services/nginx2/docker-composer/nginx2.yml
+.. code-block:: yaml
+   :caption: services/nginx2/docker-composer/nginx2.yml
 
-    version: '2.2'
+   version: '2.2'
 
-    services:
-        nginx2:
-            image: edyan/nginx:${DOCKER_NGINX2_VERSION}
-            mem_limit: ${DOCKER_NGINX2_RAM}
-            container_name: ${COMPOSE_PROJECT_NAME}_nginx2
-            hostname: ${COMPOSE_PROJECT_NAME}_nginx2
-            networks: [stakkr]
-            labels:
-                - traefik.frontend.rule=Host:nginx2.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}
+   services:
+       nginx2:
+           image: edyan/nginx:${DOCKER_NGINX2_VERSION}
+           mem_limit: ${DOCKER_NGINX2_RAM}
+           container_name: ${COMPOSE_PROJECT_NAME}_nginx2
+           hostname: ${COMPOSE_PROJECT_NAME}_nginx2
+           networks: [stakkr]
+           labels:
+               - traefik.frontend.rule=Host:nginx2.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}
 
 
 4/ Finally, check that it's available and add it to ``stakkr.yml`` :
 
-.. code:: shell
+.. code-block:: shell
 
-    stakkr services
+   stakkr services
 
 
 Output should be like :
 
-.. code:: shell
+.. code-block:: shell
 
-  ...
-  - mysql (✘)
-  - nginx2 (✘)
-  - php (✘)
-  ...
+   ...
+   - mysql (✘)
+   - nginx2 (✘)
+   - php (✘)
+   ...
 
 
 Now in ``stakkr.yml``
 
-.. code:: yaml
+.. code-block:: yaml
+   :caption: stakkr.yml
 
-    services:
-      nginx2:
-        enabled: true
-        ram: 1024M
+   services:
+     nginx2:
+       enabled: true
+       ram: 1024M
 
 
 Restart:
 
-.. code:: bash
+.. code-block:: bash
 
     $ stakkr restart --recreate
     $ stakkr status
@@ -139,7 +140,7 @@ Restart:
 
 To run a command, use the standard ``exec`` wrapper or create an alias:
 
-.. code:: bash
+.. code-block:: bash
 
     $ stakkr exec nginx2 cat /etc/passwd
 
@@ -156,7 +157,7 @@ Example again with nginx2 :
 
 1/ Create the **services/nginx2/docker-compose/Dockerfile.nginx2** file :
 
-.. code:: shell
+.. code-block:: shell
 
     FROM edyan/nginx:latest
     # etc...
@@ -164,20 +165,20 @@ Example again with nginx2 :
 
 2/ Change the **services/nginx2/docker-composer/nginx2.yml** file :
 
-.. code:: yaml
-    :caption: services/nginx2/docker-composer/nginx2.yml
+.. code-block:: yaml
+   :caption: services/nginx2/docker-composer/nginx2.yml
 
-    version: '2.2'
+   version: '2.2'
 
-    services:
-        nginx2:
-            build:
-              context: ${COMPOSE_BASE_DIR}/services/nginx2/docker-compose
-              dockerfile: Dockerfile.nginx2
-            mem_limit: ${DOCKER_NGINX2_RAM}
-            container_name: ${COMPOSE_PROJECT_NAME}_nginx2
-            hostname: ${COMPOSE_PROJECT_NAME}_nginx2
-            networks: [stakkr]
-            labels:
-                - traefik.frontend.rule=Host:nginx2.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}
+   services:
+       nginx2:
+           build:
+             context: ${COMPOSE_BASE_DIR}/services/nginx2/docker-compose
+             dockerfile: Dockerfile.nginx2
+           mem_limit: ${DOCKER_NGINX2_RAM}
+           container_name: ${COMPOSE_PROJECT_NAME}_nginx2
+           hostname: ${COMPOSE_PROJECT_NAME}_nginx2
+           networks: [stakkr]
+           labels:
+               - traefik.frontend.rule=Host:nginx2.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}
 
