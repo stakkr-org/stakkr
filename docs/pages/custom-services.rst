@@ -181,4 +181,3 @@ Example again with nginx2 :
            networks: [stakkr]
            labels:
                - traefik.frontend.rule=Host:nginx2.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}
-
