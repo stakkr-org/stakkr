@@ -15,8 +15,6 @@ RUN         addgroup stakkr root
 
 EXPOSE      80 443
 
-
-
 docker run -p 80:80 -p 443:443 -d --privileged --rm --name stakkr-dev stakkr/stakkr
 docker exec -ti stakkr-dev ash
 chown -R stakkr:stakkr /home/stakkr
