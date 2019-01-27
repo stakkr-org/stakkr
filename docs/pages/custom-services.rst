@@ -1,56 +1,132 @@
 Custom Services
-==================================
+===============
 
 
 Overview
--------------------
-If you need a specific service that is not included in stakkr by default, you can add
-a yml file into ``services/`` directory.
+--------
+If you need a specific service that is not included in stakkr by default, you can
+create your own package and add it to the **services/** directory.
 
 
-Write a Service
--------------------
-A ``stakkr`` service respects the ``docker-compose`` standard, plus a few customizations.
+Write a Package
+---------------
+A ``stakkr`` package adds to stakkr a set of new services. For example, when you add
+services via the ``stakkr services-add`` command, it adds a directory into **services/**
+that contain one or more services.
+
+Each service respects the ``docker-compose`` standard, plus a few customizations.
 
 
 Some rules:
 
-- The ``yaml`` file must be named with the same name than the service
-- That name will help to define the name of the service in ``conf/compose.ini``
-- You are free to add everything you want to ``conf/compose.ini``
-- A configuration parameter such as ``php.ram`` generates an environment variable that looks like ``DOCKER_PHP_RAM``.
+- A package comes with its config validation.
+- Each ``yaml`` file defining a service must be named with the same name than the service
+- The service will be available in ``stakkr.yml`` once defined
+- A configuration parameter such as :
+
+.. code:: yaml
+
+    memcached:
+      ram: 1024M
+
+
+generates an environment variable with a name like ``DOCKER_MEMCACHED_RAM``. That
+variable is usable in the service definition (docker-compose file).
 
 
 
 Example
-~~~~~~~~~
-Let's make a xyz service. The file will be located into ``services/`` as
-``xyz.yml``.
+~~~~~~~
+Let's make a new nginx service.
 
+1/ We need to define the ``config_schema.yml`` that will validate the service :
+See https://json-schema.org
 
 .. code:: yaml
+    :caption: services/nginx2/config_schema.yml
+
+    ---
+
+    "$schema": http://json-schema.org/draft-04/schema#
+    type: object
+    properties:
+      services:
+        type: object
+        additionalProperties: false
+        properties:
+          nginx2:
+            type: object
+            additionalProperties: false
+            properties:
+              enabled: { type: boolean }
+              version: { type: [string, number] }
+              ram: { type: string }
+              service_name: { type: string }
+              service_url: { type: string }
+            required: [enabled, version, ram, service_name, service_url]
+
+
+2/ Then the ``config_default.yml`` with the default values, some are
+required :
+
+.. code:: yaml
+    :caption: services/nginx2/config_default.yml
+
+    ---
+
+    services:
+      nginx2:
+        enabled: false # Required and set to false by default
+        version: latest
+        ram: 256M
+        service_name: Nginx (Web Server) # Required for stakkr status message
+        service_url: http://{} (works also in https) # Required for stakkr status message
+
+
+3/ Then the service itself in a **docker-compose/** subdirectory :
+
+.. code:: yaml
+    :caption: services/nginx2/docker-composer/nginx2.yml
 
     version: '2.2'
 
     services:
-        xyz:
-            image: myself/xyz:${DOCKER_XYZ_VERSION}
-            mem_limit: ${DOCKER_XYZ_RAM}
-            container_name: ${COMPOSE_PROJECT_NAME}_xyz
-            hostname: ${COMPOSE_PROJECT_NAME}_xyz
+        nginx2:
+            image: edyan/nginx:${DOCKER_NGINX2_VERSION}
+            mem_limit: ${DOCKER_NGINX2_RAM}
+            container_name: ${COMPOSE_PROJECT_NAME}_nginx2
+            hostname: ${COMPOSE_PROJECT_NAME}_nginx2
             networks: [stakkr]
             labels:
-                - traefik.frontend.rule=Host:xyz.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}
+                - traefik.frontend.rule=Host:nginx2.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}
 
 
+4/ Finally, check that it's available and add it to ``stakkr.yml`` :
 
-Now in ``conf/compose.ini``:
+.. code:: shell
 
-.. code:: cfg
+    stakkr services
 
-    services=xyz
-    xyz.version=1.13-alpine # what's in DOCKER_XYZ_VERSION
-    xyz.ram=256M # what's in DOCKER_XYZ_RAM
+
+Output should be like :
+
+.. code:: shell
+
+  ...
+  - mysql (✘)
+  - nginx2 (✘)
+  - php (✘)
+  ...
+
+
+Now in ``stakkr.yml``
+
+.. code:: yaml
+
+    services:
+      nginx2:
+        enabled: true
+        ram: 1024M
 
 
 Restart:
@@ -61,11 +137,11 @@ Restart:
     $ stakkr status
 
 
-To run a command, use the standard ``exec`` wrapper:
+To run a command, use the standard ``exec`` wrapper or create an alias:
 
 .. code:: bash
 
-    $ stakkr exec xyz cat /etc/xyz/xyz.conf
+    $ stakkr exec nginx2 cat /etc/passwd
 
 
 
@@ -76,34 +152,32 @@ like below, then run ``stakkr-compose build`` each time you need to build it. On
 ``stakkr start`` is enough to start it.
 
 
-* ``services/memcached.yml`` file :
+Example again with nginx2 :
+
+1/ Create the **services/nginx2/docker-compose/Dockerfile.nginx2** file :
+
+.. code:: shell
+
+    FROM edyan/nginx:latest
+    # etc...
+
+
+2/ Change the **services/nginx2/docker-composer/nginx2.yml** file :
 
 .. code:: yaml
+    :caption: services/nginx2/docker-composer/nginx2.yml
 
     version: '2.2'
 
     services:
-        memcached:
-            build: ${COMPOSE_BASE_DIR}/services/memcached
-            mem_limit: 1024M
-            container_name: ${COMPOSE_PROJECT_NAME}_memcached
-            hostname: ${COMPOSE_PROJECT_NAME}_memcached
+        nginx2:
+            build:
+              context: ${COMPOSE_BASE_DIR}/services/nginx2/docker-compose
+              dockerfile: Dockerfile.nginx2
+            mem_limit: ${DOCKER_NGINX2_RAM}
+            container_name: ${COMPOSE_PROJECT_NAME}_nginx2
+            hostname: ${COMPOSE_PROJECT_NAME}_nginx2
             networks: [stakkr]
+            labels:
+                - traefik.frontend.rule=Host:nginx2.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}
 
-
-
-* ``services/memcached/Dockerfile`` file :
-
-.. code:: bash
-
-    FROM memcached:1.5-alpine
-
-    # RUN ... your own logic
-
-
-
-* In ``conf/compose.ini`` file, add :
-
-.. code:: cfg
-
-    services=....,memcached

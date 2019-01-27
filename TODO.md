@@ -18,4 +18,5 @@ General
 * ~~Re-implement plugins~~ Will try via command aliases
 * ~~Check git is installed with packages-add~~
 * ~~Improve error message when config invalid (no need to display standard config_default.yml)~~
-* ~~Add unit tests for `stakkr services`, `stakkr services-add xyz` and `stakkr services-update`~~
+* ~~Add unit tests for "stakkr services", "stakkr services-add xyz" and "stakkr services-update"~~
+* ~~* Write doc for custom services~~
