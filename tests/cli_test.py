@@ -327,6 +327,13 @@ class CliTest(unittest.TestCase):
         self.assertRegex(res['stdout'], r".*PHP 7\.2.*")
         self.assertIs(res['status'], 0)
 
+        res = exec_cmd([
+            'stakkr', '-c', base_dir + '/static/config_aliases.yml', 'phptest', '--no-tty'])
+        self.assertEqual(res['stderr'], '')
+        self.assertRegex(res['stdout'], r"phptest")
+        self.assertIs(res['status'], 0)
+
+
     def setUpClass():
         """Clean services directory"""
         cli = CliTest()

@@ -13,3 +13,9 @@ aliases:
       -
         container: php
         args: [php, -v]
+  phptest:
+    description: Do a test
+    exec:
+      -
+        container: php
+        args: [echo, 'phptest']

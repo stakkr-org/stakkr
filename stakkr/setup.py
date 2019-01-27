@@ -83,6 +83,7 @@ def install_recipe(recipe: str):
     _recipe_run_commands(stakkr, recipe['commands'])
     _recipe_display_messages(stakkr, recipe['messages'])
 
+
 def _create_dir(project_dir: str, dir_name: str, force: bool):
     """Create a directory from stakkr skel"""
     dir_name = project_dir + '/' + dir_name.lstrip('/')
@@ -160,6 +161,7 @@ def _recipe_run_commands(stakkr: StakkrActions, commands: str):
         click.secho('  ↳ {}'.format(title))
         user = cmd['user'] if 'user' in cmd else 'root'
         stakkr.exec_cmd(cmd['container'], user, cmd['args'], True)
+
 
 def _recipe_display_messages(stakkr: StakkrActions, recipe_messages: list):
     """Build messages to display after installing a recipe"""

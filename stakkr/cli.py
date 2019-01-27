@@ -9,8 +9,7 @@ Give all options to manage services to be launched, stopped, etc.
 
 import sys
 import click
-from click.core import Command, Argument, Option
-from click.globals import get_current_context
+from click.core import Context
 from stakkr.docker_actions import get_running_containers_names
 from stakkr.aliases import get_aliases
 
@@ -21,11 +20,11 @@ a stack of services, for example for web development.
 Read the configuration file and setup the required services by
 linking and managing everything for you.""")
 @click.version_option('4.0b5')
-@click.option('--config', '-c', help='Change the configuration file')
+@click.option('--config', '-c', help='Set the configuration filename (stakkr.yml by default)')
 @click.option('--debug/--no-debug', '-d', default=False)
 @click.option('--verbose', '-v', is_flag=True)
 @click.pass_context
-def stakkr(ctx, config=None, debug=False, verbose=True):
+def stakkr(ctx: Context, config=None, debug=False, verbose=True):
     """Click group, set context and main object."""
     from stakkr.actions import StakkrActions
 
@@ -41,7 +40,7 @@ install packages, run commands, etc.""")
 @click.option('--user', '-u', help="User's name. Valid choices : www-data or root")
 @click.option('--tty/--no-tty', '-t/ ', is_flag=True, default=True, help="Use a TTY")
 @click.pass_context
-def console(ctx, container: str, user: str, tty: bool):
+def console(ctx: Context, container: str, user: str, tty: bool):
     """See command Help."""
     ctx.obj['STAKKR'].init_project()
     ctx.obj['CTS'] = get_running_containers_names(ctx.obj['STAKKR'].project_name)
@@ -64,7 +63,7 @@ Examples:\n
 @click.option('--tty/--no-tty', '-t/ ', is_flag=True, default=True, help="Use a TTY")
 @click.argument('container', required=True)
 @click.argument('command', required=True, nargs=-1, type=click.UNPROCESSED)
-def exec_cmd(ctx, user: str, container: str, command: tuple, tty: bool):
+def exec_cmd(ctx: Context, user: str, container: str, command: tuple, tty: bool):
     """See command Help."""
     ctx.obj['STAKKR'].init_project()
     ctx.obj['CTS'] = get_running_containers_names(ctx.obj['STAKKR'].project_name)
@@ -80,7 +79,7 @@ def exec_cmd(ctx, user: str, container: str, command: tuple, tty: bool):
 @click.option('--recreate', '-r', help="Recreate all containers", is_flag=True)
 @click.option('--proxy/--no-proxy', '-P', help="Restart the proxy", default=True)
 @click.pass_context
-def restart(ctx, container: str, pull: bool, recreate: bool, proxy: bool):
+def restart(ctx: Context, container: str, pull: bool, recreate: bool, proxy: bool):
     """See command Help."""
     print(click.style('[RESTARTING]', fg='green') + ' your stakkr services')
     try:
@@ -122,7 +121,7 @@ NAME is the directory name to clone the repo.
 @click.argument('package', required=True)
 @click.argument('name', required=False)
 @click.pass_context
-def services_add(ctx, package: str, name: str):
+def services_add(ctx: Context, package: str, name: str):
     """See command Help."""
     from stakkr.services import install
 
@@ -160,7 +159,7 @@ def services_update(ctx):
 @click.option('--recreate', '-r', help="Recreate all containers", is_flag=True)
 @click.option('--proxy/--no-proxy', '-P', help="Start proxy", default=True)
 @click.pass_context
-def start(ctx, container: str, pull: bool, recreate: bool, proxy: bool):
+def start(ctx: Context, container: str, pull: bool, recreate: bool, proxy: bool):
     """See command Help."""
     print(click.style('[STARTING]', fg='green') + ' your stakkr services')
 
@@ -179,7 +178,7 @@ def status(ctx):
 @click.argument('container', required=False)
 @click.option('--proxy/--no-proxy', '-P', help="Stop the proxy", default=True)
 @click.pass_context
-def stop(ctx, container: str, proxy: bool):
+def stop(ctx: Context, container: str, proxy: bool):
     """See command Help."""
     print(click.style('[STOPPING]', fg='yellow') + ' your stakkr services')
     ctx.obj['STAKKR'].stop(container, proxy)
@@ -225,9 +224,9 @@ def debug_mode():
     return False
 
 
-def run_commands(extra_args: tuple, tty: bool, commands: dict):
+def run_commands(ctx: Context, extra_args: tuple, tty: bool):
     """Run commands for a specific alias"""
-    ctx = get_current_context()
+    commands = ctx.obj['STAKKR'].get_config()['aliases'][ctx.command.name]['exec']
     for command in commands:
         user = command['user'] if 'user' in command else 'root'
         container = command['container']
@@ -239,21 +238,19 @@ def run_commands(extra_args: tuple, tty: bool, commands: dict):
 def main():
     """Call the CLI Script."""
     try:
-        # Set aliases from configuration
-        arg_extra_args = Argument(param_decls=['extra_args'], nargs=-1, type=click.UNPROCESSED)
-        opt_tty = Option(param_decls=['--tty/--no-tty'], is_flag=True, default=True, help="Use a TTY")
         for alias, conf in get_aliases().items():
             if conf is None:
                 continue
 
-            cli_cmd = Command(
-                name=alias,
-                context_settings=dict(ignore_unknown_options=True, allow_extra_args=True),
-                params=[arg_extra_args, opt_tty],
-                callback=lambda extra_args, tty: run_commands(extra_args, tty, conf['exec']),
-                help=conf['description'] if 'description' in conf else 'No description')
+            cmd_help = conf['description'] if 'description' in conf else 'No description'
 
-            stakkr.add_command(cli_cmd)
+            @stakkr.command(help=cmd_help, name=alias)
+            @click.option('--tty/--no-tty', '-t/ ', is_flag=True, default=True, help="Use a TTY")
+            @click.argument('extra_args', required=False, nargs=-1, type=click.UNPROCESSED)
+            @click.pass_context
+            def _f(ctx: Context, extra_args: tuple, tty: bool):
+                """See command Help."""
+                run_commands(ctx, extra_args, tty)
 
         stakkr(obj={})
     except Exception as error:
