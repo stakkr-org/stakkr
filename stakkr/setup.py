@@ -134,7 +134,7 @@ def _recipe_install_services(services: list):
     from stakkr.services import install
 
     for service in services:
-        success, message = install('services', service)
+        success, message = install('services', service, service)
         if success is False:
             click.echo(click.style('    😧 {}'.format(message), fg='red'))
             sys.exit(1)
