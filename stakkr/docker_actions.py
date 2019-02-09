@@ -147,13 +147,12 @@ def get_switch_ip():
 
 def get_running_containers(project_name: str) -> tuple:
     """Get the number of running containers and theirs details for the current stakkr instance."""
-    from stakkr.docker_actions import get_network_name
     from requests import exceptions
 
     filters = {
         'name': '{}_'.format(project_name),
         'status': 'running',
-        'network': get_network_name(project_name)}
+        'network': '{}_stakkr'.format(project_name).lower()}
 
     try:
         cts = get_client().containers.list(filters=filters)
