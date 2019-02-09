@@ -112,7 +112,7 @@ def get_ct_name(container: str):
 def get_network_name(project_name: str):
     """Find the full network name."""
     try:
-        guessed_network_name = '{}_stakkr'.format(project_name)
+        guessed_network_name = '{}_stakkr'.format(project_name).lower()
         network = get_client().networks.get(guessed_network_name)
     except NotFound:
         raise RuntimeError("Couldn't identify network (check your project name)")
@@ -147,12 +147,13 @@ def get_switch_ip():
 
 def get_running_containers(project_name: str) -> tuple:
     """Get the number of running containers and theirs details for the current stakkr instance."""
+    from stakkr.docker_actions import get_network_name
     from requests import exceptions
 
     filters = {
         'name': '{}_'.format(project_name),
         'status': 'running',
-        'network': '{}_stakkr'.format(project_name)}
+        'network': get_network_name(project_name)}
 
     try:
         cts = get_client().containers.list(filters=filters)

@@ -129,9 +129,9 @@ class StakkrActions:
 
         self._run_iptables_rules(cts)
         if proxy is True:
-            network_name = docker.get_network_name(self.project_name)
             conf = self.config['proxy']
-            Proxy(conf.get('http_port'), conf.get('https_port')).start(network_name)
+            Proxy(conf.get('http_port'), conf.get('https_port')).start(
+                docker.get_network_name(self.project_name))
 
     def status(self):
         """Return a nice table with the list of started containers."""
@@ -218,7 +218,7 @@ class StakkrActions:
         # If proxy enabled, display nice urls
         if bool(proxy_conf['enabled']):
             http_port = int(proxy_conf['http_port'])
-            url = docker.get_ct_item(service, 'traefik_host')
+            url = docker.get_ct_item(service, 'traefik_host').lower()
             url += '' if http_port == 80 else ':{}'.format(http_port)
         elif os_name() in ['Windows', 'Darwin']:
             puts(colored.yellow('[WARNING]') + ' Under Win and Mac, you need the proxy enabled')
