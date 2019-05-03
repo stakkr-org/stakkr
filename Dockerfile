@@ -9,7 +9,7 @@ RUN         apk add --no-cache python3 alpine-sdk curl git openssl-dev python3-d
             # Install stakkr
             python3 -m pip install --pre stakkr && \
             # Clean
-            apk del alpine-sdk curl git openssl-dev python3-dev libffi-dev && \
+            apk del alpine-sdk curl openssl-dev python3-dev libffi-dev && \
             rm -rf /var/cache/apk/* /var/log/*
 
 # Create user / group
