@@ -24,7 +24,7 @@ def init(force: bool, recipe: str = None):
     click.secho('Create some required files / directories', fg='green')
     install_filetree(force)
     if recipe is not None:
-        install_recipe(recipe)
+        install_recipe(recipe.lower())
         msg = "Recipe has been installed"
     else:
         msg = "Config (stakkr.yml) not present, don't forget to create it"

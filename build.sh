@@ -18,10 +18,9 @@ echo "${TAG} will also be tagged 'latest'"
 docker tag ${TAG} stakkr/stakkr:latest
 
 echo ""
-echo ""
 if [[ $? -eq 0 ]]; then
     echo -e "${GREEN}Build Done${NC}."
     echo ""
     echo "To push that version (and other of the same repo):"
-    echo "docker push stakkr/stakkr"
+    echo "  docker push stakkr/stakkr"
 fi

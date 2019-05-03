@@ -95,7 +95,6 @@ for your user. The volume will contain files with other permissions.
 Now open http://nginx.app.localhost from your browser.
 
 
-
 Development
 -----------
 
@@ -175,3 +174,25 @@ The code below starts a dind container and init a symfony app :
     # The following command should returns wordpress home
     $ w3m http://apache.wp.localhost
 
+
+
+Test your local cloned stakkr from a container
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The code below starts a dind container, mount stakkr then install it
+and init a symfony app. You need to be inside the stakkr cloned repository for that :
+
+.. code:: bash
+
+    # From the host
+    $ docker run -d --privileged -v $(pwd):/stakkr-src --rm --name stakkr-test docker:dind
+    $ docker exec -ti stakkr-test ash
+
+    # From the container
+    # Install packages required by stakkr + w3m as a local browser
+    $ apk add --no-cache python3 alpine-sdk curl git openssl-dev python3-dev w3m libffi-dev
+
+    # Install stakkr
+    $ python3 -m pip install --upgrade /stakkr-src
+
+    # Then do what you want ...
