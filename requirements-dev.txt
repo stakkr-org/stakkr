@@ -3,7 +3,6 @@ pylint
 pytest
 pytest-cov
 pytest-pep8
-pytest-xdist
 Pygments
 sphinx
 sphinx-autobuild
