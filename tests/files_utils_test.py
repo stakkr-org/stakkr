@@ -1,5 +1,5 @@
 from os import chdir, getcwd
-from os.path import abspath, dirname, realpath
+from os.path import abspath, dirname, isdir, isfile, realpath
 import sys
 import unittest
 
@@ -9,7 +9,6 @@ base_dir = abspath(dirname(__file__))
 sys.path.insert(0, base_dir + '/../')
 
 
-# https://docs.python.org/3/library/unittest.html#assert-methods
 class FilesUtilsTest(unittest.TestCase):
     def test_get_lib_basedir(self):
         self.assertEquals(
@@ -17,14 +16,13 @@ class FilesUtilsTest(unittest.TestCase):
             file_utils.get_lib_basedir())
 
     def test_get_dir(self):
-        self.assertEquals(
-            dirname(dirname(realpath(__file__))) + '/stakkr/static',
-            file_utils.get_dir('static'))
+        dir = file_utils.get_dir('static')
+        self.assertTrue(isdir(dir))
+        self.assertTrue(isfile(dir + '/docker-compose.yml'))
 
     def test_get_file(self):
-        self.assertEquals(
-            dirname(dirname(realpath(__file__))) + '/stakkr/static/config_default.yml',
-            file_utils.get_dir('static/config_default.yml'))
+        file = file_utils.get_dir('static/config_default.yml')
+        self.assertTrue(isfile(file))
 
     def test_find_project_dir_from_root(self):
         static_path = dirname(realpath(__file__)) + '/static'
