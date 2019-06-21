@@ -11,9 +11,9 @@ sys.path.insert(0, base_dir + '/../')
 
 class FilesUtilsTest(unittest.TestCase):
     def test_get_lib_basedir(self):
-        self.assertEquals(
-            dirname(dirname(realpath(__file__))) + '/stakkr',
-            file_utils.get_lib_basedir())
+        dir = file_utils.get_lib_basedir()
+        self.assertTrue(isdir(dir))
+        self.assertTrue(isfile(dir + '/stakkr_compose.py'))
 
     def test_get_dir(self):
         dir = file_utils.get_dir('static')
