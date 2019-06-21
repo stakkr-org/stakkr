@@ -32,17 +32,16 @@ stakkr-init=stakkr.setup:init
 stakkr-compose=stakkr.stakkr_compose:cli''',
     include_package_data=True,
     install_requires=[
-        'click-plugins==1.0.4',
+        'click-plugins==1.1.1',
         'clint==0.5.1',
         'anyconfig==0.9',
         # Docker compose includes requests and docker
         'docker-compose>1.20<1.30',
-        'humanfriendly',
-        'GitPython'
+        'humanfriendly==4.18',
+        'GitPython==2.1.11'
         ] + extra_packages,
     classifiers=[
-        'Development Status :: 4 - Beta',
-        # 'Development Status :: 5 - Production/Stable',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Intended Audience :: Information Technology',
@@ -55,6 +54,7 @@ stakkr-compose=stakkr.stakkr_compose:cli''',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Software Development',
         'Topic :: System :: Distributed Computing',
         'Topic :: System :: Systems Administration',

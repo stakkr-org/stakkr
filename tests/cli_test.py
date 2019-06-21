@@ -7,12 +7,12 @@ from click.testing import CliRunner
 from stakkr.docker_actions import get_client as docker_client, _container_in_network as ct_in_network
 from stakkr.cli import stakkr
 
-base_dir = os.path.abspath(os.path.dirname(__file__))
-sys.path.insert(0, base_dir + '/../')
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, BASE_DIR + '/../')
 
 
 class CliTest(unittest.TestCase):
-    cmd_base = ['stakkr', '-c', base_dir + '/static/stakkr.yml']
+    cmd_base = ['stakkr', '-c', BASE_DIR + '/static/stakkr.yml']
 
     def test_no_arg(self):
         result = CliRunner().invoke(stakkr)
@@ -47,7 +47,7 @@ class CliTest(unittest.TestCase):
 
     def test_bad_config(self):
         res = exec_cmd([
-            'stakkr', '-c', base_dir + '/static/config_invalid.yml', 'start'])
+            'stakkr', '-c', BASE_DIR + '/static/config_invalid.yml', 'start'])
         self.assertRegex(res['stderr'], r'.*Failed validating config.*')
         self.assertRegex(res['stderr'], r'.*config_invalid\.yml.*')
         self.assertRegex(res['stderr'], r".*'toto' was unexpected.*")
@@ -298,7 +298,7 @@ class CliTest(unittest.TestCase):
         self.assertIs(res['status'], 0)
 
     def test_services_double_install(self):
-        rmtree(base_dir + '/static/services/databases', ignore_errors=True)
+        rmtree(BASE_DIR + '/static/services/databases', ignore_errors=True)
 
         res = exec_cmd(self.cmd_base + ['services-add', 'databases'])
         self.assertEqual(res['stderr'], '')
@@ -311,7 +311,7 @@ class CliTest(unittest.TestCase):
         self.assertIs(res['status'], 0)
 
     def test_services_add_service_from_url(self):
-        rmtree(base_dir + '/static/services/db', ignore_errors=True)
+        rmtree(BASE_DIR + '/static/services/db', ignore_errors=True)
 
         res = exec_cmd(self.cmd_base + ['services-add', 'https://github.com/stakkr-org/services-databases.git', 'db'])
         self.assertEqual(res['stderr'], '')
@@ -319,16 +319,16 @@ class CliTest(unittest.TestCase):
         self.assertIs(res['status'], 0)
 
     def test_aliases(self):
-        exec_cmd(self.cmd_base + ['-c', base_dir + '/static/config_aliases.yml', 'start'])
+        exec_cmd(self.cmd_base + ['-c', BASE_DIR + '/static/config_aliases.yml', 'start'])
 
         res = exec_cmd([
-            'stakkr', '-c', base_dir + '/static/config_aliases.yml', 'phpver', '--no-tty'])
+            'stakkr', '-c', BASE_DIR + '/static/config_aliases.yml', 'phpver', '--no-tty'])
         self.assertEqual(res['stderr'], '')
         self.assertRegex(res['stdout'], r".*PHP 7\.2.*")
         self.assertIs(res['status'], 0)
 
         res = exec_cmd([
-            'stakkr', '-c', base_dir + '/static/config_aliases.yml', 'phptest', '--no-tty'])
+            'stakkr', '-c', BASE_DIR + '/static/config_aliases.yml', 'phptest', '--no-tty'])
         self.assertEqual(res['stderr'], '')
         self.assertRegex(res['stdout'], r"phptest")
         self.assertIs(res['status'], 0)
@@ -339,7 +339,7 @@ class CliTest(unittest.TestCase):
         cli = CliTest()
 
         for service in ['db', 'databases', 'emails', 'php']:
-            rmtree(base_dir + '/static/services/' + service, ignore_errors=True)
+            rmtree(BASE_DIR + '/static/services/' + service, ignore_errors=True)
         exec_cmd(cli.cmd_base + ['services-add', 'php'])
         exec_cmd(cli.cmd_base + ['services-add', 'emails'])
 
@@ -353,7 +353,7 @@ class CliTest(unittest.TestCase):
         stop_remove_container('static_portainer')
 
         for service in ['db', 'databases', 'emails', 'php']:
-            rmtree(base_dir + '/static/services/' + service, ignore_errors=True)
+            rmtree(BASE_DIR + '/static/services/' + service, ignore_errors=True)
         exec_cmd(cli.cmd_base + ['services-add', 'php'])
         exec_cmd(cli.cmd_base + ['services-add', 'emails'])
 
