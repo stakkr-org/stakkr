@@ -24,13 +24,11 @@ notifications:
 before_script:
     - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
     - chmod +x ./cc-test-reporter
-    - ./cc-test-reporter -v
     - ./cc-test-reporter before-build
-    - mkdir /tmp/reports
 
 # command to run tests
-script: py.test --cov=stakkr --cov-report xml:clover.xml tests/
+script: py.test --cov=stakkr tests/
 
 after_script:
-    - ./cc-test-reporter format-coverage
-    - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+    - coverage xml
+    - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi

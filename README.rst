@@ -7,8 +7,6 @@ Overview
 
 .. image:: https://scrutinizer-ci.com/g/stakkr-org/stakkr/badges/quality-score.png?b=master
    :target: https://scrutinizer-ci.com/g/stakkr-org/stakkr
-.. image:: https://scrutinizer-ci.com/g/stakkr-org/stakkr/badges/coverage.png?b=master
-   :target: https://scrutinizer-ci.com/g/stakkr-org/stakkr
 .. image:: https://travis-ci.com/stakkr-org/stakkr.svg?branch=master
    :target: https://travis-ci.com/stakkr-org/stakkr
 .. image:: https://img.shields.io/pypi/l/stakkr.svg
@@ -16,6 +14,9 @@ Overview
 .. image:: https://api.codeclimate.com/v1/badges/a11947de978e420ef6fd/maintainability
    :target: https://codeclimate.com/github/stakkr-org/stakkr/maintainability
    :alt: Maintainability
+.. image:: https://api.codeclimate.com/v1/badges/a11947de978e420ef6fd/test_coverage
+   :target: https://codeclimate.com/github/stakkr-org/stakkr/test_coverage
+   :alt: Test Coverage
 
 
 Stakkr
