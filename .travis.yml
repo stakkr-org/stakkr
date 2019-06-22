@@ -30,5 +30,7 @@ before_script:
 script: py.test
 
 after_script:
+    - echo $TRAVIS_SECURE_ENV_VARS
+    - echo $CC_TEST_REPORTER_ID
     - coverage xml
     - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
