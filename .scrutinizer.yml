@@ -23,7 +23,7 @@ build:
                     - "pip install ."
                     - "pip install -r requirements-dev.txt"
                 override:
-                    - command: py.test
+                    - command: coverage run -m py.test
                       idle_timeout: 1200
                       coverage:
                           file: .coverage

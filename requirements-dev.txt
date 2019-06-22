@@ -1,6 +1,7 @@
 -e git+https://github.com/edyan/deploy-that.git#egg=deploy-that
+coverage
 pylint
-pytest-cov==2.7.1
+pytest
 pytest-pep8==1.0.6
 Pygments
 sphinx

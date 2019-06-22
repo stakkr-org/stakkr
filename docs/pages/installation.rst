@@ -127,7 +127,7 @@ Run Tests
 
 .. code:: bash
 
-    $ py.test -c pytest.ini
+    $ coverage run -m py.test
 
 
 Generate that doc
