@@ -48,8 +48,11 @@ class StakkrComposeTest(unittest.TestCase):
 
     def test_get_available_services(self):
         from shutil import rmtree
+        from stakkr import file_utils
 
-        stakkr_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '/stakkr'
+        # Original stakkr lib path
+        stakkr_path = file_utils.get_lib_basedir()
+        # Local static test files path
         static_path = os.path.dirname(os.path.realpath(__file__)) + '/static'
         rmtree(static_path + '/services/db', ignore_errors=True)
         rmtree(static_path + '/services/databases', ignore_errors=True)
