@@ -23,11 +23,12 @@ build:
                     - "pip install ."
                     - "pip install -r requirements-dev.txt"
                 override:
-                    - command: "py.test --cov=stakkr --cov-report xml:/tmp/coverage.xml tests/"
+                    - command: py.test --cov=stakkr tests/
                       idle_timeout: 1200
                       coverage:
-                          file: /tmp/coverage.xml
-                          format: clover
+                          file: .coverage
+                          config_file: .coveragerc
+                          format: py-cc
         analysis:
             project_setup:
                 override: true

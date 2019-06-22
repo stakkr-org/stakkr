@@ -12,10 +12,9 @@ install:
     - stakkr-init
     - pip install -r requirements-dev.txt
 
-addons:
-    code_climate:
-        repo_token:
-            secure: "Z9wL+5mebndlzh8DIfEjGn2m3zep8Hm3Zn6U0bbwaoVg1l/4UVE2gDYjqrQlA8uuoovHSevpU8yEenvK2tyBiVY96raWeZnz0AUiOf+8R7iT+Fd5/2Ul8PBgJkI1awHmFsPLNv4uuvLUQaTrdsyoZw5iL4sqIomOJ3NcxFt6sKhsvc/i1O5B0sfL12/8DuBzoGx5K3e91Tnnwb1KpLqcUvozwHwL2kO1iPF6w32LS06LWNOfehIU2ikPEkAgkAv0I0oXhSsH5XD1J94s1mLqUE9+N3RC5HujXFhJoYXaZFq3magn1qnXIcepih/CfnafO2z8GhHEtADqhlG7f/C0GUXvTf0g4+y1OEWpc5TDFRMreYp6nHPZXTXU9hnfTTFUd/luKxt7ejyjkn1/8HuZRvHsf1lDh3qFVwUdjqOvtFNyAtGlRoeA4DnsgUOsWfQlha/WbKAcEFtQ4pGzKCZJzuVh1dE86uHRszWaATjaf09alKNQDfra3sEBOttvwW06cBfQF+oNhc73HP5HYk/VPh8zpf2WmmrOq8XmrVjjLioAoqbYDcG4dK009kkmxRExB3Ka7ZTj63injW5G4LpZxMxpsjzvN6N3Q9DkPeC0ZgeH3d0TfCDWoRcx9t11N/sbc9G4LKVok7WCmCrAh0XKV05T3iLkqd9pvjyN/O+6Gfo="
+env:
+    global:
+        secure: ZcG2MFV/FnCrPJaiyKKt1Rqd7W0NnEOIpn0r+OS4u4N2MKsCjeCzoZHGovXb7Av9AHokLvz0FWwD6Gd+WRoj66zdIPrDflAuWs9VEMCbhotLYb0NenU8AJBjO5V61BgdBmaCN33ZfQzMBE8z3B2RWRqk01KHDXEOdBASob4yKRetwq1PEkHMeJUtOEzVtYPu+SkBVR4xg4yW07zEtCxpZBg5I/qpunym+F7Jb/rzXwNA2csYy0NZaBGw9SzHoQZwF4c7/oUERWq7A+MzdH3zwarDBwTjb9VagIzt0jBeWd41sIqgjqRLj/qDpn5Ah1ukuSkPPVcrLLiCoXi0zudWFE68SE+Wch3iabUdQnsUc7PAg5GqHmKKge83x3KBDo9Y4PakHbFgH4Pt48GNCeY+ZVe6xNLs7PrVox5I5ZE8KScpLqYnBN0n+KS9K5pBP+cslHHb1YttJc7tiaFJhlgByEtIoUv0PMkQBiyaj6i4q3JU7l95pzrY5PIs/NBdxssF/G+QG/O4Xtod2/+xARhnQlrTbWA0eFtbzR/phcrd6iE+/3EQqxsDWJKXqMXAbTjmkADyAWj2t+4344EQyUak6+cXcSX40eGmCX+RkQexaGZGCe9WaBYUyhGrg8F96XyLS5P4mFtYU78vNFByzRv+jEIh/VKervA7y0/pwNe1+xo=
 
 notifications:
     slack:
