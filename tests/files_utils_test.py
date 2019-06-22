@@ -1,12 +1,12 @@
-from os import chdir, getcwd
+from os import chdir
 from os.path import abspath, dirname, isdir, isfile, realpath
 import sys
 import unittest
 
 from stakkr import file_utils
 
-base_dir = abspath(dirname(__file__))
-sys.path.insert(0, base_dir + '/../')
+BASE_DIR = abspath(dirname(__file__))
+sys.path.insert(0, BASE_DIR + '/../')
 
 
 class FilesUtilsTest(unittest.TestCase):
@@ -28,11 +28,13 @@ class FilesUtilsTest(unittest.TestCase):
         static_path = dirname(realpath(__file__)) + '/static'
         chdir(static_path)
         self.assertEquals(static_path, file_utils.find_project_dir())
+        chdir(BASE_DIR)
 
     def test_find_project_dir_from_subdir(self):
         static_path = dirname(realpath(__file__)) + '/static'
         chdir(static_path + '/home')
         self.assertEquals(static_path, file_utils.find_project_dir())
+        chdir(BASE_DIR)
 
 
 if __name__ == "__main__":

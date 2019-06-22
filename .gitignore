@@ -13,6 +13,7 @@ venv
 .coverage*
 !.coveragerc
 htmlcov
+coverage.xml
 /tests/static/data
 /tests/static/services/*
 !/tests/static/services/test

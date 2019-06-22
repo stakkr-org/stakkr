@@ -1,11 +1,11 @@
-[paths]
-source = stakkr
-
 [run]
 branch = True
-source = stakkr
+source = stakkr/
 parallel = false
 
 [report]
 show_missing = true
-precision = 2
+precision = 1
+
+[html]
+directory = htmlcov
