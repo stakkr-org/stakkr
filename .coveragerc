@@ -1,13 +1,10 @@
 [run]
 branch = True
 source = stakkr/
-parallel = false
+parallel = False
 omit = stakkr/__init__.py
        */site-packages/*
 
 [report]
 show_missing = true
 precision = 1
-
-[html]
-directory = htmlcov

@@ -3,32 +3,33 @@ dist: trusty
 
 language: python
 python:
-    - "3.4"
-    - "3.5"
-    - "3.6"
+  - "3.4"
+  - "3.5"
+  - "3.6"
 
 install:
-    - pip install .
-    - stakkr-init
-    - pip install -r requirements-dev.txt
+  - pip install .
+  - stakkr-init
+  - pip install -r requirements-dev.txt
 
 env:
-    global:
-        - TRAVIS_SECURE_ENV_VARS=true
-        - secure: "nwqSnagHs9wVUUq6wmIk8gU4QdYn9DZxMB5Fq0EX632CmkzAPPggNLPpJnqQomPRLmde1twEYGvsIhmFMaCH8SYQjiXg5k0JWfNinR7Y62iFUoSoL59zxPi/zSISHgnSa1Knt015k7hkw6X1p/5VoqFaOZ+hQSfoNGS5jhV/cc+ZTLt8nPK7wv9POTuE4xqplt+JTyKKzlfhJZNj27dTWKDb2lfzDhNSaMmq03DY82Yg6avSRGrnJmZNqCGjnpBXMZJTb5ewBxysVzUFFWY68fUB1T2fksWbuyYayoBv+hJSDKBRNnEh89bTx0FCW8PJmlgjKtJSScJ+zHbDV5bfvQ5p5i4dbJ6H+IULWZ11WmTEJFKxuek6Pm8Mis380EBZaGLu6ES9LTJN1OB42qfDzjWBbjWzQeF/oMWY+fuyv8lwTo92Xa1P/3lxHwSS/kkbXokwozy1OhBLPpOb+bNSKyfW8PZ1xI8XKYHc3JTlHWITBuIq+kiMX1SSIK5B8FS3wJ4L201AFfI14MC/ht16/uLphmpdxpwU8ZoWFhIlsRCKqIOUtE7eb6ilZvlSAJteuk20qQBgLPL5+a/RlYI/yUHLS+bOL0JTq7G1tyGC3OFyoWSg7qeu1YVnbFRIkY7D4g7DOVdxVe0C7ClZO85/DMdNNV8m+Z3QL9wourj2HUg="
+  global:
+  - TRAVIS_SECURE_ENV_VARS=true
+  - secure: "uXLZDwdYURs56lbpjSvWofL5BHt3IMfwWnssx5+XOzL4w9mPYjwkOk4RNPYLsKHNWLJ6Fm5tuzWZEC/NTibIEIq3G5XI8Fl9bs1HbvrS121CljDubwi2/0e5TB2Dy9F3T/0terB9qXw7Vi+y+88Eefmmgo+EpQqkXVPU6nA4BiH2UK1HNCWRlT5qzZwfpp4t7DHTrKkReuUZXYasp2Squ7UscnuHU8gjr9BORUvFR/rPGJP2IPsqWQZbE1ihEOArjcfhSBueYd+AThRq3jrry4cQp6AzI3Crl/LObarzmI3UQSFodAyo+afe1Iy+4GMH+sOfEPwJCKp4hHX9E4StLIxkl6r3d4yv2bZ/I7F5q5HhXQ5AoZw7qPcjK5+RS2MsYNCnDMkRLfW/h9LF6p2Eh5t9cqMV45mPHqq8lZAppI+6aCY/mSt6IaQ8jmandvW7h3tJNCv7tUKTFvE1Th8WElVhVESfecucscSy6cn/za7kpTDsnTcteosswx/PF1Bt4meEyzquDADeCvCVtlwlkmeN1asRGjzY3HNuqHucBosSMDu/6QYJS50DrQXp4s29HHMT/4v104ZBCFfYFvo+QDXzfu2exjg7oMdSHPZUhjUoXdmJvHpPSLFnKNb1dHbEzgnkDmttEReUNPCAfcEM23TmWJUvgRbHbddQwW4o+YY="
+  - secure: "pnNc/DVnMuHiMDKDQb57Te4R6AdBtXVLlqA69jW03SW2+WYe5YI+4BayqiQ9ViPVBao/xrLD1DBDC6rZglWPo6OnIYqTy2hLZ8OxBQT+Rjk9tdrIGnc/YQ45Poy9fUtjjg6SmMuNGO0NlX0xwzhMPT/GKL5EBTl6yPH6rtl7Zy5i+GGIbKfg74RNApaL5CGiBy8D8ZE5KnzrjAE0kBl3R1FFLj6I9GEMhJdbR/hZoYgjHGkc7tSj0uv+Vz6DyfZhlUBpqfXIiTEZ84oFi+CiPyM3rm6/kjqBNnq0kfTcvz+tlVy2f16IewNJtL9fyjEs807d6Zt1EOybEDKicMhEhB/XMYcCYdozvgxjpRH515CX9qui5pcns5GvCXl6IwjjjcGDsXjKCrW87h+3aYFnRAsRPp4oa5tadbe8qzrbOa8G/Wt/ic8zUz1K4GLWtX/45Dy1t17sHroxJTOt4PN8ybFJEVuvjccUXslSMnf/H1l1TMqxHU88wtgqXL6TqAT6zKOVUjncWcYj6nBff4wbouwAFke4T7mV/gzgNJbXNJWPaPu8K0WnHnC/p8wdCPg0jlLexvDm+opDPw40TAx4MlJz9Z1sv1n0ouxumFGsNr7TjzcxvOOeNA7eiEaGV5Vt3dkli4FmU3jJJOOavjD5SM79krmM54E6ALNmUhYO7Fk="
 
 notifications:
-    slack:
-        - secure: "VQfnV2SKRv9PFK3GPPhTZZq+etFS0mGTtbBWILoK3r35W0HLFiEAl54zZkZkojOZgaFad97y8mXrIMxl3X37EHxbA/yYaAkApXfRU6DPaOj+VNJP5IOpU8SVJxzNTvTQ2ORzYUNwXxoxuywOVwKpJP1v/HrFStvEvotAPhnA0oM+qCkqB7NRlpZBbWnpDdGqPnG1p6AHjfNjXjyHfAGHE069k4XWCRNxXPKaosJluE1ExIioIbUd+q9ZujUzCRUEJbsKmchVJMWfqHnoKKKxIr0vkL1kWGT+4L5o0YHaJRM1Ei9Bu1FKtVKK+389hWGh+ONOjlHj/U1CzKlKI49Exin2JybioauWgwodn6OO4kYjm1A0obiYGyyQceleCXpSNmq6xLPDP1d3edMki4VKWMEnYYWoFW3gyEbuf8+yf1CHMxx1YzGdhy6pCEJmzzRjWYBLEF0Tg9LfJWbCh8giQPjvnFSwCzM+Gxi1XHk1NNEO0l1yTC/LNL8uZfBG9dmFCd4JvDXGxr2RHfxjP62DKERsBP5iviV8fOQvd7krprVGNKv8SDi0UxIAtZxyrJ2yvpVkrFsWs0EB3waW0dvGWkzP70J8iGOtUEHex/HhAq0x7Xu35StGnY3RO7hLXQaG6f2xXakgYpdet6wN0vvUpEEaE6IrSPUWyjf5oK49Zp4="
+  slack:
+      secure: "WQ3nL18fuiSF6GvOle6AKlod4t5C5pSvTFsOC1jVMoX05rYYMbp0I1LW77y1aoAsns2ccZZAL3zleH2R11OzCpZmLCPxnTw/3/P8KXYGlbPbjvPrZhMIHQ1xk3pwmsq95bTry1LzxdfEhjuyn1ZCuPwLNBA0Em8L8w8DnI4XxP/YewQdUTdnIMZXWMpWOhyS2gpbJz7E3gh8+Jc2TeAkeOAo9hRJpNJYCo2Iybl+zPBdZm25T00paKEVgxRo2l2ocRkWuUa6dShi5U4UfnuytGnOa8KK3HZQlH7g72cijidf/h7LVNE0ItBET1P+zWdxLSuzQEZ053UnaYBvrdxKCG3Xa9qOGDyV8mqQ/LSCfe0prDyw7X116zfAeVMQ7NxdbSK3TbIVI0Y9SlJ5/aj4Ux3SeLC8PU4icKFM+lRpJMoTICUeVroQ+0+dZqK91Gr38NA79q0km00hnAhzNHfUgXj2/GewhsyoXa66PXrgIB0U9EI5QrTvvv0ZOP6NSIrsr01HUYIvZFUB2qI4dybMb/a2rQExkP0tq5ULy4Q7r7trGciF9YHe75QOV7YmaiHU4iz7ugd3UIoPwxSKVFm/zYSMoipzY202GoWgtgiX/uf3/PMXYw1H5i+hXFWGWHvf+9w+/rtlOqPT1Rk+ibQt56HKd0nsB3Fj3T0cY0YdAzc="
 
 before_script:
-    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-    - chmod +x ./cc-test-reporter
-    - ./cc-test-reporter before-build
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 
 # command to run tests
 script: py.test
 
 after_script:
-    - coverage xml
-    - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
+  - coverage xml
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
