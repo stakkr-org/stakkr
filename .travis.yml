@@ -21,8 +21,6 @@ notifications:
   - secure: "AHk143RYRkH37sY/Q23eI71/83ailGNVduQ8tI+YNLYAz/9WWofE/LkxDHrQNOziVqblh55lStB0znPlj+wAlHbFvZBH9sYHccms8oVvWpmxzXZakDqEvbg+8lDzYsKnreBBGvY+YGk8n4sqwvN63Ob+FoG/NAE2hhpz+GMYFBadA20zQqnCqso1WkF47pPYiks7Zx6oYsw67yNr3VEplUFiPgzYBCO8IhX5kdqobFYqiuDKtJkQh6B0lZRMdwzY5LYk/zXwPAWTjMHeAmNluDjE8UonBFam6YGZ3p009dT0TKYGx2lclugV7NcFyTz3xeSlBjxhUZTlhclq6IpOenoagYI8gwYQcKrmzJuDTABS8E/Y7p8yHhezKX7qn6+NQ+jr7RygW0XD/o0pKTfrfnsmzATymcE2idiva7sl4sxjMTZp+3mrQJeqHgJ1e6LQ+ZW3zdDSwHnwRl5IxBxF5J36BMuTf8w9dAF6suj0b4DjgRc+4P/jNvTy1tAu/1kpKjStRbEJwmuzESdkvWo9yEO0UMlTa3vC4eIp/hO6+Rkp2ZmFeH9xDuCNejYoHJi1i3Dh2P49PrxK21+o0jjyEctxjBNBnuAbvr87NHAi+0MdTKd3i+58HDZdrHT2G39tWVoaN+diLRheC1Hca+oB1QgdrCIK2gG/Yyh8w4JWd28="
 
 before_script:
-  - echo $TRAVIS_SECURE_ENV_VARS
-  - echo $CC_TEST_REPORTER_ID
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
