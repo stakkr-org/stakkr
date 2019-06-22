@@ -14,7 +14,6 @@ install:
 
 env:
     global:
-        - TRAVIS_SECURE_ENV_VARS=true
         - secure: "nwqSnagHs9wVUUq6wmIk8gU4QdYn9DZxMB5Fq0EX632CmkzAPPggNLPpJnqQomPRLmde1twEYGvsIhmFMaCH8SYQjiXg5k0JWfNinR7Y62iFUoSoL59zxPi/zSISHgnSa1Knt015k7hkw6X1p/5VoqFaOZ+hQSfoNGS5jhV/cc+ZTLt8nPK7wv9POTuE4xqplt+JTyKKzlfhJZNj27dTWKDb2lfzDhNSaMmq03DY82Yg6avSRGrnJmZNqCGjnpBXMZJTb5ewBxysVzUFFWY68fUB1T2fksWbuyYayoBv+hJSDKBRNnEh89bTx0FCW8PJmlgjKtJSScJ+zHbDV5bfvQ5p5i4dbJ6H+IULWZ11WmTEJFKxuek6Pm8Mis380EBZaGLu6ES9LTJN1OB42qfDzjWBbjWzQeF/oMWY+fuyv8lwTo92Xa1P/3lxHwSS/kkbXokwozy1OhBLPpOb+bNSKyfW8PZ1xI8XKYHc3JTlHWITBuIq+kiMX1SSIK5B8FS3wJ4L201AFfI14MC/ht16/uLphmpdxpwU8ZoWFhIlsRCKqIOUtE7eb6ilZvlSAJteuk20qQBgLPL5+a/RlYI/yUHLS+bOL0JTq7G1tyGC3OFyoWSg7qeu1YVnbFRIkY7D4g7DOVdxVe0C7ClZO85/DMdNNV8m+Z3QL9wourj2HUg="
 
 notifications:
@@ -23,7 +22,7 @@ notifications:
 
 before_script:
     - echo $TRAVIS_SECURE_ENV_VARS
-    - echo $CC_TEST_REPORTER_ID
+    - TRAVIS_SECURE_ENV_VARS=true echo $CC_TEST_REPORTER_ID
     - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
     - chmod +x ./cc-test-reporter
     - ./cc-test-reporter before-build
