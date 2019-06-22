@@ -28,7 +28,7 @@ before_script:
     - mkdir /tmp/reports
 
 # command to run tests
-script: py.test --cov=stakkr --cov-report xml:/tmp/reports/coverage.xml tests/
+script: py.test --cov=stakkr --cov-report xml:/tmp/reports/clover.xml tests/
 
 after_script:
     - ./cc-test-reporter format-coverage --prefix /tmp/reports
