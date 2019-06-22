@@ -23,10 +23,6 @@ notifications:
       secure: "WQ3nL18fuiSF6GvOle6AKlod4t5C5pSvTFsOC1jVMoX05rYYMbp0I1LW77y1aoAsns2ccZZAL3zleH2R11OzCpZmLCPxnTw/3/P8KXYGlbPbjvPrZhMIHQ1xk3pwmsq95bTry1LzxdfEhjuyn1ZCuPwLNBA0Em8L8w8DnI4XxP/YewQdUTdnIMZXWMpWOhyS2gpbJz7E3gh8+Jc2TeAkeOAo9hRJpNJYCo2Iybl+zPBdZm25T00paKEVgxRo2l2ocRkWuUa6dShi5U4UfnuytGnOa8KK3HZQlH7g72cijidf/h7LVNE0ItBET1P+zWdxLSuzQEZ053UnaYBvrdxKCG3Xa9qOGDyV8mqQ/LSCfe0prDyw7X116zfAeVMQ7NxdbSK3TbIVI0Y9SlJ5/aj4Ux3SeLC8PU4icKFM+lRpJMoTICUeVroQ+0+dZqK91Gr38NA79q0km00hnAhzNHfUgXj2/GewhsyoXa66PXrgIB0U9EI5QrTvvv0ZOP6NSIrsr01HUYIvZFUB2qI4dybMb/a2rQExkP0tq5ULy4Q7r7trGciF9YHe75QOV7YmaiHU4iz7ugd3UIoPwxSKVFm/zYSMoipzY202GoWgtgiX/uf3/PMXYw1H5i+hXFWGWHvf+9w+/rtlOqPT1Rk+ibQt56HKd0nsB3Fj3T0cY0YdAzc="
 
 before_script:
-  - echo $TRAVIS_SECURE_ENV_VARS
-  - TRAVIS_SECURE_ENV_VARS=true echo $TEST_VAR
-  - echo $TEST_VAR
-  - exit 1
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
