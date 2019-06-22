@@ -23,7 +23,7 @@ build:
                     - "pip install ."
                     - "pip install -r requirements-dev.txt"
                 override:
-                    - command: "py.test --cov-config=.coveragerc tests/"
+                    - command: "py.test tests/"
                       idle_timeout: 1200
                       coverage:
                           file: '.coverage'
