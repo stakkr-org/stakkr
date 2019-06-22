@@ -12,5 +12,22 @@ install:
     - stakkr-init
     - pip install -r requirements-dev.txt
 
+addons:
+    code_climate:
+        repo_token:
+            secure: "Z9wL+5mebndlzh8DIfEjGn2m3zep8Hm3Zn6U0bbwaoVg1l/4UVE2gDYjqrQlA8uuoovHSevpU8yEenvK2tyBiVY96raWeZnz0AUiOf+8R7iT+Fd5/2Ul8PBgJkI1awHmFsPLNv4uuvLUQaTrdsyoZw5iL4sqIomOJ3NcxFt6sKhsvc/i1O5B0sfL12/8DuBzoGx5K3e91Tnnwb1KpLqcUvozwHwL2kO1iPF6w32LS06LWNOfehIU2ikPEkAgkAv0I0oXhSsH5XD1J94s1mLqUE9+N3RC5HujXFhJoYXaZFq3magn1qnXIcepih/CfnafO2z8GhHEtADqhlG7f/C0GUXvTf0g4+y1OEWpc5TDFRMreYp6nHPZXTXU9hnfTTFUd/luKxt7ejyjkn1/8HuZRvHsf1lDh3qFVwUdjqOvtFNyAtGlRoeA4DnsgUOsWfQlha/WbKAcEFtQ4pGzKCZJzuVh1dE86uHRszWaATjaf09alKNQDfra3sEBOttvwW06cBfQF+oNhc73HP5HYk/VPh8zpf2WmmrOq8XmrVjjLioAoqbYDcG4dK009kkmxRExB3Ka7ZTj63injW5G4LpZxMxpsjzvN6N3Q9DkPeC0ZgeH3d0TfCDWoRcx9t11N/sbc9G4LKVok7WCmCrAh0XKV05T3iLkqd9pvjyN/O+6Gfo="
+
+notifications:
+    slack:
+        secure: "VQfnV2SKRv9PFK3GPPhTZZq+etFS0mGTtbBWILoK3r35W0HLFiEAl54zZkZkojOZgaFad97y8mXrIMxl3X37EHxbA/yYaAkApXfRU6DPaOj+VNJP5IOpU8SVJxzNTvTQ2ORzYUNwXxoxuywOVwKpJP1v/HrFStvEvotAPhnA0oM+qCkqB7NRlpZBbWnpDdGqPnG1p6AHjfNjXjyHfAGHE069k4XWCRNxXPKaosJluE1ExIioIbUd+q9ZujUzCRUEJbsKmchVJMWfqHnoKKKxIr0vkL1kWGT+4L5o0YHaJRM1Ei9Bu1FKtVKK+389hWGh+ONOjlHj/U1CzKlKI49Exin2JybioauWgwodn6OO4kYjm1A0obiYGyyQceleCXpSNmq6xLPDP1d3edMki4VKWMEnYYWoFW3gyEbuf8+yf1CHMxx1YzGdhy6pCEJmzzRjWYBLEF0Tg9LfJWbCh8giQPjvnFSwCzM+Gxi1XHk1NNEO0l1yTC/LNL8uZfBG9dmFCd4JvDXGxr2RHfxjP62DKERsBP5iviV8fOQvd7krprVGNKv8SDi0UxIAtZxyrJ2yvpVkrFsWs0EB3waW0dvGWkzP70J8iGOtUEHex/HhAq0x7Xu35StGnY3RO7hLXQaG6f2xXakgYpdet6wN0vvUpEEaE6IrSPUWyjf5oK49Zp4="
+
+before_script:
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+    - chmod +x ./cc-test-reporter
+    - ./cc-test-reporter before-build
+
 # command to run tests
 script: py.test --cov=stakkr --cov-report xml:coverage.xml tests/
+
+after_script:
+    - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT -t clover coverage.xml

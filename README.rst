@@ -13,6 +13,9 @@ Overview
    :target: https://travis-ci.com/stakkr-org/stakkr
 .. image:: https://img.shields.io/pypi/l/stakkr.svg
    :target: https://pypi.python.org/pypi/stakkr
+.. image:: https://api.codeclimate.com/v1/badges/a11947de978e420ef6fd/maintainability
+   :target: https://codeclimate.com/github/stakkr-org/stakkr/maintainability
+   :alt: Maintainability
 
 
 Stakkr
