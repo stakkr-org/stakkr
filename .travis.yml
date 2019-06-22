@@ -25,9 +25,11 @@ before_script:
     - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
     - chmod +x ./cc-test-reporter
     - ./cc-test-reporter before-build
+    - mkdir /tmp/reports
 
 # command to run tests
-script: py.test --cov=stakkr --cov-report xml:coverage.xml tests/
+script: py.test --cov=stakkr --cov-report xml:/tmp/reports/coverage.xml tests/
 
 after_script:
-    - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT -t clover coverage.xml
+    - ./cc-test-reporter format-coverage --prefix /tmp/reports
+    - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
