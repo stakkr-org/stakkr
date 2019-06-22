@@ -28,7 +28,7 @@ before_script:
   - ./cc-test-reporter before-build
 
 # command to run tests
-script: coverage run -m py.test
+script: py.test
 
 after_script:
   - coverage xml
