@@ -27,7 +27,7 @@ build:
                       idle_timeout: 1200
                       coverage:
                           file: coverage.xml
-                          format: xml
+                          format: clover
         analysis:
             project_setup:
                 override: true
