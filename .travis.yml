@@ -22,6 +22,8 @@ notifications:
         - secure: "VQfnV2SKRv9PFK3GPPhTZZq+etFS0mGTtbBWILoK3r35W0HLFiEAl54zZkZkojOZgaFad97y8mXrIMxl3X37EHxbA/yYaAkApXfRU6DPaOj+VNJP5IOpU8SVJxzNTvTQ2ORzYUNwXxoxuywOVwKpJP1v/HrFStvEvotAPhnA0oM+qCkqB7NRlpZBbWnpDdGqPnG1p6AHjfNjXjyHfAGHE069k4XWCRNxXPKaosJluE1ExIioIbUd+q9ZujUzCRUEJbsKmchVJMWfqHnoKKKxIr0vkL1kWGT+4L5o0YHaJRM1Ei9Bu1FKtVKK+389hWGh+ONOjlHj/U1CzKlKI49Exin2JybioauWgwodn6OO4kYjm1A0obiYGyyQceleCXpSNmq6xLPDP1d3edMki4VKWMEnYYWoFW3gyEbuf8+yf1CHMxx1YzGdhy6pCEJmzzRjWYBLEF0Tg9LfJWbCh8giQPjvnFSwCzM+Gxi1XHk1NNEO0l1yTC/LNL8uZfBG9dmFCd4JvDXGxr2RHfxjP62DKERsBP5iviV8fOQvd7krprVGNKv8SDi0UxIAtZxyrJ2yvpVkrFsWs0EB3waW0dvGWkzP70J8iGOtUEHex/HhAq0x7Xu35StGnY3RO7hLXQaG6f2xXakgYpdet6wN0vvUpEEaE6IrSPUWyjf5oK49Zp4="
 
 before_script:
+    - echo $TRAVIS_SECURE_ENV_VARS
+    - echo $CC_TEST_REPORTER_ID
     - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
     - chmod +x ./cc-test-reporter
     - ./cc-test-reporter before-build
@@ -30,7 +32,5 @@ before_script:
 script: py.test
 
 after_script:
-    - echo $TRAVIS_SECURE_ENV_VARS
-    - echo $CC_TEST_REPORTER_ID
     - coverage xml
     - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
