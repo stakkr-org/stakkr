@@ -20,7 +20,7 @@ build:
                     - "virtualenv -p /usr/bin/python3 venv"
                     - "source venv/bin/activate"
                     - "pip install --upgrade pip"
-                    - "pip install ."
+                    - "pip install -e ."
                     - "pip install -r requirements-dev.txt"
                 override:
                     - command: py.test
