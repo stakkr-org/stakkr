@@ -1,10 +1,3 @@
 [run]
-branch = True
-source = stakkr/
+omit = stakkr/setup.py
 parallel = False
-omit = stakkr/__init__.py
-       */site-packages/*
-
-[report]
-show_missing = true
-precision = 1
