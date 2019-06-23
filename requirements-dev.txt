@@ -1,5 +1,6 @@
 -e git+https://github.com/edyan/deploy-that.git#egg=deploy-that
 pylint
+pytest
 pytest-cov
 pytest-pep8
 pytest-xdist
