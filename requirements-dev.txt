@@ -3,7 +3,6 @@ pylint
 pytest==4.6.3
 pytest-cov==2.7.1
 pytest-pep8==1.0.6
-pytest-xdist==1.29.0
 Pygments
 sphinx
 sphinx-autobuild
