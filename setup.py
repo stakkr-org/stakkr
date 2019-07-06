@@ -6,20 +6,25 @@ extra_packages = []
 if os.name == 'nt':
     extra_packages.append('pypiwin32')
 
-# Start Patch
-# force install docker-compose to a specific version because of
-# incompatibility with docker-clean
-from pip._internal import main as pip
-pip(['install', 'docker-compose>1.20,<1.30'])
-# End patch
-
-__version__ = '4.1.1'
+__version__ = '4.1.0'
 
 # Get the long description from the README file
 def readme():
     here = os.path.dirname(os.path.abspath(__file__))
     with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
         return f.read()
+
+# Start Patch
+# force install docker-compose to a specific version because of
+# incompatibility with docker-clean
+try:
+    import docker
+except ImportError:
+    import sys
+    from subprocess import call, DEVNULL
+    compose_package = 'docker-compose>1.20,<1.30'
+    call([sys.executable, "-m", "pip", "install", compose_package], stderr=DEVNULL, stdout=DEVNULL)
+# End patch
 
 setup(
     name='stakkr',
