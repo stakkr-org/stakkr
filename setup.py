@@ -36,6 +36,7 @@ stakkr-compose=stakkr.stakkr_compose:cli''',
         'anyconfig==0.9',
         # Docker compose includes requests and docker
         'docker-compose>1.20<1.30',
+        'docker-clean',
         'humanfriendly==4.18',
         'GitPython==2.1.11'
         ] + extra_packages,
