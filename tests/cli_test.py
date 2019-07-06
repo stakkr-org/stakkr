@@ -335,7 +335,18 @@ class CliTest(unittest.TestCase):
 
 
     def setUpClass():
-        """Clean services directory"""
+        """Clean containers and services directory"""
+        from docker import client
+        from docker.errors import NotFound
+        cts = client.from_env().containers.list(all=True)
+        for ct in cts:
+            try:
+                ct.stop()
+                ct.remove(v=True, force=True)
+            except NotFound:
+                pass
+
+
         cli = CliTest()
 
         for service in ['db', 'databases', 'emails', 'php']:
