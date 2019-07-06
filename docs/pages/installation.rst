@@ -127,7 +127,7 @@ Run Tests
 
 .. code:: bash
 
-    $ coverage run -m py.test
+    $ py.test
 
 
 Generate that doc
