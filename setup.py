@@ -6,6 +6,13 @@ extra_packages = []
 if os.name == 'nt':
     extra_packages.append('pypiwin32')
 
+# Start Patch
+# force install docker-compose to a specific version because of
+# incompatibility with docker-clean
+from pip._internal import main as pip
+pip(['install', 'docker-compose>1.20,<1.30'])
+# End patch
+
 __version__ = '4.1.1'
 
 # Get the long description from the README file
@@ -31,18 +38,15 @@ stakkr=stakkr.cli:main
 stakkr-init=stakkr.setup:init
 stakkr-compose=stakkr.stakkr_compose:cli''',
     include_package_data=True,
-    setup_requires=[
-        'docker>=3.7.0<4.0.2',
-    ],
     install_requires=[
         'docker-compose>1.20<1.30',
         'click-plugins==1.1.1',
         'clint==0.5.1',
+        'docker-clean',
         'anyconfig==0.9',
         'humanfriendly==4.18',
         'GitPython==2.1.11'
         ] + extra_packages,
-    extras_require={'stakkr':'docker-clean'},
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
