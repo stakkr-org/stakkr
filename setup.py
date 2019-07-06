@@ -6,7 +6,7 @@ extra_packages = []
 if os.name == 'nt':
     extra_packages.append('pypiwin32')
 
-__version__ = '4.1.1'
+__version__ = '4.1'
 
 # Get the long description from the README file
 def readme():
@@ -25,21 +25,24 @@ setup(
     license='Apache 2.0',
     packages=['stakkr'],
     py_modules=['stakkr'],
+    python_requires='>=3.3',
     entry_points='''[console_scripts]
 stakkr=stakkr.cli:main
 stakkr-init=stakkr.setup:init
 stakkr-compose=stakkr.stakkr_compose:cli''',
     include_package_data=True,
+    setup_requires=[
+        'docker>=3.7.0<4.0.2',
+    ],
     install_requires=[
+        'docker-compose>1.20<1.30',
         'click-plugins==1.1.1',
         'clint==0.5.1',
         'anyconfig==0.9',
-        # Docker compose includes requests and docker
-        'docker-compose>1.20<1.30',
-        'docker-clean',
         'humanfriendly==4.18',
         'GitPython==2.1.11'
         ] + extra_packages,
+    extras_require={'stakkr':'docker-clean'},
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',

@@ -8,6 +8,7 @@ __pycache__
 *_stakkr
 venv
 *.pyc
+/.eggs
 
 # Tests
 .coverage*
