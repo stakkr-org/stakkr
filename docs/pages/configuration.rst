@@ -125,7 +125,7 @@ You can define your own network in compose.ini by setting a ``subnet``.
 It's optional, and it's probably better to let it like that.
 
 .. WARNING::
-   If you change that, run ``docker-clean`` which removes orphans images, stopped container, etc ...
+   If you change that, run ``docker system prune -f -a --volumes`` which removes orphans images, stopped container, etc ...
 
    As we use ``traefik`` as a reverse proxy, no need to expose any ports
    or to access containers directly via their IP.

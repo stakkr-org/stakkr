@@ -14,18 +14,6 @@ def readme():
     with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
         return f.read()
 
-# Start Patch
-# force install docker-compose to a specific version because of
-# incompatibility with docker-clean
-try:
-    import docker
-except ImportError:
-    import sys
-    from subprocess import call, DEVNULL
-    compose_package = 'docker-compose>1.20,<1.30'
-    call([sys.executable, "-m", "pip", "install", compose_package], stderr=DEVNULL, stdout=DEVNULL)
-# End patch
-
 setup(
     name='stakkr',
     version=__version__,
@@ -47,7 +35,6 @@ stakkr-compose=stakkr.stakkr_compose:cli''',
         'docker-compose>1.20<1.30',
         'click-plugins==1.1.1',
         'clint==0.5.1',
-        'docker-clean',
         'anyconfig==0.9',
         'humanfriendly==4.18',
         'GitPython==2.1.11'
