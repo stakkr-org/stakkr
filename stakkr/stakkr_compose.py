@@ -90,7 +90,7 @@ def _get_config(config_file: str):
     config = config_reader.read()
 
     if config is False:
-        config.display_errors()
+        config_reader.display_errors()
         sys.exit(1)
 
     return config, config_reader.config_file

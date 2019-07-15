@@ -107,9 +107,9 @@ To develop stakkr, you have to create a virtual environment :
 
     $ git clone git@github.com:stakkr-org/stakkr.git stakkr
     $ cd stakkr
-    $ python3 -m venv venv
-    $ source venv/bin/activate
-    # For Windows use "venv\Scripts\activate"
+    $ python3 -m venv venv_stakkr
+    $ source venv_stakkr/bin/activate
+    # For Windows use "venv_stakkr\Scripts\activate"
 
 
 Then install stakkr and its dependencies :

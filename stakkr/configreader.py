@@ -33,6 +33,7 @@ class Config:
         msg = 'Failed validating config ('
         msg += ', '.join(self.config_files)
         msg += '):\n    - {}\n'.format(self.error)
+        msg += '\nMake sure you have the right services.\n'
         stderr.write(style(msg, fg='red'))
 
     def read(self):
