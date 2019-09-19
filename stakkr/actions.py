@@ -130,7 +130,7 @@ class StakkrActions:
         self._run_iptables_rules(cts)
         if proxy is True:
             conf = self.config['proxy']
-            Proxy(conf.get('http_port'), conf.get('https_port')).start(
+            Proxy(conf.get('http_port'), conf.get('https_port'), version=conf.get('version')).start(
                 docker.get_network_name(self.project_name))
 
     def status(self):

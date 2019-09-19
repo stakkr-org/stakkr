@@ -60,7 +60,8 @@ properties:
       domain: { type: string }
       http_port: { type: integer }
       https_port: { type: integer }
-    required: [enabled, domain, http_port, https_port]
+      version: { type: [string, number] }
+    required: [enabled, domain, http_port, https_port, version]
 
   project_name:
     type: string
