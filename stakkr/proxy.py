@@ -10,11 +10,12 @@ from stakkr.file_utils import get_dir
 class Proxy:
     """Main class that does actions asked by the cli."""
 
-    def __init__(self, http_port: int = 80, https_port: int = 443, ct_name: str = 'proxy_stakkr'):
+    def __init__(self, http_port: int = 80, https_port: int = 443, ct_name: str = 'proxy_stakkr', version: str = 'latest'):
         """Set the right values to start the proxy."""
         self.ports = {'http': http_port, 'https': https_port}
         self.ct_name = ct_name
         self.docker_client = docker.get_client()
+        self.version = version
 
     def start(self, stakkr_network: str = None):
         """Start stakkr proxy if stopped."""
@@ -39,9 +40,9 @@ class Proxy:
         """Start proxy."""
         proxy_conf_dir = get_dir('static/proxy')
         try:
-            self.docker_client.images.pull('traefik:latest')
+            self.docker_client.images.pull('traefik:{}'.format(self.version))
             self.docker_client.containers.run(
-                'traefik:latest', remove=True, detach=True,
+                'traefik:{}'.format(self.version), remove=True, detach=True,
                 hostname=self.ct_name, name=self.ct_name,
                 volumes=[
                     '/var/run/docker.sock:/var/run/docker.sock',
