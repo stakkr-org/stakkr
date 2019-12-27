@@ -223,7 +223,9 @@ class StakkrActions:
         elif os_name() in ['Windows', 'Darwin']:
             puts(colored.yellow('[WARNING]') + ' Under Win and Mac, you need the proxy enabled')
 
-        return service_url.format(url)
+        urls = [service_url.format(url) for url in url.split(',')]
+
+        return ' / '.join(urls)
 
 
 def _get_single_container_option(container: str):
