@@ -61,7 +61,7 @@ Examples:\n
 @click.pass_context
 @click.option('--user', '-u', help="User's name. Be careful, each container have its own users.")
 @click.option('--tty/--no-tty', '-t/ ', is_flag=True, default=True, help="Use a TTY")
-@click.option('--workdir', '-w', help="Working directory", default="/var/www")
+@click.option('--workdir', '-w', help="Working directory")
 @click.argument('container', required=True)
 @click.argument('command', required=True, nargs=-1, type=click.UNPROCESSED)
 def exec_cmd(ctx: Context, user: str, container: str, command: tuple, tty: bool, workdir: str):

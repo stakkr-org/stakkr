@@ -71,11 +71,11 @@ class StakkrActions:
 
         # Protect args to avoid strange behavior in exec
         args = ['"{}"'.format(arg) for arg in args]
-
+        workdir = "/var/{}".format(self.cwd_relative) if workdir is None else workdir
         tty = 't' if tty is True else ''
         ct_name = docker.get_ct_name(container)
         cmd = ['docker', 'exec', '-u', user, '-i' + tty, '-w', workdir, ct_name, 'sh', '-c']
-        cmd += ["""exec {1}""".format(self.cwd_relative, ' '.join(args))]
+        cmd += ["""exec {}""".format(' '.join(args))]
         command.verbose(self.context['VERBOSE'], 'Command : "' + ' '.join(cmd) + '"')
         subprocess.call(cmd, stdin=sys.stdin)
 
