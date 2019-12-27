@@ -19,7 +19,7 @@ a stack of services, for example for web development.
 
 Read the configuration file and setup the required services by
 linking and managing everything for you.""")
-@click.version_option('4.1.5')
+@click.version_option('4.1.6')
 @click.option('--config', '-c', help='Set the configuration filename (stakkr.yml by default)')
 @click.option('--debug/--no-debug', '-d', default=False)
 @click.option('--verbose', '-v', is_flag=True)
