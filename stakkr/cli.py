@@ -61,16 +61,17 @@ Examples:\n
 @click.pass_context
 @click.option('--user', '-u', help="User's name. Be careful, each container have its own users.")
 @click.option('--tty/--no-tty', '-t/ ', is_flag=True, default=True, help="Use a TTY")
+@click.option('--workdir', '-w', help="Working directory", default="/var/www")
 @click.argument('container', required=True)
 @click.argument('command', required=True, nargs=-1, type=click.UNPROCESSED)
-def exec_cmd(ctx: Context, user: str, container: str, command: tuple, tty: bool):
+def exec_cmd(ctx: Context, user: str, container: str, command: tuple, tty: bool, workdir: str):
     """See command Help."""
     ctx.obj['STAKKR'].init_project()
     ctx.obj['CTS'] = get_running_containers_names(ctx.obj['STAKKR'].project_name)
     if ctx.obj['CTS']:
         click.Choice(ctx.obj['CTS']).convert(container, None, ctx)
 
-    ctx.obj['STAKKR'].exec_cmd(container, _get_cmd_user(user, container), command, tty)
+    ctx.obj['STAKKR'].exec_cmd(container, _get_cmd_user(user, container), command, tty, workdir)
 
 
 @stakkr.command(help="Restart all (or a single as CONTAINER) container(s)")
@@ -229,10 +230,11 @@ def run_commands(ctx: Context, extra_args: tuple, tty: bool):
     commands = ctx.obj['STAKKR'].get_config()['aliases'][ctx.command.name]['exec']
     for command in commands:
         user = command['user'] if 'user' in command else 'root'
+        workdir = command['workdir'] if 'workdir' in command else '/'
         container = command['container']
         args = command['args'] + list(extra_args) if extra_args is not None else []
 
-        ctx.invoke(exec_cmd, user=user, container=container, command=args, tty=tty)
+        ctx.invoke(exec_cmd, user=user, container=container, command=args, tty=tty, workdir=workdir)
 
 
 def main():

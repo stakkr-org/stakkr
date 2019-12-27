@@ -48,6 +48,7 @@ properties:
             properties:
               container: { type: string }
               user: { type: string }
+              workdir: { type: string }
               args:
                 type: array
                 title: Command itself split in parts

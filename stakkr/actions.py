@@ -63,7 +63,7 @@ class StakkrActions:
 
         return text
 
-    def exec_cmd(self, container: str, user: str, args: tuple, tty: bool):
+    def exec_cmd(self, container: str, user: str, args: tuple, tty: bool, workdir: str):
         """Run a command from outside to any container. Wrapped into /bin/sh."""
         self.init_project()
 
@@ -74,8 +74,8 @@ class StakkrActions:
 
         tty = 't' if tty is True else ''
         ct_name = docker.get_ct_name(container)
-        cmd = ['docker', 'exec', '-u', user, '-i' + tty, ct_name, 'sh', '-c']
-        cmd += ["""test -d "/var/{0}" && cd "/var/{0}" ; exec {1}""".format(self.cwd_relative, ' '.join(args))]
+        cmd = ['docker', 'exec', '-u', user, '-i' + tty, '-w', workdir, ct_name, 'sh', '-c']
+        cmd += ["""exec {1}""".format(self.cwd_relative, ' '.join(args))]
         command.verbose(self.context['VERBOSE'], 'Command : "' + ' '.join(cmd) + '"')
         subprocess.call(cmd, stdin=sys.stdin)
 
