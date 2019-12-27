@@ -230,7 +230,7 @@ def run_commands(ctx: Context, extra_args: tuple, tty: bool):
     commands = ctx.obj['STAKKR'].get_config()['aliases'][ctx.command.name]['exec']
     for command in commands:
         user = command['user'] if 'user' in command else 'root'
-        workdir = command['workdir'] if 'workdir' in command else '/'
+        workdir = command['workdir'] if 'workdir' in command else None
         container = command['container']
         args = command['args'] + list(extra_args) if extra_args is not None else []
 
