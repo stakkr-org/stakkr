@@ -268,18 +268,18 @@ def _container_in_network(container: str, expected_network: str):
     return False
 
 
- def _get_traefik_host(labels: list):
-     traefik_label = None
-     regexp = re.compile('^traefik\.(.*?)frontend.rule$')
-     for label in labels.keys():
-         matches = regexp.match(label)
-         if matches:
-             traefik_label = 'traefik.' + matches.group() + 'frontend.rule'
-             break
+def _get_traefik_host(labels: list):
+    traefik_label = None
+    regexp = re.compile('^traefik\.(.*?)frontend.rule$')
+    for label in labels.keys():
+        matches = regexp.match(label)
+        if matches:
+            traefik_label = 'traefik.' + matches.group() + 'frontend.rule'
+            break
 
-     if traefik_label is None:
-         return 'No traefik rule'
+    if traefik_label is None:
+        return 'No traefik rule'
 
-     rules = labels[label].split(':')
-     return rules[1]
+    rules = labels[label].split(':')
 
+    return rules[1]
