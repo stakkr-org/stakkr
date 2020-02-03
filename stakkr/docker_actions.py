@@ -1,6 +1,7 @@
 # coding: utf-8
 """Docker functions to get info about containers."""
 
+import re
 from docker.errors import NotFound, NullResource
 __st__ = {'cts_info': dict(), 'running_cts': 0}
 
