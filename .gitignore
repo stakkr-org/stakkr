@@ -9,6 +9,7 @@ __pycache__
 venv
 *.pyc
 /.eggs
+.pypirc
 
 # Tests
 .coverage*
