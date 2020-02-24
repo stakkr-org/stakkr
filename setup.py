@@ -35,7 +35,7 @@ stakkr-compose=stakkr.stakkr_compose:cli''',
         'docker-compose>1.20<1.30',
         'click-plugins==1.1.1',
         'clint==0.5.1',
-        'PyYAML>3<4', # because of anyconfig
+        'PyYAML==3.13', # because of anyconfig
         'anyconfig==0.9.10',
         'humanfriendly==4.18',
         'GitPython==3.0.8',
