@@ -35,10 +35,11 @@ stakkr-compose=stakkr.stakkr_compose:cli''',
         'docker-compose>1.20<1.30',
         'click-plugins==1.1.1',
         'clint==0.5.1',
+        'PyYAML>3<5', # become of anyconfig
         'anyconfig==0.9.10',
         'humanfriendly==4.18',
         'GitPython==3.0.8',
-        'gitdb2==3.0.1'
+        'gitdb2==3.0.1', # because of GitPython
         ] + extra_packages,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
