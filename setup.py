@@ -35,6 +35,7 @@ stakkr-compose=stakkr.stakkr_compose:cli''',
         'docker-compose>1.20<1.30',
         'click-plugins==1.1.1',
         'clint==0.5.1',
+        'PyYAML==3.13', # Needed for anyconfig that doesn't fix its requirements
         'anyconfig==0.9',
         'humanfriendly==4.18',
         'GitPython==3.0.8',
