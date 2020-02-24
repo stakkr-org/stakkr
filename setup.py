@@ -37,7 +37,8 @@ stakkr-compose=stakkr.stakkr_compose:cli''',
         'clint==0.5.1',
         'anyconfig==0.9',
         'humanfriendly==4.18',
-        'GitPython==2.1.11'
+        'GitPython==3.0.8',
+        'gitdb2==3.0.1'
         ] + extra_packages,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
