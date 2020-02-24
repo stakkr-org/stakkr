@@ -35,7 +35,7 @@ stakkr-compose=stakkr.stakkr_compose:cli''',
         'docker-compose>1.20<1.30',
         'click-plugins==1.1.1',
         'clint==0.5.1',
-        'anyconfig==0.9',
+        'anyconfig==0.9.10',
         'humanfriendly==4.18',
         'GitPython==3.0.8',
         'gitdb2==3.0.1'
