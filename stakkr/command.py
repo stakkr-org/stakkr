@@ -30,7 +30,8 @@ def launch_cmd_displays_output(cmd: list, print_msg: bool = True, print_err: boo
 def verbose(display: bool, message: str):
     """Display a message if verbose is On."""
     if display is True:
-        echo(style('[VERBOSE]', fg='green') + ' {}'.format(message), file=sys.stderr)
+        echo(style('[VERBOSE]', fg='green') +
+             ' {}'.format(message), file=sys.stderr)
 
 
 def _read_messages(result: BufferedReader, display: bool = False):

@@ -18,7 +18,8 @@ def init(force: bool, recipe: str = None):
     """CLI Entry point, when initializing stakkr manually."""
     config_file = os.getcwd() + '/stakkr.yml'
     if os.path.isfile(config_file) and force is False:
-        click.secho('Config file (stakkr.yml) already present. Leaving.', fg='yellow')
+        click.secho(
+            'Config file (stakkr.yml) already present. Leaving.', fg='yellow')
         return
 
     click.secho('Create some required files / directories', fg='green')
@@ -106,8 +107,8 @@ def _copy_file(project_dir: str, source_file: str, force: bool):
     try:
         shutil.copy(full_path, dest_file)
     except Exception:
-        msg = "Error trying to copy {} .. check that the file is there ...".format(full_path)
-        print(msg, file=sys.stderr)
+        msg = "Error trying to copy {} .. check that the file is there ..."
+        print(msg.format(full_path), file=sys.stderr)
 
 
 def _recipe_get_config(recipe: str):
@@ -115,7 +116,8 @@ def _recipe_get_config(recipe: str):
     if recipe is None:
         return ''
 
-    recipe_config = file_utils.get_file('static/recipes', '{}.yml'.format(recipe))
+    recipe_config = file_utils.get_file(
+        'static/recipes', '{}.yml'.format(recipe))
     if os.path.isfile(recipe_config) is False:
         click.secho('"{}" recipe does not exist'.format(recipe), fg='red')
         sys.exit(1)
@@ -143,7 +145,8 @@ def _recipe_install_services(services: list):
             click.echo(click.style('    😊 {}'.format(message), fg='yellow'))
             continue
 
-        click.echo(click.style('    😀 Package "{}" Installed'.format(service), fg='green'))
+        click.echo(click.style(
+            '    😀 Package "{}" Installed'.format(service), fg='green'))
 
 
 def _recipe_init_stakkr():
