@@ -25,7 +25,7 @@ class CliTest(unittest.TestCase):
         self.assertEqual('Usage: stakkr [OPTIONS] COMMAND [ARGS]', result.output[:38])
 
         res_out = result.output[-38:].strip()
-        self.assertEqual('Error: No such command "hello-world".', res_out)
+        self.assertEqual("Error: No such command 'hello-world'.", res_out)
 
     def test_pull(self):
         exec_cmd(self.cmd_base + ['start', '--pull'])

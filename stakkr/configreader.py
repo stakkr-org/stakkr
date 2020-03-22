@@ -49,7 +49,8 @@ class Config:
         try:
             anyconfig.validate(config, schema, safe=False)
         except _Error as error:
-            self.error = '{} ({})'.format(error.message, ' -> '.join(map(str, error.path)))
+            error_path = ' -> '.join(map(str, error.path))
+            self.error = '{} ({})'.format(error.message, error_path)
             return False
 
         config['project_dir'] = path.realpath(path.dirname(self.config_file))

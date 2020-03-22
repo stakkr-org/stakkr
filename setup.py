@@ -32,14 +32,12 @@ stakkr-init=stakkr.setup:init
 stakkr-compose=stakkr.stakkr_compose:cli''',
     include_package_data=True,
     install_requires=[
-        'docker-compose>1.20<1.30',
+        'docker-compose==1.25.4',
         'click-plugins==1.1.1',
         'clint==0.5.1',
-        'PyYAML==5.2', # because of anyconfig
-        'anyconfig==0.9.10',
-        'humanfriendly==4.18',
-        'GitPython==3.0.8',
-        'gitdb2==3.0.1', # because of GitPython
+        'PyYAML==3.13',
+        'anyconfig==0.9.0',
+        'GitPython==3.1.0'
         ] + extra_packages,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
