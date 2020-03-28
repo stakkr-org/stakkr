@@ -20,12 +20,16 @@ class CliTest(unittest.TestCase):
         self.assertEqual('Usage: stakkr [OPTIONS] COMMAND [ARGS]', result.output[:38])
 
     def test_bad_arg(self):
+        """
+        Try a unknown command and make sure the result is "no such command"
+        """
+
         result = CliRunner().invoke(stakkr, ['hello-world'])
         self.assertEqual(2, result.exit_code)
         self.assertEqual('Usage: stakkr [OPTIONS] COMMAND [ARGS]', result.output[:38])
 
-        res_out = result.output[-38:].strip()
-        self.assertEqual("Error: No such command 'hello-world'.", res_out)
+        regex = r"Error: No such command ['\"]+hello-world['\"]+."
+        self.assertRegex(result.output[-38:].strip(), regex)
 
     def test_pull(self):
         exec_cmd(self.cmd_base + ['start', '--pull'])
