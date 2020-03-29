@@ -12,8 +12,15 @@ GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 TAG=stakkr/stakkr:${VERSION}
 
+
+# Build Image
 echo "Building ${TAG}"
-docker build -t ${TAG} .
+docker build --tag ${TAG} \
+             --cache-from ${TAG} \
+             --build-arg BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+             --build-arg VCS_REF="$(git rev-parse --short HEAD)" \
+             --build-arg DOCKER_TAG="${TAG}" \
+             .
 echo "${TAG} will also be tagged 'latest'"
 docker tag ${TAG} stakkr/stakkr:latest
 
