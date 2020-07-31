@@ -1,7 +1,7 @@
 # language: python
 build:
     environment:
-        # python: 3.7.3
+        python: 3.8
         mysql: false
         postgresql: false
         mongodb: false
