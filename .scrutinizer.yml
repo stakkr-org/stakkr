@@ -1,7 +1,9 @@
 # language: python
 build:
     environment:
-        python: 3.8.5
+        python:
+            version: 3.8.5
+            virtualenv: true
         mysql: false
         postgresql: false
         mongodb: false
@@ -16,9 +18,6 @@ build:
         tests-and-coverage:
             tests:
                 before:
-                    - "sudo apt-get install -y python3-dev"
-                    - "virtualenv -p /usr/bin/python3 venv"
-                    - "source venv/bin/activate"
                     - "pip install --upgrade pip"
                     - "pip install -e ."
                     - "pip install -r requirements-dev.txt"
