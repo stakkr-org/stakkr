@@ -32,7 +32,6 @@ stakkr-init=stakkr.setup:init
 stakkr-compose=stakkr.stakkr_compose:cli''',
     include_package_data=True,
     install_requires=[
-        'docker==4.2.2',
         'docker-compose==1.26.2',
         'click-plugins==1.1.1',
         'clint==0.5.1',
