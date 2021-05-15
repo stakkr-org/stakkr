@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import io
 import os
 import re
 import sys
@@ -12,6 +11,10 @@ sys.path.insert(0, base_dir + '/../')
 
 # https://docs.python.org/3/library/unittest.html#assert-methods
 class ConfigReaderTest(unittest.TestCase):
+    @pytest.fixture(autouse=True)
+    def capfd(self, capfd):
+        self.capfd = capfd
+
     def test_bad_config(self):
         """Test a non existing configuration file"""
         c = Config('/does/not/exists.yml')
@@ -27,25 +30,12 @@ class ConfigReaderTest(unittest.TestCase):
         self.assertGreater(len(c.error), 0)
         self.assertRegex(c.error, '.*Additional properties are not allowed.*')
 
-        # The rest doesn't work, for an unknown reason
-        pytest.skip('Error trying to capture stderr')
-        return
+        c.display_errors()
+        out, err = self.capfd.readouterr()
 
-        # Don't go further with python < 3.5
-        try:
-            from contextlib import redirect_stderr
-        except Exception:
-            return
-
-        f = io.StringIO()
-        with redirect_stderr(f):
-            c.display_errors()
-        err = f.getvalue()
-
-        regex = re.compile('.*config_invalid.yml.*', re.MULTILINE)
-        self.assertRegex(err, regex)
-
-        regex = re.compile('.*Failed validating main config or plugin configs.*', re.MULTILINE)
+        regex = re.compile(
+            'Failed validating config.+config_default.yml.+config_invalid.yml.*',
+            re.MULTILINE)
         self.assertRegex(err, regex)
 
         regex = re.compile('Additional properties are not allowed.*', re.MULTILINE)

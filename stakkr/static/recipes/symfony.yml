@@ -5,7 +5,7 @@ config:
       document_root: /var/www/app/public
     php:
       enabled: true
-      version: 7.2
+      version: 7.4
       ram: 1024M
   proxy:
     enabled: true

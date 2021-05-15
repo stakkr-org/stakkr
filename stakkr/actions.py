@@ -25,13 +25,13 @@ class StakkrActions:
         self.project_dir = None
         self.cwd_relative = None
 
-    def console(self, container: str, user: str, tty: bool):
+    def console(self, container: str, user: str, is_tty: bool):
         """Enter a container. Stakkr will try to guess the right shell."""
         self.init_project()
 
         docker.check_cts_are_running(self.project_name)
 
-        tty = 't' if tty is True else ''
+        tty = 't' if is_tty is True else ''
         ct_name = docker.get_ct_name(container)
         cmd = ['docker', 'exec', '-u', user, '-i' + tty]
         cmd += [docker.get_ct_name(container), docker.guess_shell(ct_name)]
@@ -63,19 +63,19 @@ class StakkrActions:
 
         return text
 
-    def exec_cmd(self, container: str, user: str, args: tuple, tty: bool, workdir: str):
+    def exec_cmd(self, container: str, user: str, args: tuple, is_tty: bool, workdir: str):
         """Run a command from outside to any container. Wrapped into /bin/sh."""
         self.init_project()
 
         docker.check_cts_are_running(self.project_name)
 
         # Protect args to avoid strange behavior in exec
-        args = ['"{}"'.format(arg) for arg in args]
+        cmd_args = ['"{}"'.format(arg) for arg in args]
         workdir = "/var/{}".format(self.cwd_relative) if workdir is None else workdir
-        tty = 't' if tty is True else ''
+        tty = 't' if is_tty is True else ''
         ct_name = docker.get_ct_name(container)
         cmd = ['docker', 'exec', '-u', user, '-i' + tty, '-w', workdir, ct_name, 'sh', '-c']
-        cmd += ["""exec {}""".format(' '.join(args))]
+        cmd += ["""exec {}""".format(' '.join(cmd_args))]
         command.verbose(self.context['VERBOSE'], 'Command : "' + ' '.join(cmd) + '"')
         subprocess.call(cmd, stdin=sys.stdin)
 
@@ -110,11 +110,11 @@ class StakkrActions:
         self.init_project()
         verb = self.context['VERBOSE']
         debug = self.context['DEBUG']
-
         self._is_up(container)
 
         if pull is True:
-            command.launch_cmd_displays_output(self._get_compose_base_cmd() + ['pull'], verb, debug, True)
+            cmd = self._get_compose_base_cmd() + ['pull']
+            command.launch_cmd_displays_output(cmd, verb, debug, True)
 
         recreate_param = '--force-recreate' if recreate is True else '--no-recreate'
         cmd = self._get_compose_base_cmd() + ['up', '-d', recreate_param, '--remove-orphans']

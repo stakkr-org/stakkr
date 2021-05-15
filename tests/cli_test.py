@@ -70,7 +70,7 @@ class CliTest(unittest.TestCase):
         exec_cmd(self.cmd_base + ['start'])
 
         res = exec_cmd(self.cmd_base + ['console', 'mysql'])
-        self.assertRegex(res['stderr'], r'.*Invalid value: invalid choice: mysql\. \(choose from.*')
+        self.assertRegex(res['stderr'], r"Error: Invalid value: 'mysql' is not one of.+")
         self.assertEqual(res['stdout'], '')
         self.assertIs(res['status'], 2)
 
@@ -78,7 +78,7 @@ class CliTest(unittest.TestCase):
 
         res = exec_cmd(self.cmd_base + ['console', 'php'])
         self.assertEqual(res['stdout'], '')
-        self.assertRegex(res['stderr'], r'.*Have you started stakkr with the start action.*')
+        self.assertRegex(res['stderr'], r'.+Have you started stakkr with the start action.+')
         self.assertIs(res['status'], 1)
 
     def test_exec_php(self):

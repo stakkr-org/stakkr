@@ -27,7 +27,7 @@ class Config:
         self.error = ''
 
     def display_errors(self):
-        """Display errors in STDOUT."""
+        """Display errors in STDERR."""
         from click import style
 
         msg = 'Failed validating config ('
@@ -45,6 +45,7 @@ class Config:
         """
         schema = anyconfig.multi_load(self.spec_files)
         config = anyconfig.multi_load(self.config_files)
+
         # Make sure the compiled configuration is valid
         try:
             anyconfig.validate(config, schema, safe=False)

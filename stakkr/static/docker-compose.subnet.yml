@@ -3,8 +3,8 @@
 version: '2.2'
 
 networks:
-    stakkr:
-        driver: bridge
-        ipam:
-            config:
-                - subnet: ${DOCKER_SUBNET}
+  stakkr:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "${DOCKER_SUBNET}"

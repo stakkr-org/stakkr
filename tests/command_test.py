@@ -1,10 +1,8 @@
-import io
 import os
 import re
 import sys
+import pytest
 import unittest
-
-from contextlib import redirect_stdout
 from stakkr.command import launch_cmd_displays_output
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
@@ -17,71 +15,42 @@ class CommandTest(unittest.TestCase):
     cmd_nook = ['cat', '/does/not/exist']
     cmd_err = ['echoo']
 
+    @pytest.fixture(autouse=True)
+    def capfd(self, capfd):
+        self.capfd = capfd
+
     def test_command_without_stdout_ok(self):
         # TODO make it work under windows
         if os.name == 'nt':
             return
 
-        f = io.StringIO()
-        with redirect_stdout(f):
-            launch_cmd_displays_output(self.cmd_ok, False, False)
-        res = f.getvalue()
-        self.assertEqual('.', res[:1])
-
-        try:
-            from contextlib import redirect_stderr
-        except Exception:
-            return
-
-        f = io.StringIO()
-        with redirect_stderr(f):
-            launch_cmd_displays_output(self.cmd_ok, False, False)
-        res = f.getvalue()
-        self.assertEqual('', res)
+        launch_cmd_displays_output(self.cmd_ok, False, False)
+        
+        out, err = self.capfd.readouterr()
+        self.assertEqual('.', out[:1])
+        self.assertEqual('', err)
 
     def test_command_with_stdout_ok(self):
         # TODO make it work under windows
         if os.name == 'nt':
             return
 
-        f = io.StringIO()
-        with redirect_stdout(f):
-            launch_cmd_displays_output(self.cmd_ok, True, False)
-        res = f.getvalue()
-        self.assertEqual('coucou\n\n', res)
+        launch_cmd_displays_output(self.cmd_ok, True, False)
 
-        try:
-            from contextlib import redirect_stderr
-        except Exception:
-            return
-
-        f = io.StringIO()
-        with redirect_stderr(f):
-            launch_cmd_displays_output(self.cmd_ok, True, False)
-        res = f.getvalue()
-        self.assertEqual('', res)
+        out, err = self.capfd.readouterr()
+        self.assertEqual('coucou\n\n', out)
+        self.assertEqual('', err)
 
     def test_command_with_stderr_no_stdout_ok(self):
         # TODO make it work under windows
         if os.name == 'nt':
             return
 
-        f = io.StringIO()
-        with redirect_stdout(f):
-            launch_cmd_displays_output(self.cmd_ok, False, True)
-        res = f.getvalue()
-        self.assertEqual('.', res[:1])
+        launch_cmd_displays_output(self.cmd_ok, False, True)
 
-        try:
-            from contextlib import redirect_stderr
-        except Exception:
-            return
-
-        f = io.StringIO()
-        with redirect_stderr(f):
-            launch_cmd_displays_output(self.cmd_ok, False, True)
-        res = f.getvalue()
-        self.assertEqual('', res)
+        out, err = self.capfd.readouterr()
+        self.assertEqual('.', out[:1])
+        self.assertEqual('', err)
 
     def test_command_exception(self):
         with self.assertRaisesRegex(SystemError, r"Cannot run the command: \[.*Err.*2\]"):
@@ -92,91 +61,47 @@ class CommandTest(unittest.TestCase):
         if os.name == 'nt':
             return
 
-        f = io.StringIO()
-        with redirect_stdout(f):
-            launch_cmd_displays_output(self.cmd_nook, False, False)
-        res = f.getvalue()
-        self.assertEqual('\n', res)
+        launch_cmd_displays_output(self.cmd_nook, False, False)
 
-        try:
-            from contextlib import redirect_stderr
-        except Exception:
-            return
-
-        f = io.StringIO()
-        with redirect_stderr(f):
-            launch_cmd_displays_output(self.cmd_nook, False, False)
-        res = f.getvalue()
-        self.assertEqual('', res)
+        out, err = self.capfd.readouterr()
+        self.assertEqual('\n', out)
+        self.assertEqual('', err)
 
     def test_command_without_stderr_but_stdout_err(self):
         # TODO make it work under windows
         if os.name == 'nt':
             return
 
-        f = io.StringIO()
-        with redirect_stdout(f):
-            launch_cmd_displays_output(self.cmd_nook, True, False)
-        res = f.getvalue()
-        self.assertEqual('\n', res)
+        launch_cmd_displays_output(self.cmd_nook, True, False)
 
-        try:
-            from contextlib import redirect_stderr
-        except Exception:
-            return
-
-        f = io.StringIO()
-        with redirect_stderr(f):
-            launch_cmd_displays_output(self.cmd_nook, True, False)
-        res = f.getvalue()
-        self.assertEqual('', res)
+        out, err = self.capfd.readouterr()
+        self.assertEqual('\n', out)
+        self.assertEqual('', err)
 
     def test_command_with_stderr_no_stdout_err(self):
         # TODO make it work under windows
         if os.name == 'nt':
             return
 
-        f = io.StringIO()
-        with redirect_stdout(f):
-            launch_cmd_displays_output(self.cmd_nook, False, True)
-        res = f.getvalue()
+        launch_cmd_displays_output(self.cmd_nook, False, True)
+
+        out, err = self.capfd.readouterr()
         expected = re.compile('.*No such file or directory.*', re.MULTILINE)
-        self.assertRegex(res, expected)
-
-        try:
-            from contextlib import redirect_stderr
-        except Exception:
-            return
-
-        f = io.StringIO()
-        with redirect_stderr(f):
-            launch_cmd_displays_output(self.cmd_nook, False, True)
-        res = f.getvalue()
-        self.assertEqual('', res)
+        self.assertRegex(out, expected)
+        self.assertEqual('', err)
 
     def test_command_with_stderr_no_stdout_err_loop(self):
         # TODO make it work under windows
         if os.name == 'nt':
             return
 
-        f = io.StringIO()
-        with redirect_stdout(f):
-            cmd = ['cat', 'w', 'r', 'o', 'n', 'g', 'f', 'i', 'l', 'e']
-            launch_cmd_displays_output(cmd, False, True)
-        res = f.getvalue()
+        cmd = ['cat', 'w', 'r', 'o', 'n', 'g', 'f', 'i', 'l', 'e']
+        launch_cmd_displays_output(cmd, False, True)
+
+        out, err = self.capfd.readouterr()
         expected = re.compile(r'.*\.\.\. and more.*', re.MULTILINE)
-        self.assertRegex(res, expected)
-
-        try:
-            from contextlib import redirect_stderr
-        except Exception:
-            return
-
-        f = io.StringIO()
-        with redirect_stderr(f):
-            launch_cmd_displays_output(self.cmd_nook, False, True)
-        res = f.getvalue()
-        self.assertEqual('', res)
+        self.assertRegex(out, expected)
+        self.assertEqual('', err)
 
 
 if __name__ == "__main__":

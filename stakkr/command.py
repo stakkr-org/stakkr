@@ -7,7 +7,6 @@ A command wrapper to get a live output displayed.
 
 import subprocess
 import sys
-from io import BufferedReader
 from click import echo, style
 
 
@@ -34,29 +33,30 @@ def verbose(display: bool, message: str):
              ' {}'.format(message), file=sys.stderr)
 
 
-def _read_messages(result: BufferedReader, display: bool = False):
+def _read_messages(result: subprocess.Popen, display: bool = False):
     """Print messages sent to the STDOUT."""
     for line in result.stdout:
         line = line.decode()
         line = line if display is True else '.'
-        print(line, end='')
-        sys.stdout.flush()
+        sys.stdout.write(line)
 
-    print()
+    sys.stdout.write("\n")
 
 
-def _print_errors(result: BufferedReader):
+def _print_errors(result: subprocess.Popen):
     """Print messages sent to the STDERR."""
     num = 0
     for line in result.stderr:
         err = line.decode()
 
         if num == 0:
-            print(style("Command returned errors :", fg='red'))
+            sys.stdout.write(style("Command returned errors :", fg='red'))
 
         if num < 5:
-            print(err, end='')
+            sys.stdout.write(err)
         elif num == 5:
-            print(style('... and more', fg='red'))
+            sys.stdout.write(style('... and more', fg='red'))
 
         num += 1
+
+    sys.stdout.write("\n")

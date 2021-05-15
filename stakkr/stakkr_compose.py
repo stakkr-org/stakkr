@@ -19,7 +19,7 @@ from stakkr.configreader import Config
                context_settings=dict(ignore_unknown_options=True))
 @click.option('--config-file', '-c', help="Set stakkr config file location (default stakkr.yml)")
 @click.argument('command', nargs=-1, type=click.UNPROCESSED)
-def cli(config_file: str = None, command: tuple = ()):
+def cli(config_file: str, command: tuple = ()):
     """Command line entry point."""
     config, config_file = _get_config(config_file)
 
@@ -88,7 +88,6 @@ def _get_config(config_file: str):
     """Read main stakkr.yml file."""
     config_reader = Config(config_file)
     config = config_reader.read()
-
     if config is False:
         config_reader.display_errors()
         sys.exit(1)
@@ -153,6 +152,7 @@ def _set_env_from_config(config: dict):
     """Define environment variables to be used in services yaml."""
     os.environ['COMPOSE_BASE_DIR'] = config['project_dir']
     os.environ['COMPOSE_PROJECT_NAME'] = config['project_name']
+
     for parameter, value in config.items():
         if parameter == 'services':
             _set_env_for_services(value)

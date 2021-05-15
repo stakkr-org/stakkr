@@ -9,6 +9,7 @@ Give all options to manage services to be launched, stopped, etc.
 
 import sys
 import click
+from os import getcwd
 from click.core import Context
 from stakkr.docker_actions import get_running_containers_names
 from stakkr.aliases import get_aliases
@@ -27,6 +28,9 @@ linking and managing everything for you.""")
 def stakkr(ctx: Context, config=None, debug=False, verbose=True):
     """Click group, set context and main object."""
     from stakkr.actions import StakkrActions
+
+    if config is not None and config[0] != '/':
+        config = '{}/{}'.format(getcwd(), config)
 
     ctx.obj['CONFIG'] = config
     ctx.obj['DEBUG'] = debug

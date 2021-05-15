@@ -8,16 +8,20 @@ if os.name == 'nt':
 
 __version__ = '4.2'
 
+
 # Get the long description from the README file
 def readme():
     here = os.path.dirname(os.path.abspath(__file__))
     with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
         return f.read()
 
+
 setup(
     name='stakkr',
     version=__version__,
-    description='A configurable stack based on docker to run any combination of services (PHP, MySQL, Apache, Nginx, Mongo, etc..)',
+    description='''
+    A configurable stack based on docker to run any combination
+of services (PHP, MySQL, Apache, Nginx, Mongo, etc..)''',
     long_description=readme(),
     url='http://github.com/stakkr-org/stakkr',
     author='Emmanuel Dyan',
@@ -32,12 +36,13 @@ stakkr-init=stakkr.setup:init
 stakkr-compose=stakkr.stakkr_compose:cli''',
     include_package_data=True,
     install_requires=[
-        'docker-compose==1.26.2',
+        'docker-compose==1.29.2',
+        'click==8.0.0',
         'click-plugins==1.1.1',
         'clint==0.5.1',
-        'PyYAML==3.13',
-        'anyconfig==0.9.0',
-        'GitPython==3.1.7'
+        'PyYAML==3.13', # To be upgraded
+        'anyconfig==0.9.11', # To be upgraded
+        'GitPython==3.1.17'
         ] + extra_packages,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
