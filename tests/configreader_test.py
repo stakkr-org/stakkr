@@ -34,11 +34,11 @@ class ConfigReaderTest(unittest.TestCase):
         out, err = self.capfd.readouterr()
 
         regex = re.compile(
-            'Failed validating config.+config_default.yml.+config_invalid.yml.*',
+            '.+Failed validating config.+config_default\.yml.+config_invalid\.yml.+',
             re.MULTILINE)
         self.assertRegex(err, regex)
 
-        regex = re.compile('Additional properties are not allowed.*', re.MULTILINE)
+        regex = re.compile('.+Additional properties are not allowed.+toto.+', re.MULTILINE)
         self.assertRegex(err, regex)
 
     def test_valid_config(self):
