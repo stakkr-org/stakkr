@@ -6,6 +6,7 @@ from sys import stderr
 import anyconfig
 from jsonschema.exceptions import _Error
 from stakkr.file_utils import get_file, find_project_dir
+from yaml import FullLoader
 
 
 class Config:
@@ -42,8 +43,8 @@ class Config:
         It could be either local or from a local services
         (first local then packages by alphabetical order).
         """
-        schema = anyconfig.multi_load(self.spec_files)
-        config = anyconfig.multi_load(self.config_files)
+        schema = anyconfig.load(self.spec_files, Loader=FullLoader)
+        config = anyconfig.load(self.config_files, Loader=FullLoader)
 
         # Make sure the compiled configuration is valid
         try:
