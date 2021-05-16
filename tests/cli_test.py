@@ -1,10 +1,11 @@
 import os
 import subprocess
 import sys
+import pytest
 import unittest
 from shutil import rmtree
 from click.testing import CliRunner
-from stakkr.docker_actions import get_client as docker_client, _container_in_network as ct_in_network
+from stakkr.docker_actions import get_client as docker_client, _container_in_network
 from stakkr.cli import stakkr
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -13,6 +14,10 @@ sys.path.insert(0, BASE_DIR + '/../')
 
 class CliTest(unittest.TestCase):
     cmd_base = ['stakkr', '-c', BASE_DIR + '/static/stakkr.yml']
+
+    @pytest.fixture(autouse=True)
+    def capfd(self, capfd):
+        self.capfd = capfd
 
     def test_no_arg(self):
         result = CliRunner().invoke(stakkr)
@@ -111,7 +116,7 @@ class CliTest(unittest.TestCase):
         self.assertIs(res['status'], 0)
 
         # Proxy is in network now
-        self.assertIs(True, ct_in_network('proxy_stakkr', 'static_stakkr'))
+        self.assertIs(True, _container_in_network('proxy_stakkr', 'static_stakkr'))
 
         # Check it's fine
         res = exec_cmd(self.cmd_base + ['status'])
@@ -129,7 +134,7 @@ class CliTest(unittest.TestCase):
 
         exec_cmd(self.cmd_base + ['start'])
         # Proxy is in network now
-        self.assertIs(True, ct_in_network('proxy_stakkr', 'static_stakkr'))
+        self.assertIs(True, _container_in_network('proxy_stakkr', 'static_stakkr'))
 
         # Restart
         res = exec_cmd(self.cmd_base + ['restart'])
@@ -149,7 +154,7 @@ class CliTest(unittest.TestCase):
         self.assertIs(res['status'], 0)
 
         # Proxy is in network
-        self.assertIs(True, ct_in_network('proxy_stakkr', 'static_stakkr'))
+        self.assertIs(True, _container_in_network('proxy_stakkr', 'static_stakkr'))
 
     def test_start(self):
         self._proxy_start_check_not_in_network()
@@ -168,7 +173,7 @@ class CliTest(unittest.TestCase):
             self.assertIs(res['status'], 0)
 
         # Proxy is in network now
-        self.assertIs(True, ct_in_network('proxy_stakkr', 'static_stakkr'))
+        self.assertIs(True, _container_in_network('proxy_stakkr', 'static_stakkr'))
 
         # Again ....
         res = exec_cmd(cmd)
@@ -317,7 +322,8 @@ class CliTest(unittest.TestCase):
     def test_services_add_service_from_url(self):
         rmtree(BASE_DIR + '/static/services/db', ignore_errors=True)
 
-        res = exec_cmd(self.cmd_base + ['services-add', 'https://github.com/stakkr-org/services-databases.git', 'db'])
+        cmd_opts = ['services-add', 'https://github.com/stakkr-org/services-databases.git', 'db']
+        res = exec_cmd(self.cmd_base + cmd_opts)
         self.assertEqual(res['stderr'], '')
         self.assertRegex(res['stdout'], r'.*Package.*databases.*installed successfully')
         self.assertIs(res['status'], 0)
@@ -337,7 +343,6 @@ class CliTest(unittest.TestCase):
         self.assertRegex(res['stdout'], r"phptest")
         self.assertIs(res['status'], 0)
 
-
     def setUpClass():
         """Clean containers and services directory"""
         from docker import client
@@ -349,7 +354,6 @@ class CliTest(unittest.TestCase):
                 ct.remove(v=True, force=True)
             except NotFound:
                 pass
-
 
         cli = CliTest()
 
@@ -380,7 +384,7 @@ class CliTest(unittest.TestCase):
         # Proxy is not connected to network
         self.assertIs(
             False,
-            ct_in_network('proxy_stakkr', 'static_stakkr'))
+            _container_in_network('proxy_stakkr', 'static_stakkr'))
 
 
 def exec_cmd(cmd: list):

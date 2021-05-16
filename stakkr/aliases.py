@@ -2,7 +2,7 @@
 """Aliases management"""
 
 from sys import argv
-from yaml import load, error
+from yaml import safe_load, error
 from stakkr.configreader import get_config_and_project_dir
 
 
@@ -29,7 +29,7 @@ def get_aliases():
     config = {}
     try:
         with open(config_file, 'r') as stream:
-            config = load(stream)
+            config = safe_load(stream)
     except (error.YAMLError, FileNotFoundError):
         pass
 

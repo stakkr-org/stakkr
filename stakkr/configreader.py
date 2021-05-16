@@ -1,7 +1,6 @@
 # coding: utf-8
 """Simple Config Reader."""
 
-from collections.abc import Iterable
 from os import path
 from sys import stderr
 import anyconfig

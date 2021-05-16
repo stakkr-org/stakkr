@@ -5,7 +5,7 @@ import os
 import shutil
 import sys
 import click
-from yaml import load, dump
+from yaml import safe_load, dump
 from stakkr import file_utils
 from stakkr.actions import StakkrActions
 
@@ -62,12 +62,12 @@ def install_filetree(force: bool = False):
         _copy_file(os.getcwd(), required_tpl, force)
 
 
-def install_recipe(recipe: str):
+def install_recipe(recipe_name: str):
     """Install a recipe (do all tasks)"""
     # Get config
-    recipe_config = _recipe_get_config(recipe)
+    recipe_config = _recipe_get_config(recipe_name)
     with open(recipe_config, 'r') as stream:
-        recipe = load(stream)
+        recipe = safe_load(stream)
 
     # Install everything declared in the recipe
     click.secho('Installing services')
@@ -158,7 +158,7 @@ def _recipe_init_stakkr():
     })
 
 
-def _recipe_run_commands(stakkr: StakkrActions, commands: str):
+def _recipe_run_commands(stakkr: StakkrActions, commands: dict):
     """Run all commands defined in recipe"""
     for title, cmd in commands.items():
         click.secho('  ↳ {}'.format(title))
