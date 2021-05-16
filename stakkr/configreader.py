@@ -43,22 +43,32 @@ class Config:
         It could be either local or from a local services
         (first local then packages by alphabetical order).
         """
-        schema = anyconfig.load(self.spec_files, Loader=FullLoader)
-        config = anyconfig.load(self.config_files, Loader=FullLoader)
+
+        spec = {}
+        for filepath in self.spec_files:
+            yaml = anyconfig.load(filepath, Loader=FullLoader)
+            spec = _merge_dictionaries(spec, yaml)
+        # Waiting anyconfig to work for that :
+        # schema = anyconfig.load(self.spec_files, Loader=FullLoader)
+
+        conf = {}
+        for filepath in self.config_files:
+            yaml = anyconfig.load(filepath, Loader=FullLoader)
+            conf = _merge_dictionaries(conf, yaml)
+        # Waiting anyconfig to work for that :
+        # config = anyconfig.load(self.spec_files, Loader=FullLoader)
 
         # Make sure the compiled configuration is valid
-        try:
-            anyconfig.validate(config, schema, safe=False)
-        except _Error as error:
-            error_path = ' -> '.join(map(str, error.path))
-            self.error = '{} ({})'.format(error.message, error_path)
+        valid, errs = anyconfig.validate(conf, spec, ac_schema_safe=False, ac_schema_errors=True)
+        if valid is False:
+            self.error = errs[0]
             return False
 
-        config['project_dir'] = path.realpath(path.dirname(self.config_file))
-        if config['project_name'] == '':
-            config['project_name'] = path.basename(config['project_dir'])
+        conf['project_dir'] = path.realpath(path.dirname(self.config_file))
+        if conf['project_name'] == '':
+            conf['project_name'] = path.basename(conf['project_dir'])
 
-        return config
+        return conf
 
     def _build_config_files_list(self):
         self.config_files = [
@@ -85,3 +95,16 @@ def get_config_and_project_dir(config_file: str):
         config_file = '{}/stakkr.yml'.format(project_dir)
 
     return config_file, project_dir
+
+
+def _merge_dictionaries(dict1, dict2):
+    for key, val in dict1.items():
+        if isinstance(val, dict):
+            dict2_node = dict2.setdefault(key, {})
+            _merge_dictionaries(val, dict2_node)
+
+        else:
+            if key not in dict2:
+                dict2[key] = val
+
+    return dict2

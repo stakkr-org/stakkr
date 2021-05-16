@@ -41,7 +41,7 @@ stakkr-compose=stakkr.stakkr_compose:cli''',
         'click-plugins==1.1.1',
         'clint==0.5.1',
         'PyYAML==5.4.1',
-        'anyconfig==0.9.0',  # To be upgraded
+        'anyconfig==0.10.1',
         'GitPython==3.1.17'
         ] + extra_packages,
     classifiers=[
