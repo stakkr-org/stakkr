@@ -4,7 +4,6 @@
 from os import path
 from sys import stderr
 import anyconfig
-from jsonschema.exceptions import _Error
 from stakkr.file_utils import get_file, find_project_dir
 from yaml import FullLoader
 
@@ -43,7 +42,6 @@ class Config:
         It could be either local or from a local services
         (first local then packages by alphabetical order).
         """
-
         spec = {}
         for filepath in self.spec_files:
             yaml = anyconfig.load(filepath, Loader=FullLoader)
@@ -88,13 +86,10 @@ class Config:
 def get_config_and_project_dir(config_file: str):
     """Guess config file name and project dir"""
     if config_file is not None:
-        config_file = path.abspath(config_file)
-        project_dir = path.dirname(config_file)
-    else:
-        project_dir = find_project_dir()
-        config_file = '{}/stakkr.yml'.format(project_dir)
+        return path.abspath(config_file), path.dirname(config_file)
 
-    return config_file, project_dir
+    project_dir = find_project_dir()
+    return '{}/stakkr.yml'.format(project_dir), project_dir
 
 
 def _merge_dictionaries(dict1, dict2):

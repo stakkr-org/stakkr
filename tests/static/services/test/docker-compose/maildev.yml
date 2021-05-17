@@ -1,12 +1,14 @@
-version: '2.2'
+version: "3.8"
 
 services:
-    maildev:
-        image: djfarrelly/maildev:${DOCKER_MAILDEV_VERSION}
-        mem_limit: ${DOCKER_MAILDEV_RAM}
-        container_name: ${COMPOSE_PROJECT_NAME}_maildev
-        hostname: ${COMPOSE_PROJECT_NAME}_maildev
-        networks: [stakkr]
-        labels:
-            - traefik.frontend.rule=Host:maildev.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}
-            - traefik.port=80 # because maildev exposes more than one port
+  maildev:
+    image: djfarrelly/maildev:${DOCKER_MAILDEV_VERSION}
+    mem_limit: ${DOCKER_MAILDEV_RAM}
+    container_name: ${COMPOSE_PROJECT_NAME}_maildev
+    hostname: ${COMPOSE_PROJECT_NAME}_maildev
+    networks: [stakkr]
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.maildev.tls: "true"
+      traefik.http.routers.maildev.rule: "Host(`maildev.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}`)"
+      traefik.http.services.maildev.loadbalancer.server.port: 80

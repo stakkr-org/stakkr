@@ -10,8 +10,12 @@ from stakkr.file_utils import get_dir
 class Proxy:
     """Main class that does actions asked by the cli."""
 
-    def __init__(self, http_port: int = 80, https_port: int = 443, ct_name: str = 'proxy_stakkr', version: str = 'latest'):
+    def __init__(self,
+                 http_port: int = 80, https_port: int = 443,
+                 ct_name: str = 'proxy_stakkr',
+                 version: str = 'latest'):
         """Set the right values to start the proxy."""
+
         self.ports = {'http': http_port, 'https': https_port}
         self.ct_name = ct_name
         self.docker_client = docker.get_client()
@@ -45,9 +49,11 @@ class Proxy:
                 'traefik:{}'.format(self.version), remove=True, detach=True,
                 hostname=self.ct_name, name=self.ct_name,
                 volumes=[
-                    '/var/run/docker.sock:/var/run/docker.sock',
-                    '{}/traefik.toml:/etc/traefik/traefik.toml'.format(proxy_conf_dir),
+                    '/var/run/docker.sock:/var/run/docker.sock:ro',
+                    '{}/traefik.yml:/etc/traefik/traefik.yml:ro'.format(proxy_conf_dir),
+                    '{}/config.yml:/etc/traefik/config.yml'.format(proxy_conf_dir),
                     '{}/ssl:/etc/traefik/ssl'.format(proxy_conf_dir)],
-                ports={80: self.ports['http'], 8080: 8080, 443: self.ports['https']})
+                labels={'traefik.enable': 'true', 'traefik.http.routers.traefik': 'true'},
+                ports={80: self.ports['http'], 443: self.ports['https']})
         except DockerException as error:
             raise RuntimeError("Can't start proxy ...({})".format(error))

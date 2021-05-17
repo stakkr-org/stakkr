@@ -1,6 +1,6 @@
 # Override stakkr network with the one defined in config
 
-version: '2.2'
+version: '3.8'
 
 networks:
   stakkr:

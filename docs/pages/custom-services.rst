@@ -88,7 +88,7 @@ required :
 .. code-block:: yaml
    :caption: services/nginx2/docker-composer/nginx2.yml
 
-   version: '2.2'
+   version: "3.8"
 
    services:
        nginx2:

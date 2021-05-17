@@ -8,7 +8,7 @@ services:
     version: latest
     ram: 512M
     service_name: Portainer (Docker Webadmin)
-    service_url: http://{}
+    service_url: https://{}
 
 aliases: {}
 
@@ -17,7 +17,7 @@ proxy:
   domain: localhost
   http_port: 80
   https_port: 443
-  version: 1.7.0
+  version: 2.4
 
 project_name: ''
 
