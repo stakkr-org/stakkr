@@ -24,7 +24,8 @@ class Proxy:
     def start(self, stakkr_network: str = None):
         """Start stakkr proxy if stopped."""
         if docker.container_running(self.ct_name) is False:
-            print(click.style('[STARTING]', fg='green') + ' traefik')
+            msg = ' traefik (Dashboard: http://traefik.docker.localhost)'
+            print(click.style('[STARTING]', fg='green') + msg)
             self._start_container()
 
         # Connect it to network if asked
@@ -54,6 +55,7 @@ class Proxy:
                     '{}/config.yml:/etc/traefik/config.yml'.format(proxy_conf_dir),
                     '{}/ssl:/etc/traefik/ssl'.format(proxy_conf_dir)],
                 labels={'traefik.enable': 'true', 'traefik.http.routers.traefik': 'true'},
-                ports={80: self.ports['http'], 443: self.ports['https']})
+                ports={80: self.ports['http'], 443: self.ports['https']}
+                )
         except DockerException as error:
             raise RuntimeError("Can't start proxy ...({})".format(error))
