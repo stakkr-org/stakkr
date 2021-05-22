@@ -7,6 +7,7 @@ from shutil import rmtree
 from click.testing import CliRunner
 from stakkr.docker_actions import get_client as docker_client, _container_in_network
 from stakkr.cli import stakkr
+from stakkr.proxy import Proxy
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, BASE_DIR + '/../')
@@ -18,6 +19,13 @@ class CliTest(unittest.TestCase):
     @pytest.fixture(autouse=True)
     def capfd(self, capfd):
         self.capfd = capfd
+
+    # see https://github.com/pytest-dev/pytest/issues/5502
+    @pytest.fixture(autouse=True)
+    def capture_wrap(self):
+        sys.stderr.close = lambda *args: None
+        sys.stdout.close = lambda *args: None
+        yield
 
     def test_aliases(self):
         exec_cmd(self.cmd_base + ['-c', BASE_DIR + '/static/config_aliases.yml', 'start'])
@@ -343,16 +351,17 @@ class CliTest(unittest.TestCase):
         self.assertRegex(res['stdout'], r'.*Package.*databases.*installed successfully')
         self.assertIs(res['status'], 0)
 
-    def setUpClass():
+    @classmethod
+    def setUpClass(cls):
         """Clean containers and services directory"""
         from docker import client
-        from docker.errors import NotFound
+        from docker.errors import NotFound, APIError
         cts = client.from_env().containers.list(all=True)
         for ct in cts:
             try:
                 ct.stop()
                 ct.remove(v=True, force=True)
-            except NotFound:
+            except (NotFound, APIError):
                 pass
 
         cli = CliTest()
@@ -362,7 +371,8 @@ class CliTest(unittest.TestCase):
         exec_cmd(cli.cmd_base + ['services-add', 'php'])
         exec_cmd(cli.cmd_base + ['services-add', 'emails'])
 
-    def tearDownClass():
+    @classmethod
+    def tearDownClass(cls):
         cli = CliTest()
 
         exec_cmd(cli.cmd_base + ['stop'])
@@ -377,7 +387,6 @@ class CliTest(unittest.TestCase):
         exec_cmd(cli.cmd_base + ['services-add', 'emails'])
 
     def _proxy_start_check_not_in_network(self):
-        from stakkr.proxy import Proxy
         # First start Proxy to verify it'll be added in the network
         stop_remove_container('proxy_stakkr')
         Proxy().start()
