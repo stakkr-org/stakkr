@@ -7,9 +7,9 @@ From click, build stakkr.
 Give all options to manage services to be launched, stopped, etc.
 """
 
-import sys
 import click
 from os import getcwd
+from sys import argv, exit, stdout, stderr
 from click.core import Context
 from stakkr.docker_actions import get_running_containers_names
 from stakkr.aliases import get_aliases
@@ -86,7 +86,7 @@ def exec_cmd(ctx: Context, user: str, container: str, command: tuple, tty: bool,
 @click.pass_context
 def restart(ctx: Context, container: str, pull: bool, recreate: bool, proxy: bool):
     """See command Help."""
-    print(click.style('[RESTARTING]', fg='green') + ' your stakkr services')
+    stdout.write(click.style('[RESTARTING]', fg='green') + ' your stakkr services\n')
     try:
         ctx.invoke(stop, container=container, proxy=proxy)
     except Exception:
@@ -104,8 +104,8 @@ def services(ctx):
 
     from stakkr.stakkr_compose import get_available_services
 
-    print('Available services usable in stakkr.yml ', end='')
-    print('({} = disabled) : '.format(click.style('✘', fg='red')))
+    stdout.write('Available services usable in stakkr.yml ')
+    stdout.write('({} = disabled) : \n'.format(click.style('✘', fg='red')))
 
     svcs = ctx.obj['STAKKR'].get_config()['services']
     enabled_svcs = [svc for svc, opts in svcs.items() if opts['enabled'] is True]
@@ -116,7 +116,7 @@ def services(ctx):
             version = svcs[available_svc]['version']
             sign = click.style(str(version), fg='green')
 
-        print('  - {} ({})'.format(available_svc, sign))
+        stdout.write('  - {} ({})\n'.format(available_svc, sign))
 
 
 @stakkr.command(help="""Download a pack of services from github (see github) containing services.
@@ -136,7 +136,7 @@ def services_add(ctx: Context, package: str, name: str):
     success, message = install(services_dir, package, name)
     if success is False:
         click.echo(click.style(message, fg='red'))
-        sys.exit(1)
+        exit(1)
 
     stdout_msg = 'Package "' + click.style(package, fg='green') + '" installed successfully'
     if message is not None:
@@ -155,7 +155,7 @@ def services_update(ctx):
     project_dir = _get_project_dir(ctx.obj['CONFIG'])
     services_dir = '{}/services'.format(project_dir)
     update_all(services_dir)
-    print(click.style('Packages updated', fg='green'))
+    stdout.write(click.style('Packages updated\n', fg='green'))
 
 
 @stakkr.command(help="Start all (or a single as CONTAINER) container(s) defined in compose.ini")
@@ -166,7 +166,7 @@ def services_update(ctx):
 @click.pass_context
 def start(ctx: Context, container: str, pull: bool, recreate: bool, proxy: bool):
     """See command Help."""
-    print(click.style('[STARTING]', fg='green') + ' your stakkr services')
+    stdout.write(click.style('[STARTING]', fg='green') + ' your stakkr services\n')
 
     ctx.obj['STAKKR'].start(container, pull, recreate, proxy)
     _show_status(ctx)
@@ -185,7 +185,7 @@ def status(ctx):
 @click.pass_context
 def stop(ctx: Context, container: str, proxy: bool):
     """See command Help."""
-    print(click.style('[STOPPING]', fg='yellow') + ' your stakkr services')
+    stdout.write(click.style('[STOPPING]', fg='yellow') + ' your stakkr services\n')
     ctx.obj['STAKKR'].stop(container, proxy)
 
 
@@ -202,12 +202,12 @@ def _get_cmd_user(user: str, container: str):
 def _show_status(ctx):
     services_ports = ctx.obj['STAKKR'].get_services_urls()
     if services_ports == '':
-        print('\nServices Status:')
+        stdout.write('\nServices Status:\n')
         ctx.invoke(status)
         return
 
-    print('\nServices URLs :')
-    print(services_ports)
+    stdout.write('\nServices URLs :\n')
+    stdout.write(services_ports)
 
 
 def _get_project_dir(config: str):
@@ -223,7 +223,7 @@ def _get_project_dir(config: str):
 
 def debug_mode():
     """Guess if we are in debug mode, useful to display runtime errors."""
-    if '--debug' in sys.argv or '-d' in sys.argv:
+    if '--debug' in argv or '-d' in argv:
         return True
 
     return False
@@ -268,13 +268,13 @@ def main():
 |______|_|  \_\_|  \_\\____/|_|  \_\
 
 """, fg='yellow')
-        msg += click.style('{}'.format(error), fg='red')
-        print(msg + '\n', file=sys.stderr)
+        msg += click.style('{}\n'.format(error), fg='red')
+        stderr.write(msg)
 
         if debug_mode() is True:
             raise error
 
-        sys.exit(1)
+        exit(1)
 
 
 if __name__ == '__main__':

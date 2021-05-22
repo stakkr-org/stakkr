@@ -2,6 +2,7 @@
 """Manage public proxy to expose containers."""
 
 import click
+from sys import stdout
 from docker.errors import DockerException
 from stakkr import docker_actions as docker
 from stakkr.file_utils import get_dir
@@ -24,8 +25,8 @@ class Proxy:
     def start(self, stakkr_network: str = None):
         """Start stakkr proxy if stopped."""
         if docker.container_running(self.ct_name) is False:
-            msg = ' traefik (Dashboard: http://traefik.docker.localhost)'
-            print(click.style('[STARTING]', fg='green') + msg)
+            msg = ' traefik (Dashboard: http://traefik.docker.localhost)\n'
+            stdout.write(click.style('[STARTING]', fg='green') + msg)
             self._start_container()
 
         # Connect it to network if asked
@@ -37,7 +38,7 @@ class Proxy:
         if docker.container_running(self.ct_name) is False:
             return
 
-        print(click.style('[STOPPING]', fg='green') + ' traefik')
+        stdout.write(click.style('[STOPPING]', fg='green') + ' traefik\n')
         proxy_ct = self.docker_client.containers.get(self.ct_name)
         proxy_ct.stop()
 

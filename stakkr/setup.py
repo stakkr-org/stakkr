@@ -107,8 +107,8 @@ def _copy_file(project_dir: str, source_file: str, force: bool):
     try:
         shutil.copy(full_path, dest_file)
     except Exception:
-        msg = "Error trying to copy {} .. check that the file is there ..."
-        print(msg.format(full_path), file=sys.stderr)
+        msg = "Error trying to copy {} .. check that the file is there ...\n"
+        sys.stderr.write(msg.format(full_path))
 
 
 def _recipe_get_config(recipe: str):
