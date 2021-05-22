@@ -5,6 +5,8 @@ import pytest
 import unittest
 from shutil import rmtree
 from click.testing import CliRunner
+from docker import client
+from docker.errors import APIError, NotFound
 from stakkr.docker_actions import get_client as docker_client, _container_in_network
 from stakkr.cli import stakkr
 from stakkr.proxy import Proxy
@@ -354,8 +356,6 @@ class CliTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Clean containers and services directory"""
-        from docker import client
-        from docker.errors import NotFound, APIError
         cts = client.from_env().containers.list(all=True)
         for ct in cts:
             try:
@@ -370,6 +370,16 @@ class CliTest(unittest.TestCase):
             rmtree(BASE_DIR + '/static/services/' + service, ignore_errors=True)
         exec_cmd(cli.cmd_base + ['services-add', 'php'])
         exec_cmd(cli.cmd_base + ['services-add', 'emails'])
+
+    @classmethod
+    def tearDown(cls):
+        cts = client.from_env().containers.list(all=True)
+        for ct in cts:
+            try:
+                ct.stop()
+                ct.remove(v=True, force=True)
+            except (NotFound, APIError):
+                pass
 
     @classmethod
     def tearDownClass(cls):
@@ -388,7 +398,6 @@ class CliTest(unittest.TestCase):
 
     def _proxy_start_check_not_in_network(self):
         # First start Proxy to verify it'll be added in the network
-        stop_remove_container('proxy_stakkr')
         Proxy().start()
         # Proxy is not connected to network
         self.assertIs(
@@ -414,12 +423,11 @@ def exec_cmd(cmd: list, capfd=None):
 
 
 def stop_remove_container(ct_name: str):
-    from docker.errors import NotFound
     try:
         ct = docker_client().containers.get(ct_name)
         ct.stop()
         ct.remove()
-    except NotFound:
+    except (APIError, NotFound):
         pass
 
 
