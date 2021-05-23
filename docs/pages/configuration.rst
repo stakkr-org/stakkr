@@ -70,7 +70,7 @@ parameters such as databases for passwords :
 
 HTTPS
 -----
-If you need to work with websites in HTTPS, change the urls to *https://*. If you don't
+Stakkr is now full https with an self-signed certificate. If you don't
 want to accept the certificate everytime, you can ask chrome to accept all *localhost*
 certificates by calling ``chrome://flags/#allow-insecure-localhost`` as a URL.
 

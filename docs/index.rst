@@ -46,7 +46,7 @@ Examples
 ==============
 You can combine services as you want to have :
 
-- A **Dev LAMP stack** (Apache + MySQL 5.7 + PHP 7.2 with xdebug and xhprof) ...
+- A **Dev LAMP stack** (Nginx + Postgres 13 + PHP 8.0 with xdebug and xhprof) ...
   and if suddenly you want to test your code with PHP 7.0,
   change it in ``stakkr.yml``, restart, it's done !
 - Or Apache 2.2 + PHP 5.6 + MySQL 5.5 for a **legacy environment**

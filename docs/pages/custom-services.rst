@@ -168,16 +168,19 @@ Example again with nginx2 :
 .. code-block:: yaml
    :caption: services/nginx2/docker-composer/nginx2.yml
 
-   version: '2.2'
+   version: "3.8"
 
    services:
-       nginx2:
-           build:
-             context: ${COMPOSE_BASE_DIR}/services/nginx2/docker-compose
-             dockerfile: Dockerfile.nginx2
-           mem_limit: ${DOCKER_NGINX2_RAM}
-           container_name: ${COMPOSE_PROJECT_NAME}_nginx2
-           hostname: ${COMPOSE_PROJECT_NAME}_nginx2
-           networks: [stakkr]
-           labels:
-               - traefik.frontend.rule=Host:nginx2.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}
+     nginx2:
+       build:
+         context: ${COMPOSE_BASE_DIR}/services/nginx2/docker-compose
+         dockerfile: Dockerfile.nginx2
+       mem_limit: ${DOCKER_NGINX2_RAM}
+       container_name: ${COMPOSE_PROJECT_NAME}_nginx2
+       hostname: ${COMPOSE_PROJECT_NAME}_nginx2
+       networks: [stakkr]
+       labels:
+         traefik.enable: "true"
+         traefik.http.services.nginx2.loadbalancer.server.port: 80
+         traefik.http.routers.nginx2.tls: "true"
+         traefik.http.routers.nginx2.rule: "Host(`nginx2.${COMPOSE_PROJECT_NAME}.${PROXY_DOMAIN}`)"

@@ -5,7 +5,7 @@ Installation
 
 Docker
 ======
-You must have Docker installed on your computer. Pick the right version for your OS from https://www.docker.com/community-edition
+You must have Docker installed on your computer. Pick the right version for your OS from https://docs.docker.com/get-docker/
 
 .. WARNING::
 
@@ -45,7 +45,7 @@ Then :
     # That option is recommended when you know how to do and especially for MacOs
     # For windows just run : python -m pip --no-cache-dir install stakkr
     ###
-    
+
     $ mkdir my_project
     $ cd my_project
 
@@ -147,7 +147,7 @@ The code below starts a dind container and init a symfony app :
 .. code:: bash
 
     # From the host
-    $ docker run -d --privileged --rm --name stakkr-test docker:dind
+    $ docker run -d -v /var/run/docker.sock:/var/run/docker.sock --privileged --rm --name stakkr-test docker:dind
     $ docker exec -ti stakkr-test ash
 
     # From the container

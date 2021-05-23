@@ -1,14 +1,18 @@
 FROM        docker:dind
 
 # Stakkr + dependencies installation
-RUN         apk add --no-cache python3 alpine-sdk curl git openssl-dev python3-dev libffi-dev && \
+RUN         apk add --no-cache \
+                alpine-sdk cargo curl git libffi-dev openssl-dev \
+                python3 py3-pip py3-requests py3-wheel python3-dev rust && \
             # Install / upgrade pip
             python3 -m pip install --upgrade pip && \
             # Add dev tools
             # Install stakkr
             python3 -m pip install --pre stakkr && \
             # Clean
-            apk del alpine-sdk curl openssl-dev python3-dev libffi-dev && \
+            apk del \
+                alpine-sdk cargo curl libffi-dev openssl-dev \
+                python3-dev py3-pip py3-wheel rust && \
             rm -rf /var/cache/apk/* /var/log/*
 
 # Create user / group
