@@ -35,8 +35,6 @@ build:
         override:
           - py-scrutinizer-run
           - pylint-run --rcfile=.pylintrc
-      resources:
-        cpus: 2
 
 checks:
   python:
