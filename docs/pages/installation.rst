@@ -116,7 +116,7 @@ Then install stakkr and its dependencies :
 
 .. code:: bash
 
-    $ python -m pip install --upgrade pip wheel
+    $ python -m pip install --upgrade pip setuptools wheel
     $ python -m pip install -e .
     $ python -m pip install -r requirements-dev.txt
     $ stakkr-init

@@ -20,8 +20,9 @@ setup(
     name='stakkr',
     version=__version__,
     description='''
-    A configurable stack based on docker to run any combination
+A configurable stack based on docker to run any combination
 of services (PHP, MySQL, Apache, Nginx, Mongo, etc..)''',
+    long_description_content_type='text/x-rst',
     long_description=readme(),
     url='http://github.com/stakkr-org/stakkr',
     author='Emmanuel Dyan',
@@ -29,7 +30,7 @@ of services (PHP, MySQL, Apache, Nginx, Mongo, etc..)''',
     license='Apache 2.0',
     packages=['stakkr'],
     py_modules=['stakkr'],
-    python_requires='>=3.3',
+    python_requires='>=3.6',
     entry_points='''[console_scripts]
 stakkr=stakkr.cli:main
 stakkr-init=stakkr.setup:init

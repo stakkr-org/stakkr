@@ -1,22 +1,22 @@
 .. image:: https://raw.githubusercontent.com/edyan/stakkr/master/docs/stakkr-logo.png
-    :width: 200px
-    :align: center
+  :width: 200px
+  :align: center
 
 Overview
 ========
 
 .. image:: https://scrutinizer-ci.com/g/stakkr-org/stakkr/badges/quality-score.png?b=master
-   :target: https://scrutinizer-ci.com/g/stakkr-org/stakkr
+  :target: https://scrutinizer-ci.com/g/stakkr-org/stakkr
 .. image:: https://travis-ci.com/stakkr-org/stakkr.svg?branch=master
-   :target: https://travis-ci.com/stakkr-org/stakkr
+  :target: https://travis-ci.com/stakkr-org/stakkr
 .. image:: https://img.shields.io/pypi/l/stakkr.svg
-   :target: https://pypi.python.org/pypi/stakkr
+  :target: https://pypi.python.org/pypi/stakkr
 .. image:: https://api.codeclimate.com/v1/badges/a11947de978e420ef6fd/maintainability
-   :target: https://codeclimate.com/github/stakkr-org/stakkr/maintainability
-   :alt: Maintainability
+  :target: https://codeclimate.com/github/stakkr-org/stakkr/maintainability
+  :alt: Maintainability
 .. image:: https://api.codeclimate.com/v1/badges/a11947de978e420ef6fd/test_coverage
-   :target: https://codeclimate.com/github/stakkr-org/stakkr/test_coverage
-   :alt: Test Coverage
+  :target: https://codeclimate.com/github/stakkr-org/stakkr/test_coverage
+  :alt: Test Coverage
 
 
 Stakkr
