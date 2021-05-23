@@ -2,7 +2,7 @@
 build:
   environment:
     python:
-      version: 3.7.9
+      version: 3.8.9
       virtualenv: true
     mysql: false
     postgresql: false
@@ -13,7 +13,7 @@ build:
     neo4j: false
     rabbitmq: false
     docker:
-      remote_engine: false
+      remote_engine: true
   nodes:
     tests-and-coverage:
       tests:
