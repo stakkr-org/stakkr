@@ -179,7 +179,8 @@ class CliTest(unittest.TestCase):
         self.assertIs(res['status'], 0)
 
         # Proxy is in network
-        self.assertIs(True, _container_in_network('proxy_stakkr', 'static_stakkr'))
+        if 'SCRUTINIZER_API_ENDPOINT' not in os.environ:
+            self.assertIs(True, _container_in_network('proxy_stakkr', 'static_stakkr'))
 
     def test_start(self):
         self._proxy_start_check_not_in_network()

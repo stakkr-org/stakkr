@@ -1,47 +1,47 @@
 # language: python
 build:
-    environment:
-        python:
-            version: 3.7.3
-            virtualenv: true
-        mysql: false
-        postgresql: false
-        mongodb: false
-        elasticsearch: false
-        redis: false
-        memcached: false
-        neo4j: false
-        rabbitmq: false
-        docker:
-            remote_engine: true
-    nodes:
-        tests-and-coverage:
-            tests:
-                before:
-                    - "pip install --upgrade pip"
-                    - "pip install -e ."
-                    - "pip install -r requirements-dev.txt"
-                override:
-                    - command: py.test
-                      idle_timeout: 1200
-                      coverage:
-                          file: .coverage
-                          config_file: .coveragerc
-                          format: py-cc
-        analysis:
-            project_setup:
-                override: true
-            tests:
-                override:
-                    - py-scrutinizer-run
-                    - pylint-run --rcfile=.pylintrc
+  environment:
+    python:
+      version: 3.7.1
+      virtualenv: true
+    mysql: false
+    postgresql: false
+    mongodb: false
+    elasticsearch: false
+    redis: false
+    memcached: false
+    neo4j: false
+    rabbitmq: false
+    docker:
+      remote_engine: true
+  nodes:
+    tests-and-coverage:
+      tests:
+        before:
+          - "pip install --upgrade pip"
+          - "pip install -e ."
+          - "pip install -r requirements-dev.txt"
+        override:
+          - command: py.test
+            idle_timeout: 1200
+            coverage:
+              file: .coverage
+              config_file: .coveragerc
+              format: py-cc
+    analysis:
+      project_setup:
+        override: true
+      tests:
+        override:
+          - py-scrutinizer-run
+          - pylint-run --rcfile=.pylintrc
 
 checks:
-    python:
-        code_rating: true
-        duplicate_code: true
-        classes_valid_slots: true
+  python:
+    code_rating: true
+    duplicate_code: true
+    classes_valid_slots: true
 
 filter:
-    paths:
-        - stakkr/
+  paths:
+    - stakkr/
