@@ -27,7 +27,7 @@ before_script:
   - ./cc-test-reporter before-build
 
 # command to run tests
-script: py.test --no-cov --capture=tee-sys
+script: py.test --no-cov --capture=no
 
 after_script:
   - coverage xml
