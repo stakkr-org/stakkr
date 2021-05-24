@@ -6,7 +6,7 @@ extra_packages = []
 if os.name == 'nt':
     extra_packages.append('pypiwin32')
 
-__version__ = '5.0'
+__version__ = '5.1'
 
 
 # Get the long description from the README file
