@@ -16,7 +16,9 @@ TAG=stakkr/stakkr:${VERSION}
 # Build Image
 echo "Building ${TAG}"
 docker build --tag ${TAG} \
+             --progress=plain \
              --cache-from ${TAG} \
+             --build-arg STAKKR_VERSION="${VERSION}" \
              --build-arg BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
              --build-arg VCS_REF="$(git rev-parse --short HEAD)" \
              --build-arg DOCKER_TAG="${TAG}" \
