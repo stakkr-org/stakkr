@@ -63,7 +63,9 @@ class StakkrActions:
 
         return text
 
-    def exec_cmd(self, container: str, user: str, args: tuple, is_tty: bool, workdir: str):
+    def exec_cmd(self,
+                 container: str, user: str,
+                 args: tuple, is_tty: bool, workdir: str = None):
         """Run a command from outside to any container. Wrapped into /bin/sh."""
         self.init_project()
 
